@@ -1,0 +1,29 @@
+{
+  "name": "usage-metering-engine-backend",
+  "version": "1.0.0",
+  "description": "High-throughput Usage-Based Pricing & Metering Engine backend using ESM & MVC Architecture",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node data/seed.js"
+  },
+  "keywords": [
+    "metering",
+    "usage-based-pricing",
+    "billing",
+    "mvc",
+    "high-throughput",
+    "events"
+  ],
+  "author": "Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.24.5",
+    "uuid": "^10.0.0"
+  }
+}

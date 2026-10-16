@@ -1,0 +1,169 @@
+export const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1').replace(/\/+$/, '');
+
+async function handleResponse(res) {
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || `API Error: ${res.status} ${res.statusText}`);
+  }
+  return res.json();
+}
+
+export const api = {
+  // Telemetry & Health
+  async getHealth() {
+    const res = await fetch(`${API_BASE}/health`);
+    return handleResponse(res);
+  },
+
+  async getTelemetry() {
+    const res = await fetch(`${API_BASE}/events/telemetry`);
+    return handleResponse(res);
+  },
+
+  // Events Ingestion
+  async ingestEvent(eventPayload) {
+    const res = await fetch(`${API_BASE}/events`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(eventPayload)
+    });
+    return handleResponse(res);
+  },
+
+  async ingestBatch(eventsArray) {
+    const res = await fetch(`${API_BASE}/events/batch`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ events: eventsArray })
+    });
+    return handleResponse(res);
+  },
+
+  async getRecentEvents(limit = 50, customerId = null) {
+    const url = new URL(`${API_BASE}/events`);
+    url.searchParams.set('limit', limit);
+    if (customerId) url.searchParams.set('customerId', customerId);
+    const res = await fetch(url.toString());
+    return handleResponse(res);
+  },
+
+  async resetAllUsage() {
+    const res = await fetch(`${API_BASE}/events/reset`, { method: 'POST' });
+    return handleResponse(res);
+  },
+
+  // Meters
+  async getMeters() {
+    const res = await fetch(`${API_BASE}/meters`);
+    return handleResponse(res);
+  },
+
+  async createMeter(meterData) {
+    const res = await fetch(`${API_BASE}/meters`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(meterData)
+    });
+    return handleResponse(res);
+  },
+
+  async deleteMeter(id) {
+    const res = await fetch(`${API_BASE}/meters/${id}`, { method: 'DELETE' });
+    return handleResponse(res);
+  },
+
+  // Pricing Plans
+  async getPricingPlans() {
+    const res = await fetch(`${API_BASE}/pricing-plans`);
+    return handleResponse(res);
+  },
+
+  async simulatePricing(rateCard, quantity) {
+    const res = await fetch(`${API_BASE}/pricing-plans/simulate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rateCard, quantity })
+    });
+    return handleResponse(res);
+  },
+
+  // Customers
+  async getCustomers() {
+    const res = await fetch(`${API_BASE}/customers`);
+    return handleResponse(res);
+  },
+
+  async getCustomerUsage(customerId) {
+    const res = await fetch(`${API_BASE}/customers/${customerId}/usage`);
+    return handleResponse(res);
+  },
+
+  async createCustomer(customerData) {
+    const res = await fetch(`${API_BASE}/customers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(customerData)
+    });
+    return handleResponse(res);
+  },
+
+  // Billing & Invoices
+  async getInvoices(customerId = null) {
+    const url = new URL(`${API_BASE}/billing/invoices`);
+    if (customerId) url.searchParams.set('customerId', customerId);
+    const res = await fetch(url.toString());
+    return handleResponse(res);
+  },
+
+  async generateInvoice(customerId) {
+    const res = await fetch(`${API_BASE}/billing/invoices/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ customerId })
+    });
+    return handleResponse(res);
+  },
+
+  async getWebhookLogs() {
+    const res = await fetch(`${API_BASE}/billing/webhooks`);
+    return handleResponse(res);
+  },
+
+  getInvoiceHtmlUrl(invoiceId) {
+    return `${API_BASE}/billing/invoices/${invoiceId}/html`;
+  },
+
+  // Simulator
+  async startSimulator(rate, scenario) {
+    const res = await fetch(`${API_BASE}/simulator/start`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rate, scenario })
+    });
+    return handleResponse(res);
+  },
+
+  async stopSimulator() {
+    const res = await fetch(`${API_BASE}/simulator/stop`, { method: 'POST' });
+    return handleResponse(res);
+  },
+
+  async triggerBurst(count = 50, scenario = 'mixed', customerId = null) {
+    const res = await fetch(`${API_BASE}/simulator/burst`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ count, scenario, customerId })
+    });
+    return handleResponse(res);
+  },
+
+  async getSimulatorStatus() {
+    const res = await fetch(`${API_BASE}/simulator/status`);
+    return handleResponse(res);
+  },
+
+  // Live SSE stream helper
+  createEventSource() {
+    return new EventSource(`${API_BASE}/events/stream`);
+  }
+};
