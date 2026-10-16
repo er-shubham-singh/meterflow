@@ -5,7 +5,6 @@ import Header from '@/components/layout/Header';
 import PlanCard from '@/components/pricing/PlanCard';
 import InteractiveTierCalculator from '@/components/pricing/InteractiveTierCalculator';
 import { api } from '@/services/api';
-import { Calculator, Sparkles } from 'lucide-react';
 
 export default function PricingPage() {
   const [plans, setPlans] = useState([]);
@@ -48,13 +47,13 @@ export default function PricingPage() {
 
         {/* Plans Grid */}
         <div style={{ marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: '800', color: '#fff', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)', marginBottom: '16px' }}>
             Enterprise Rate Card Plans ({plans.length})
           </h2>
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
             gap: '24px'
           }}>
             {plans.map((p) => (

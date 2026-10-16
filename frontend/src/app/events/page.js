@@ -5,7 +5,7 @@ import Header from '@/components/layout/Header';
 import LiveEventTable from '@/components/events/LiveEventTable';
 import EventPayloadModal from '@/components/events/EventPayloadModal';
 import { api } from '@/services/api';
-import { Activity, Filter, RefreshCw, Zap } from 'lucide-react';
+import { Filter, RefreshCw } from 'lucide-react';
 
 export default function EventsPage() {
   const [events, setEvents] = useState([]);
@@ -67,22 +67,23 @@ export default function EventsPage() {
       <main className="page-container">
         {/* Controls bar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             <Filter size={16} color="var(--text-muted)" />
-            <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '600' }}>Filter Event Type:</span>
+            <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '600' }}>Filter:</span>
             {['ALL', 'ai.', 'api.', 'cloud.', 'user.', 'storage.'].map((type) => (
               <button
                 key={type}
                 onClick={() => setFilterType(type)}
                 style={{
-                  background: filterType === type ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-                  border: filterType === type ? '1px solid #10b981' : '1px solid var(--border-subtle)',
-                  color: filterType === type ? '#34d399' : '#cbd5e1',
+                  background: filterType === type ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-card)',
+                  border: filterType === type ? '1px solid var(--emerald-500)' : '1px solid var(--border-subtle)',
+                  color: filterType === type ? 'var(--emerald-400)' : 'var(--text-muted)',
                   padding: '5px 12px',
                   borderRadius: '6px',
                   fontSize: '12px',
                   fontWeight: '600',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 {type === 'ALL' ? 'All Events' : type.replace('.', '').toUpperCase()}
@@ -100,13 +101,14 @@ export default function EventsPage() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: 'rgba(255, 255, 255, 0.05)',
+                background: 'var(--bg-card)',
                 border: '1px solid var(--border-subtle)',
-                color: '#fff',
+                color: 'var(--text-main)',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '12px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
               }}
             >
               <RefreshCw size={12} />

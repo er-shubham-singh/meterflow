@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MeterFlow - Architecture & Workflow Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+    @page {
+      size: A4;
+      margin: 16mm 14mm 16mm 14mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      line-height: 1.5;
+      font-size: 9.5pt;
+    }
+
+    .page {
+      page-break-after: always;
+      position: relative;
+    }
+
+    .page:last-child {
+      page-break-after: avoid;
+    }
+
+    /* Cover Page */
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justifyContent: space-between;
+      min-height: 92vh;
+      padding: 30px 10px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 8.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-primary { background: #ecfdf5; color: #059669; border: 1px solid #10b981; }
+    .badge-violet { background: #eef2ff; color: #4f46e5; border: 1px solid #6366f1; }
+    .badge-amber { background: #fffbeb; color: #b45309; border: 1px solid #f59e0b; }
+    .badge-blue { background: #f0f9ff; color: #0284c7; border: 1px solid #0284c7; }
+
+    .cover-title {
+      font-size: 32pt;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-top: 20px;
+    }
+
+    .cover-title span {
+      color: #10b981;
+    }
+
+    .cover-subtitle {
+      font-size: 13pt;
+      color: #475569;
+      margin-top: 14px;
+      max-width: 650px;
+      line-height: 1.5;
+    }
+
+    .cover-meta {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .meta-item {
+      font-size: 9pt;
+    }
+
+    .meta-label {
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 2px;
+    }
+
+    .meta-val {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 10pt;
+    }
+
+    /* Typography */
+    h1 {
+      font-size: 18pt;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #10b981;
+      padding-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2 {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    h3 {
+      font-size: 10pt;
+      font-weight: 700;
+      color: #334155;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+
+    p {
+      margin-bottom: 8px;
+      color: #334155;
+    }
+
+    /* Section Cards & Callouts */
+    .callout {
+      background: #f8fafc;
+      border-left: 4px solid #10b981;
+      padding: 10px 14px;
+      margin: 12px 0;
+      border-radius: 0 8px 8px 0;
+      font-size: 9pt;
+    }
+
+    .callout-info { border-left-color: #6366f1; background: #faf5ff; }
+    .callout-warning { border-left-color: #f59e0b; background: #fffbeb; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 8.5pt;
+    }
+
+    th {
+      background: #0f172a;
+      color: #f8fafc;
+      text-align: left;
+      padding: 8px 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+    }
+
+    tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    code, pre {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+    }
+
+    code {
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 8pt;
+      border: 1px solid #e2e8f0;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #34d399;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 7.5pt;
+      line-height: 1.45;
+      overflow-x: auto;
+      margin: 8px 0;
+    }
+
+    /* Architecture Flow Box */
+    .flow-diagram {
+      background: #090d16;
+      color: #f8fafc;
+      border-radius: 10px;
+      padding: 14px;
+      margin: 12px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.8pt;
+      line-height: 1.35;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .info-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .info-card h4 {
+      font-size: 9.5pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .formula-box {
+      background: #ecfdf5;
+      border: 1px solid #10b981;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      color: #065f46;
+      margin: 4px 0;
+    }
+
+    .footer {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 6px;
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 7.5pt;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER PAGE -->
+  <div class="page cover">
+    <div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
+        <span class="badge badge-primary">Enterprise Architecture Guide</span>
+        <span class="badge badge-violet">Version 1.0.0</span>
+        <span class="badge badge-blue">Production Ready</span>
+      </div>
+
+      <div class="cover-title">
+        Meter<span>Flow</span> Systems
+      </div>
+      <div style="font-size: 16pt; font-weight: 700; color: #1e293b; margin-top: 6px;">
+        Usage-Based Pricing & Metering Engine
+      </div>
+      <div class="cover-subtitle">
+        Comprehensive Architectural Guide, End-to-End Ingestion Flow, Sliding Window Aggregations, Complex Tier Pricing Algorithms, and Cloud Deployment Runbook.
+      </div>
+
+      <div class="callout" style="margin-top: 30px;">
+        <strong>System Mission:</strong> High-throughput API event listener that calculates complex multi-tenant consumption metrics in real-time and feeds directly into enterprise billing systems (Stripe Billing Engine and Oracle NetSuite ERP).
+      </div>
+
+      <div class="cover-meta">
+        <div class="meta-item">
+          <div class="meta-label">Frontend Framework</div>
+          <div class="meta-val">Next.js 16 (App Router, Turbopack, Vanilla CSS)</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Backend Architecture</div>
+          <div class="meta-val">Node.js + Express.js (ESM "type": "module", MVC)</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">NoSQL Database</div>
+          <div class="meta-val">MongoDB Atlas via Mongoose ORM</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Real-Time Transport</div>
+          <div class="meta-val">Server-Sent Events (SSE) Pipeline</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>MeterFlow Cloud Infrastructure &copy; 2026</span>
+      <span>Confidential - For Internal & Engineering Use</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1: ARCHITECTURE & END-TO-END WORKFLOW -->
+  <div class="page">
+    <h1>1. Architecture & End-to-End Workflow</h1>
+
+    <p>
+      The MeterFlow platform decouples raw event telemetry from financial calculation and billing systems. It operates in four coordinated phases: <strong>Ingestion &rarr; Metering &rarr; Rating &rarr; Settlement</strong>.
+    </p>
+
+    <div class="flow-diagram">
++---------------------------------------------------------------------------------+
+|                               API EVENT SOURCES                                 |
+|  [AI Token Inferences]      [API Gateway Requests]      [GPU Cloud Compute]     |
++---------------------------------------+-----------------------------------------+
+                                        | (HTTP POST /events or /events/batch)
+                                        v
++---------------------------------------------------------------------------------+
+|                       1. EDGE INGESTION & IDEMPOTENCY                           |
+|  - Idempotency Deduplication Cache (LRU Hash Ring) -> Drops Duplicate Bills     |
+|  - Asynchronous Mongoose Persistence to MongoDB "events" collection             |
++---------------------------------------+-----------------------------------------+
+                                        |
+                                        v
++---------------------------------------------------------------------------------+
+|                      2. REAL-TIME METERING & AGGREGATION                        |
+|  - In-Memory Sliding Window Aggregator (Zero-lock concurrent math)              |
+|  - Aggregations: SUM (Tokens), MAX (Storage), COUNT (Calls), UNIQUE (MAU)       |
+|  - Real-time Server-Sent Events (SSE) Broadcast to Next.js Web Console          |
++---------------------------------------+-----------------------------------------+
+                                        |
+                                        v
++---------------------------------------------------------------------------------+
+|                         3. PRICING & RATING ENGINE                              |
+|  - Evaluates Rate Cards: Graduated Tiers, Volume Tiers, Packages, Free Credits  |
+|  - Real-time Accrued Cost calculation & Tenant Budget Limit Alarms (80% / 100%) |
++---------------------------------------+-----------------------------------------+
+                                        |
+                                        v
++---------------------------------------------------------------------------------+
+|                    4. BILLING FEEDS & SETTLEMENT ENGINE                         |
+|  - Automated Invoice Generator with Line Item Math Breakdown                    |
+|  - Outbound Webhook Delivery: Stripe Usage Record API + NetSuite ERP (HMAC-SHA) |
+|  - Executive Printable Invoice View (Receipt HTML/PDF)                          |
++---------------------------------------------------------------------------------+
+    </div>
+
+    <h2>Core Architecture Components</h2>
+    <div class="card-grid">
+      <div class="info-card">
+        <h4>⚡ Edge Ingestion Listener</h4>
+        <p style="font-size: 8.5pt;">Accepts single and batch telemetry payloads (up to 2,000/batch) with sub-millisecond overhead. Idempotency keys prevent double billing on network retries.</p>
+      </div>
+      <div class="info-card">
+        <h4>⏱️ Metering Aggregator</h4>
+        <p style="font-size: 8.5pt;">Maintains running totals per customer and meter. Supports mathematical formulas with filter expressions (e.g. <code>model == 'claude-3-5-sonnet'</code>).</p>
+      </div>
+      <div class="info-card">
+        <h4>🧮 Pricing Engine</h4>
+        <p style="font-size: 8.5pt;">Calculates consumption bills using multi-tier rate cards. Subtracts free allowances and computes graduated tier brackets with exact currency precision.</p>
+      </div>
+      <div class="info-card">
+        <h4>📦 Outbound Billing Feeds</h4>
+        <p style="font-size: 8.5pt;">Generates finalized invoices and delivers signed HMAC-SHA256 payloads to Stripe Billing API and corporate ERP accounting systems.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>MeterFlow Architecture & Workflow Guide</span>
+      <span>Page 2</span>
+    </div>
+  </div>
+
+  <!-- SECTION 2: CONSUMPTION METERS & AGGREGATIONS -->
+  <div class="page">
+    <h1>2. Consumption Meters & Aggregation Rules</h1>
+
+    <p>
+      A <strong>Meter</strong> defines the exact logic of how raw API telemetry translates into billable usage units. MeterFlow supports 6 mathematical aggregation functions:
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Aggregation Type</th>
+          <th>Mathematical Logic</th>
+          <th>Typical Use Case</th>
+          <th>Example Properties</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>SUM</strong></td>
+          <td>&sum; (properties[valueProperty])</td>
+          <td>LLM Input/Output Tokens, Cloud Runtime Hours</td>
+          <td><code>tokens: 2100</code>, <code>vCpuHours: 2.5</code></td>
+        </tr>
+        <tr>
+          <td><strong>MAX</strong></td>
+          <td>Max(properties[valueProperty])</td>
+          <td>Peak High-Watermark Storage, Peak Concurrent DB Connections</td>
+          <td><code>storageGb: 450.2</code>, <code>connections: 84</code></td>
+        </tr>
+        <tr>
+          <td><strong>COUNT</strong></td>
+          <td>Count(matching events)</td>
+          <td>API Invocations, OCR Scans, Webhook Deliveries</td>
+          <td><code>units: 1</code>, <code>endpoint: "/v1/inference"</code></td>
+        </tr>
+        <tr>
+          <td><strong>UNIQUE_COUNT</strong></td>
+          <td>Cardinality of Set(properties[valueProperty])</td>
+          <td>Monthly Active Users (MAU), Unique Devices, IP Addresses</td>
+          <td><code>userId: "usr_9410"</code>, <code>ip: "192.168.1.1"</code></td>
+        </tr>
+        <tr>
+          <td><strong>WEIGHTED_AVG</strong></td>
+          <td>(&sum; val &times; weight) / &sum; weight</td>
+          <td>Average Latency, Server Cluster Load</td>
+          <td><code>duration: 120ms</code>, <code>weight: 5</code></td>
+        </tr>
+        <tr>
+          <td><strong>LATEST</strong></td>
+          <td>Last recorded state value</td>
+          <td>Current Provisioned License Seats, Active Workers</td>
+          <td><code>seatCount: 25</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Pre-configured Enterprise Meters</h2>
+    <div class="card-grid">
+      <div class="info-card">
+        <h4>1. LLM Generative Tokens (<code>llm_tokens_total</code>)</h4>
+        <div class="formula-box">SUM(ai.completion.properties.tokens)</div>
+        <p style="font-size: 8pt; color: #64748b; margin-top: 4px;">Tracks token consumption across prompt and completion inferences.</p>
+      </div>
+      <div class="info-card">
+        <h4>2. API Gateway Invocations (<code>api_requests_total</code>)</h4>
+        <div class="formula-box">COUNT(api.request.properties.units)</div>
+        <p style="font-size: 8pt; color: #64748b; margin-top: 4px;">Counts billable HTTP and gRPC gateway requests.</p>
+      </div>
+      <div class="info-card">
+        <h4>3. GPU & Cloud Compute Hours (<code>gpu_compute_hours</code>)</h4>
+        <div class="formula-box">SUM(cloud.compute.properties.vCpuHours)</div>
+        <p style="font-size: 8pt; color: #64748b; margin-top: 4px;">Dedicated GPU clusters (NVIDIA A100) and vCPU compute runtime.</p>
+      </div>
+      <div class="info-card">
+        <h4>4. Monthly Active Users (<code>monthly_active_users</code>)</h4>
+        <div class="formula-box">UNIQUE_COUNT(user.session.properties.userId)</div>
+        <p style="font-size: 8pt; color: #64748b; margin-top: 4px;">Deduplicated unique user identities active within the billing cycle.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <strong>Property Extraction & Filters:</strong> Meters support arbitrary filtering criteria. For example, a meter can track only events where <code>properties.model === "claude-3-5-sonnet"</code> or <code>properties.region === "us-east-1"</code>.
+    </div>
+
+    <div class="footer">
+      <span>MeterFlow Architecture & Workflow Guide</span>
+      <span>Page 3</span>
+    </div>
+  </div>
+
+  <!-- SECTION 3: COMPLEX PRICING MODELS & RATE CARDS -->
+  <div class="page">
+    <h1>3. Complex Pricing Models & Rate Cards</h1>
+
+    <p>
+      MeterFlow provides mathematically rigorous pricing engines supporting four distinct billing models with included free credit allowances.
+    </p>
+
+    <h2>1. Graduated Tiered Pricing (Marginal Brackets)</h2>
+    <p>
+      Usage is partitioned into tiers. Each tier applies its unit rate only to the consumption falling within its specific range.
+    </p>
+
+    <div class="flow-diagram">
+Example Rate Card: LLM Generative Tokens (Free Allowance: 100,000 tokens)
+Tier 1: 0        - 500,000 tokens    @ $0.0020 / token
+Tier 2: 500,001  - 2,500,000 tokens  @ $0.0015 / token
+Tier 3: 2,500,001+                   @ $0.0008 / token
+
+If Consumed Quantity = 1,200,000 tokens:
+1. Free Allowance:   100,000 tokens included ($0.00)
+2. Billable Units:   1,200,000 - 100,000 = 1,100,000 billable units
+3. Tier 1 Brackets:  First 500,000 @ $0.0020  = $1,000.00
+4. Tier 2 Brackets:  Remaining 600,000 @ $0.0015 = $900.00
+-----------------------------------------------------------------------
+Total Accrued Cost = $1,000.00 + $900.00 = $1,900.00
+    </div>
+
+    <h2>2. Comparison of Pricing Models</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Behavior</th>
+          <th>Formula</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>GRADUATED</strong></td>
+          <td>Marginal pricing per tier bracket</td>
+          <td><code>Cost = &sum; (Units in Tier_i &times; Rate_i)</code></td>
+        </tr>
+        <tr>
+          <td><strong>VOLUME</strong></td>
+          <td>Entire volume priced at single rate reached</td>
+          <td><code>Cost = Total Units &times; Tier_Matched_Rate</code></td>
+        </tr>
+        <tr>
+          <td><strong>PACKAGE</strong></td>
+          <td>Billed per block of units (rounded up)</td>
+          <td><code>Cost = &lceil;Total Units / PackageSize&rceil; &times; PackagePrice</code></td>
+        </tr>
+        <tr>
+          <td><strong>FLAT_FEE</strong></td>
+          <td>Flat pay-as-you-go rate per unit</td>
+          <td><code>Cost = Total Units &times; UnitPrice</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>3. Pre-configured Enterprise Plans</h2>
+    <div class="card-grid">
+      <div class="info-card">
+        <h4>Enterprise AI & Scale ($499/mo Base)</h4>
+        <p style="font-size: 8pt;">Designed for high-scale generative AI applications. Graduated tokens (100k free, then $0.002/$0.0015/$0.0008), API package ($5 per 10k calls), GPU compute ($0.25/hr).</p>
+      </div>
+      <div class="info-card">
+        <h4>FinTech High-Throughput ($999/mo Base)</h4>
+        <p style="font-size: 8pt;">Volume discount pricing for financial transaction gateways. Aggressive volume tiers for API requests ($0.0008 down to $0.0002) with 100k free requests.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>MeterFlow Architecture & Workflow Guide</span>
+      <span>Page 4</span>
+    </div>
+  </div>
+
+  <!-- SECTION 4: BILLING FEEDS & WEBHOOK DISPATCH -->
+  <div class="page">
+    <h1>4. Billing Feeds & Webhook Integrations</h1>
+
+    <p>
+      Once consumption metrics are calculated, MeterFlow synchronizes directly with upstream financial accounting and payment engines via authenticated webhook pipelines.
+    </p>
+
+    <h2>Stripe Billing Usage Record Integration</h2>
+    <p>
+      Formatted according to the <strong>Stripe Billing Meter Events API</strong> specification, signed with <code>HMAC-SHA256</code> to ensure zero tampering:
+    </p>
+
+    <pre>
+{
+  "id": "evt_hook_1730000000",
+  "object": "event",
+  "type": "billing.usage_record.created",
+  "data": {
+    "object": {
+      "id": "mrec_inv_bb4b3211",
+      "customer": "cust_anthropic_res",
+      "subscription_item": "si_plan_enterprise_ai",
+      "livemode": true,
+      "quantity": 1100000,
+      "total_amount_cents": 190000,
+      "currency": "usd",
+      "line_item_breakdown": [
+        {
+          "meter": "LLM Generative Tokens",
+          "tier_details": [
+            { "tier": 1, "unitsConsumed": 500000, "unitPrice": 0.002, "cost": 1000 },
+            { "tier": 2, "unitsConsumed": 600000, "unitPrice": 0.0015, "cost": 900 }
+          ],
+          "amount": 1900.00
+        }
+      ]
+    }
+  }
+}
+    </pre>
+
+    <h2>Automated Invoice Generation & Printable HTML</h2>
+    <p>
+      Finalized invoices generate an itemized legal receipt accessible at:
+      <br><code>GET /api/v1/billing/invoices/:id/html</code>
+    </p>
+
+    <div class="callout callout-warning">
+      <strong>Budget Limit & Threshold Alarms:</strong>
+      Each tenant account has a <code>budgetLimit</code> (e.g. $10,000). When accrued usage crosses <strong>80%</strong>, the dashboard displays amber telemetry warnings; at <strong>100%</strong>, automated soft or hard quota policies can be triggered.
+    </div>
+
+    <div class="footer">
+      <span>MeterFlow Architecture & Workflow Guide</span>
+      <span>Page 5</span>
+    </div>
+  </div>
+
+  <!-- SECTION 5: CLOUD DEPLOYMENT & API REFERENCE -->
+  <div class="page">
+    <h1>5. Deployment Guide & API Reference</h1>
+
+    <h2>Production Cloud Deployment Runbook</h2>
+
+    <div class="card-grid">
+      <div class="info-card">
+        <h4>Backend on Render / Railway</h4>
+        <p style="font-size: 8pt;">
+          <strong>Build Command:</strong> <code>npm install</code><br>
+          <strong>Start Command:</strong> <code>node server.js</code><br>
+          <strong>Root Directory:</strong> <code>backend</code><br>
+          <strong>Environment Variables:</strong><br>
+          &bull; <code>PORT=5001</code><br>
+          &bull; <code>MONGO_URI=mongodb+srv://...</code>
+        </p>
+      </div>
+
+      <div class="info-card">
+        <h4>Frontend on Vercel / Render</h4>
+        <p style="font-size: 8pt;">
+          <strong>Build Command:</strong> <code>npm run build</code><br>
+          <strong>Output Directory:</strong> <code>.next</code><br>
+          <strong>Root Directory:</strong> <code>frontend</code><br>
+          <strong>Environment Variables:</strong><br>
+          &bull; <code>NEXT_PUBLIC_API_URL=https://&lt;backend&gt;.onrender.com/api/v1</code>
+        </p>
+      </div>
+    </div>
+
+    <h2>API Reference Summary</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Endpoint</th>
+          <th>Method</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>/api/v1/health</code></td>
+          <td>GET</td>
+          <td>System uptime, memory, throughput rate, MongoDB connection status</td>
+        </tr>
+        <tr>
+          <td><code>/api/v1/events</code></td>
+          <td>POST</td>
+          <td>Ingest single billable API event with idempotency check</td>
+        </tr>
+        <tr>
+          <td><code>/api/v1/events/batch</code></td>
+          <td>POST</td>
+          <td>High-throughput batch ingestion (up to 2,000 events)</td>
+        </tr>
+        <tr>
+          <td><code>/api/v1/events/stream</code></td>
+          <td>GET</td>
+          <td>Real-time Server-Sent Events (SSE) telemetry pipeline</td>
+        </tr>
+        <tr>
+          <td><code>/api/v1/meters</code></td>
+          <td>GET / POST</td>
+          <td>List and define consumption meters and aggregation rules</td>
+        </tr>
+        <tr>
+          <td><code>/api/v1/pricing-plans</code></td>
+          <td>GET / POST</td>
+          <td>List and configure rate cards and graduated pricing tiers</td>
+        </tr>
+        <tr>
+          <td><code>/api/v1/pricing-plans/simulate</code></td>
+          <td>POST</td>
+          <td>Simulate tier calculation for arbitrary consumed units</td>
+        </tr>
+        <tr>
+          <td><code>/api/v1/customers/:id/usage</code></td>
+          <td>GET</td>
+          <td>Fetch live real-time accrued usage and budget status</td>
+        </tr>
+        <tr>
+          <td><code>/api/v1/billing/invoices/generate</code></td>
+          <td>POST</td>
+          <td>Finalize invoice & push webhook feed into Stripe/NetSuite</td>
+        </tr>
+        <tr>
+          <td><code>/api/v1/simulator/burst</code></td>
+          <td>POST</td>
+          <td>Trigger traffic burst (50, 150, 300 events) for load testing</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <span>MeterFlow Architecture & Workflow Guide &bull; End of Document</span>
+      <span>Page 6</span>
+    </div>
+  </div>
+
+</body>
+</html>

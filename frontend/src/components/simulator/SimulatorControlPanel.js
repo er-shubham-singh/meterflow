@@ -59,9 +59,9 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
 
   return (
     <div className="glass-panel" style={{ padding: '28px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h2 style={{ fontSize: '18px', fontWeight: '800', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Zap size={20} color="#10b981" />
             High-Throughput Workload Generator
           </h2>
@@ -75,7 +75,7 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
         </span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '28px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '28px' }}>
         {/* Scenario Selection */}
         <div>
           <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', fontWeight: '600' }}>
@@ -96,9 +96,10 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
                   gap: '10px',
                   padding: '10px 12px',
                   borderRadius: '8px',
-                  background: scenario === s.id ? 'rgba(16, 185, 129, 0.12)' : 'rgba(255, 255, 255, 0.02)',
-                  border: scenario === s.id ? '1px solid #10b981' : '1px solid var(--border-subtle)',
-                  cursor: 'pointer'
+                  background: scenario === s.id ? 'rgba(16, 185, 129, 0.12)' : 'var(--bg-card)',
+                  border: scenario === s.id ? '1px solid var(--emerald-500)' : '1px solid var(--border-subtle)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
                 }}
               >
                 <input
@@ -110,7 +111,7 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
                   style={{ marginTop: '2px', accentColor: '#10b981' }}
                 />
                 <div>
-                  <strong style={{ fontSize: '13px', color: '#f8fafc', display: 'block' }}>{s.label}</strong>
+                  <strong style={{ fontSize: '13px', color: 'var(--text-heading)', display: 'block' }}>{s.label}</strong>
                   <span style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>{s.desc}</span>
                 </div>
               </label>
@@ -125,7 +126,7 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
               <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600' }}>
                 Continuous Ingestion Rate:
               </label>
-              <span style={{ fontSize: '14px', fontWeight: '800', color: '#10b981', fontFamily: 'var(--font-mono)' }}>
+              <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--emerald-400)', fontFamily: 'var(--font-mono)' }}>
                 {rate} evt/s
               </span>
             </div>
@@ -153,8 +154,8 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
                   padding: '14px',
                   borderRadius: '8px',
                   border: 'none',
-                  background: isRunning ? '#f43f5e' : '#10b981',
-                  color: isRunning ? '#fff' : '#022c22',
+                  background: isRunning ? 'var(--rose-500)' : 'var(--emerald-500)',
+                  color: '#ffffff',
                   fontWeight: '700',
                   fontSize: '14px',
                   cursor: 'pointer',
@@ -175,7 +176,7 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
           <div style={{
             marginTop: '20px',
             padding: '16px',
-            background: 'rgba(15, 23, 42, 0.5)',
+            background: 'var(--bg-inset)',
             border: '1px solid var(--border-subtle)',
             borderRadius: '10px'
           }}>
@@ -191,16 +192,17 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
                   style={{
                     padding: '8px',
                     borderRadius: '6px',
-                    background: 'rgba(255, 255, 255, 0.05)',
+                    background: 'var(--bg-card)',
                     border: '1px solid var(--border-subtle)',
-                    color: '#cbd5e1',
+                    color: 'var(--text-main)',
                     fontSize: '12px',
                     fontWeight: '600',
                     cursor: burstLoading ? 'wait' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '4px'
+                    gap: '4px',
+                    transition: 'all 0.15s ease'
                   }}
                 >
                   <FastForward size={12} color="#38bdf8" />
@@ -210,7 +212,7 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
             </div>
 
             {lastBurstResult && (
-              <div style={{ marginTop: '10px', fontSize: '11px', color: '#34d399', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ marginTop: '10px', fontSize: '11px', color: 'var(--emerald-400)', fontFamily: 'var(--font-mono)' }}>
                 Burst: {lastBurstResult.ingested} events in {lastBurstResult.durationMs}ms ({lastBurstResult.throughputPerSec} evt/s)
               </div>
             )}

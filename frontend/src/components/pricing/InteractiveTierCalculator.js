@@ -45,9 +45,9 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
 
   return (
     <div className="glass-panel" style={{ padding: '28px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
         <div>
-          <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Sparkles size={18} color="#10b981" />
             Interactive Tier Simulation Engine
           </h3>
@@ -69,14 +69,15 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
               key={idx}
               onClick={() => setSelectedRateCardIndex(idx)}
               style={{
-                background: selectedRateCardIndex === idx ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-                border: selectedRateCardIndex === idx ? '1px solid #10b981' : '1px solid var(--border-subtle)',
-                color: selectedRateCardIndex === idx ? '#34d399' : '#cbd5e1',
+                background: selectedRateCardIndex === idx ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-card)',
+                border: selectedRateCardIndex === idx ? '1px solid var(--emerald-500)' : '1px solid var(--border-subtle)',
+                color: selectedRateCardIndex === idx ? 'var(--emerald-400)' : 'var(--text-muted)',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '12px',
                 fontWeight: '600',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
               }}
             >
               {rc.meterCode} ({rc.pricingModel})
@@ -86,8 +87,8 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
       </div>
 
       {/* Slider & Input */}
-      <div style={{ marginBottom: '28px', background: 'rgba(15, 23, 42, 0.5)', padding: '20px', borderRadius: '10px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+      <div style={{ marginBottom: '28px', background: 'var(--bg-inset)', padding: '20px', borderRadius: '10px' }}>
+        <div className="interactive-calc-controls" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', gap: '10px' }}>
           <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '600' }}>
             Simulated Consumed Units:
           </span>
@@ -122,9 +123,9 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
       {/* Real-time Calculation Breakdown */}
       {calculation && (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#fff' }}>Graduated Tier Mathematical Breakdown:</h4>
-            <div style={{ fontSize: '20px', fontWeight: '800', color: '#10b981' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+            <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-heading)' }}>Graduated Tier Mathematical Breakdown:</h4>
+            <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--emerald-400)' }}>
               Total: {formatCurrency(calculation.totalCost)}
             </div>
           </div>
@@ -138,13 +139,15 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '12px 16px',
-                  background: 'rgba(255, 255, 255, 0.02)',
+                  background: 'var(--bg-card)',
                   border: '1px solid var(--border-subtle)',
-                  borderRadius: '8px'
+                  borderRadius: '8px',
+                  flexWrap: 'wrap',
+                  gap: '8px'
                 }}
               >
                 <div>
-                  <div style={{ fontWeight: '600', color: '#f8fafc', fontSize: '13px' }}>
+                  <div style={{ fontWeight: '600', color: 'var(--text-heading)', fontSize: '13px' }}>
                     Tier {t.tier}: Range {t.range}
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--text-subtle)', marginTop: '2px' }}>
@@ -152,7 +155,7 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
                   </div>
                 </div>
 
-                <div style={{ fontSize: '14px', fontWeight: '700', color: '#e2e8f0', fontFamily: 'var(--font-mono)' }}>
+                <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
                   {formatCurrency(t.cost)}
                 </div>
               </div>

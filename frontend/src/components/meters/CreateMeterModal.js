@@ -36,23 +36,37 @@ export default function CreateMeterModal({ onClose, onCreated }) {
       inset: 0,
       background: 'rgba(0, 0, 0, 0.75)',
       backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 100,
-      padding: '20px'
+      padding: '16px'
     }}>
       <div className="glass-panel" style={{
         width: '100%',
         maxWidth: '520px',
-        background: '#0d131f',
+        maxHeight: '90vh',
+        overflowY: 'auto',
+        background: 'var(--bg-secondary)',
         border: '1px solid var(--border-medium)',
         borderRadius: '16px',
-        padding: '28px'
+        padding: '24px',
+        boxShadow: 'var(--shadow-lg)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#fff' }}>Define Consumption Meter</h3>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-heading)' }}>Define Consumption Meter</h3>
+          <button
+            onClick={onClose}
+            aria-label="Close modal"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              padding: '4px'
+            }}
+          >
             <X size={20} />
           </button>
         </div>
@@ -70,7 +84,7 @@ export default function CreateMeterModal({ onClose, onCreated }) {
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '6px' }}>Meter Code (Slug)</label>
               <input
@@ -95,7 +109,7 @@ export default function CreateMeterModal({ onClose, onCreated }) {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '6px' }}>Aggregation Type</label>
               <select
@@ -151,8 +165,8 @@ export default function CreateMeterModal({ onClose, onCreated }) {
             disabled={loading}
             style={{
               marginTop: '12px',
-              background: '#10b981',
-              color: '#022c22',
+              background: 'var(--emerald-500)',
+              color: '#ffffff',
               fontWeight: '700',
               padding: '12px',
               borderRadius: '8px',

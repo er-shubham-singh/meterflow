@@ -14,10 +14,10 @@ export default function WebhookFeedLog({ webhookLogs = [] }) {
 
   return (
     <div className="glass-panel" style={{ overflow: 'hidden' }}>
-      <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Radio size={16} color="#10b981" />
-          <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#fff' }}>Direct Billing System Outbound Feeds</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-heading)' }}>Direct Billing System Outbound Feeds</h3>
         </div>
         <span className="badge-tag badge-emerald">HMAC-SHA256 Signed</span>
       </div>
@@ -28,10 +28,12 @@ export default function WebhookFeedLog({ webhookLogs = [] }) {
             key={log.id}
             style={{
               padding: '14px 20px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+              borderBottom: '1px solid var(--border-subtle)',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between'
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '10px'
             }}
           >
             <div>
@@ -39,7 +41,7 @@ export default function WebhookFeedLog({ webhookLogs = [] }) {
                 <span className="badge-tag badge-violet" style={{ fontSize: '10px' }}>
                   {log.provider}
                 </span>
-                <strong style={{ fontSize: '13px', color: '#f8fafc' }}>
+                <strong style={{ fontSize: '13px', color: 'var(--text-heading)' }}>
                   {log.customer} &ndash; {log.invoiceNumber}
                 </strong>
               </div>
@@ -49,10 +51,10 @@ export default function WebhookFeedLog({ webhookLogs = [] }) {
             </div>
 
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '14px', fontWeight: '700', color: '#10b981', fontFamily: 'var(--font-mono)' }}>
+              <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--emerald-400)', fontFamily: 'var(--font-mono)' }}>
                 {formatCurrency(log.totalAmount, log.currency)}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#34d399', justifyContent: 'flex-end', marginTop: '2px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--emerald-400)', justifyContent: 'flex-end', marginTop: '2px' }}>
                 <CheckCircle2 size={12} />
                 <span>HTTP {log.statusCode} OK</span>
               </div>

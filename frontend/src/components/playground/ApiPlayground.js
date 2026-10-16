@@ -76,9 +76,9 @@ export default function ApiPlayground({ onEventIngested }) {
 
   return (
     <div className="glass-panel" style={{ padding: '28px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h2 style={{ fontSize: '18px', fontWeight: '800', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Terminal size={18} color="#10b981" />
             API Event Listener Playground
           </h2>
@@ -87,20 +87,21 @@ export default function ApiPlayground({ onEventIngested }) {
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {Object.keys(SAMPLE_PAYLOADS).map((k) => (
             <button
               key={k}
               onClick={() => handleTemplateChange(k)}
               style={{
-                background: selectedTemplate === k ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-                border: selectedTemplate === k ? '1px solid #10b981' : '1px solid var(--border-subtle)',
-                color: selectedTemplate === k ? '#34d399' : '#cbd5e1',
+                background: selectedTemplate === k ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-card)',
+                border: selectedTemplate === k ? '1px solid var(--emerald-500)' : '1px solid var(--border-subtle)',
+                color: selectedTemplate === k ? 'var(--emerald-400)' : 'var(--text-muted)',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '11px',
                 fontWeight: '600',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
               }}
             >
               {k.replace('_', ' ').toUpperCase()}
@@ -109,7 +110,7 @@ export default function ApiPlayground({ onEventIngested }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
         {/* JSON Editor */}
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -140,8 +141,9 @@ export default function ApiPlayground({ onEventIngested }) {
             onChange={(e) => setJsonText(e.target.value)}
             style={{
               width: '100%',
-              background: '#070a10',
-              color: '#34d399',
+              background: 'var(--bg-code)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--emerald-400)',
               fontSize: '12px',
               lineHeight: '1.5',
               padding: '14px',
@@ -159,8 +161,8 @@ export default function ApiPlayground({ onEventIngested }) {
               padding: '12px',
               borderRadius: '8px',
               border: 'none',
-              background: '#10b981',
-              color: '#022c22',
+              background: 'var(--emerald-500)',
+              color: '#ffffff',
               fontWeight: '700',
               fontSize: '13px',
               cursor: loading ? 'wait' : 'pointer',
@@ -184,11 +186,11 @@ export default function ApiPlayground({ onEventIngested }) {
           <pre style={{
             height: 'calc(100% - 60px)',
             minHeight: '260px',
-            background: '#070a10',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
+            background: 'var(--bg-code)',
+            border: '1px solid var(--border-subtle)',
             borderRadius: '8px',
             padding: '16px',
-            color: response?.status === 'error' ? '#fb7185' : '#818cf8',
+            color: response?.status === 'error' ? 'var(--rose-400)' : 'var(--violet-400)',
             fontSize: '12px',
             fontFamily: 'var(--font-mono)',
             overflowY: 'auto'

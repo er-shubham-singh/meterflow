@@ -10,12 +10,12 @@ export default function PlanCard({ plan, onSelectPlan, isSelected }) {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
-      border: isSelected ? '2px solid #10b981' : '1px solid var(--border-subtle)',
-      background: isSelected ? 'rgba(16, 185, 129, 0.05)' : 'var(--bg-card)'
+      border: isSelected ? '2px solid var(--emerald-500)' : '1px solid var(--border-subtle)',
+      background: isSelected ? 'rgba(16, 185, 129, 0.08)' : 'var(--bg-card)'
     }}>
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#fff' }}>{plan.name}</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)' }}>{plan.name}</h3>
           <span className="badge-tag badge-violet">{plan.code}</span>
         </div>
 
@@ -28,7 +28,7 @@ export default function PlanCard({ plan, onSelectPlan, isSelected }) {
           <span style={{ fontSize: '11px', color: 'var(--text-subtle)', textTransform: 'uppercase', fontWeight: '600' }}>
             Base Recurring Platform Fee
           </span>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: '#10b981', marginTop: '2px' }}>
+          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--emerald-400)', marginTop: '2px' }}>
             {formatCurrency(plan.baseFee, plan.currency)}
             <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '400' }}> / cycle</span>
           </div>
@@ -45,7 +45,7 @@ export default function PlanCard({ plan, onSelectPlan, isSelected }) {
               <div
                 key={idx}
                 style={{
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: 'var(--bg-inset)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: '8px',
                   padding: '10px 12px',
@@ -53,7 +53,7 @@ export default function PlanCard({ plan, onSelectPlan, isSelected }) {
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                  <strong style={{ color: '#f8fafc' }}>{rc.meterCode}</strong>
+                  <strong style={{ color: 'var(--text-heading)' }}>{rc.meterCode}</strong>
                   <span className={`badge-tag ${
                     rc.pricingModel === 'GRADUATED' ? 'badge-emerald' :
                     rc.pricingModel === 'VOLUME' ? 'badge-cyan' : 'badge-amber'
@@ -80,8 +80,8 @@ export default function PlanCard({ plan, onSelectPlan, isSelected }) {
             padding: '10px',
             borderRadius: '8px',
             border: '1px solid var(--border-subtle)',
-            background: isSelected ? '#10b981' : 'rgba(255, 255, 255, 0.05)',
-            color: isSelected ? '#022c22' : '#fff',
+            background: isSelected ? 'var(--emerald-500)' : 'var(--bg-card)',
+            color: isSelected ? '#ffffff' : 'var(--text-main)',
             fontWeight: '600',
             fontSize: '13px',
             cursor: 'pointer',

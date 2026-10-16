@@ -20,7 +20,7 @@ export default function CustomerCard({ customer, onSelect, onGenerateInvoice }) 
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
           <div>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff' }}>{customer.company || customer.name}</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-heading)' }}>{customer.company || customer.name}</h3>
             <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{customer.email}</div>
           </div>
           <span className="badge-tag badge-emerald" style={{ fontSize: '10px' }}>
@@ -29,7 +29,7 @@ export default function CustomerCard({ customer, onSelect, onGenerateInvoice }) 
         </div>
 
         {/* Real-time Accrued Cost */}
-        <div style={{ margin: '16px 0', background: 'rgba(15, 23, 42, 0.5)', padding: '14px', borderRadius: '10px' }}>
+        <div style={{ margin: '16px 0', background: 'var(--bg-inset)', padding: '14px', borderRadius: '10px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
             <span style={{ fontSize: '11px', color: 'var(--text-subtle)', textTransform: 'uppercase', fontWeight: '600' }}>
               Realtime Accrued Usage
@@ -39,14 +39,14 @@ export default function CustomerCard({ customer, onSelect, onGenerateInvoice }) 
             </span>
           </div>
 
-          <div style={{ fontSize: '24px', fontWeight: '800', color: '#fff', fontFamily: 'var(--font-mono)' }}>
+          <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-heading)', fontFamily: 'var(--font-mono)' }}>
             {formatCurrency(accrued)}
           </div>
 
           {/* Budget progress bar */}
           <div style={{
             height: '6px',
-            background: 'rgba(255, 255, 255, 0.08)',
+            background: 'var(--border-medium)',
             borderRadius: '4px',
             overflow: 'hidden',
             marginTop: '8px'
@@ -62,7 +62,7 @@ export default function CustomerCard({ customer, onSelect, onGenerateInvoice }) 
 
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '6px' }}>
             <span style={{ color: 'var(--text-subtle)' }}>Cycle Cap</span>
-            <span style={{ color: isBudgetWarning ? '#fbbf24' : '#34d399', fontWeight: '600' }}>
+            <span style={{ color: isBudgetWarning ? '#fbbf24' : 'var(--emerald-400)', fontWeight: '600' }}>
               {percentUsed}% consumed
             </span>
           </div>
@@ -75,9 +75,9 @@ export default function CustomerCard({ customer, onSelect, onGenerateInvoice }) 
           style={{
             flex: 1,
             padding: '8px 12px',
-            background: 'rgba(255, 255, 255, 0.04)',
+            background: 'var(--bg-card)',
             border: '1px solid var(--border-subtle)',
-            color: '#cbd5e1',
+            color: 'var(--text-main)',
             borderRadius: '6px',
             fontSize: '12px',
             fontWeight: '600',

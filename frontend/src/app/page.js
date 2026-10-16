@@ -105,13 +105,13 @@ export default function DashboardPage() {
         <ThroughputChart throughputHistory={telemetry?.throughputHistory || []} />
 
         {/* Two-Column Grid: Customers Usage & Live Event Stream */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.8fr', gap: '24px' }}>
+        <div className="dashboard-grid">
           {/* Customer Usage Accounts */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Users size={18} color="#38bdf8" />
-                <h2 style={{ fontSize: '16px', fontWeight: '700', color: '#fff' }}>
+                <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-heading)' }}>
                   Live Accounts & Accrued Usage
                 </h2>
               </div>
@@ -119,7 +119,7 @@ export default function DashboardPage() {
                 href="/customers"
                 style={{
                   fontSize: '12px',
-                  color: '#34d399',
+                  color: 'var(--emerald-400)',
                   textDecoration: 'none',
                   display: 'flex',
                   alignItems: 'center',
@@ -149,7 +149,7 @@ export default function DashboardPage() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Activity size={18} color="#10b981" />
-                <h2 style={{ fontSize: '16px', fontWeight: '700', color: '#fff' }}>
+                <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-heading)' }}>
                   Live Ingestion Stream
                 </h2>
               </div>
@@ -157,7 +157,7 @@ export default function DashboardPage() {
                 href="/events"
                 style={{
                   fontSize: '12px',
-                  color: '#34d399',
+                  color: 'var(--emerald-400)',
                   textDecoration: 'none',
                   display: 'flex',
                   alignItems: 'center',

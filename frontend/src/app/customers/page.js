@@ -63,9 +63,9 @@ export default function CustomersPage() {
 
       <main className="page-container">
         {/* Top Action Bar */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <h2 style={{ fontSize: '18px', fontWeight: '800', color: '#fff' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)' }}>
               Active Billable Tenants ({customers.length})
             </h2>
             <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -76,8 +76,8 @@ export default function CustomersPage() {
           <button
             onClick={() => setShowAddModal(true)}
             style={{
-              background: '#10b981',
-              color: '#022c22',
+              background: 'var(--emerald-500)',
+              color: '#ffffff',
               fontWeight: '700',
               padding: '10px 16px',
               borderRadius: '8px',
@@ -97,7 +97,7 @@ export default function CustomersPage() {
         {/* Customer Cards Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
           gap: '24px'
         }}>
           {customers.map((c) => (
@@ -130,14 +130,23 @@ export default function CustomersPage() {
           inset: 0,
           background: 'rgba(0, 0, 0, 0.75)',
           backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 100,
-          padding: '20px'
+          padding: '16px'
         }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '480px', background: '#0d131f', padding: '28px', borderRadius: '16px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#fff', marginBottom: '16px' }}>Add Customer Account</h3>
+          <div className="glass-panel" style={{
+            width: '100%',
+            maxWidth: '480px',
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--border-medium)',
+            padding: '24px',
+            borderRadius: '16px',
+            boxShadow: 'var(--shadow-lg)'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)', marginBottom: '16px' }}>Add Customer Account</h3>
             <form onSubmit={handleCreateCustomer} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px' }}>Contact Name</label>
@@ -156,8 +165,8 @@ export default function CustomersPage() {
                 <input required type="number" style={{ width: '100%' }} value={newCust.budgetLimit} onChange={(e) => setNewCust({ ...newCust, budgetLimit: Number(e.target.value) })} />
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
-                <button type="button" onClick={() => setShowAddModal(false)} style={{ background: 'transparent', border: '1px solid var(--border-subtle)', color: '#cbd5e1', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ background: '#10b981', color: '#022c22', fontWeight: '700', border: 'none', padding: '8px 18px', borderRadius: '6px', cursor: 'pointer' }}>Create</button>
+                <button type="button" onClick={() => setShowAddModal(false)} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-main)', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ background: 'var(--emerald-500)', color: '#ffffff', fontWeight: '700', border: 'none', padding: '8px 18px', borderRadius: '6px', cursor: 'pointer' }}>Create</button>
               </div>
             </form>
           </div>

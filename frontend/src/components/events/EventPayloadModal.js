@@ -17,26 +17,30 @@ export default function EventPayloadModal({ event, onClose }) {
     <div style={{
       position: 'fixed',
       inset: 0,
-      background: 'rgba(0, 0, 0, 0.75)',
+      background: 'rgba(0, 0, 0, 0.7)',
       backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 100,
-      padding: '20px'
+      padding: '16px'
     }}>
       <div className="glass-panel" style={{
         width: '100%',
         maxWidth: '640px',
-        background: '#0d131f',
+        maxHeight: '90vh',
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'var(--bg-secondary)',
         border: '1px solid var(--border-medium)',
         borderRadius: '16px',
         padding: '24px',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)'
+        boxShadow: 'var(--shadow-lg)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff' }}>API Ingestion Payload</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-heading)' }}>API Ingestion Payload</h3>
             <span style={{ fontSize: '11px', color: 'var(--text-subtle)', fontFamily: 'var(--font-mono)' }}>
               {event.id}
             </span>
@@ -45,9 +49,9 @@ export default function EventPayloadModal({ event, onClose }) {
             <button
               onClick={handleCopy}
               style={{
-                background: 'rgba(255, 255, 255, 0.08)',
+                background: 'var(--bg-card)',
                 border: '1px solid var(--border-subtle)',
-                color: '#fff',
+                color: 'var(--text-main)',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '12px',
@@ -62,6 +66,7 @@ export default function EventPayloadModal({ event, onClose }) {
             </button>
             <button
               onClick={onClose}
+              aria-label="Close modal"
               style={{
                 background: 'transparent',
                 border: 'none',
@@ -76,12 +81,12 @@ export default function EventPayloadModal({ event, onClose }) {
         </div>
 
         <pre style={{
-          background: '#070a10',
+          background: 'var(--bg-code)',
           padding: '16px',
           borderRadius: '10px',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
+          border: '1px solid var(--border-subtle)',
           fontSize: '12px',
-          color: '#34d399',
+          color: 'var(--emerald-400)',
           overflowX: 'auto',
           maxHeight: '400px'
         }}>

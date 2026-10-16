@@ -5,7 +5,7 @@ import Header from '@/components/layout/Header';
 import InvoiceList from '@/components/billing/InvoiceList';
 import WebhookFeedLog from '@/components/billing/WebhookFeedLog';
 import { api } from '@/services/api';
-import { FileText, Radio, Send, RefreshCw } from 'lucide-react';
+import { FileText, RefreshCw } from 'lucide-react';
 
 export default function BillingPage() {
   const [invoices, setInvoices] = useState([]);
@@ -66,10 +66,10 @@ export default function BillingPage() {
       <main className="page-container">
         {/* Invoices Section */}
         <div style={{ marginBottom: '36px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <FileText size={18} color="#10b981" />
-              <h2 style={{ fontSize: '16px', fontWeight: '800', color: '#fff' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-heading)' }}>
                 Generated Customer Invoices ({invoices.length})
               </h2>
             </div>
@@ -79,13 +79,14 @@ export default function BillingPage() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: 'rgba(255, 255, 255, 0.05)',
+                background: 'var(--bg-card)',
                 border: '1px solid var(--border-subtle)',
-                color: '#fff',
+                color: 'var(--text-main)',
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '12px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
               }}
             >
               <RefreshCw size={12} />

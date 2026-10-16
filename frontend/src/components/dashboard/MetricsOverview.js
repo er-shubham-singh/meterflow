@@ -79,7 +79,7 @@ export default function MetricsOverview({ telemetry, metersCount, totalAccruedRe
             </div>
 
             <div>
-              <div style={{ fontSize: '28px', fontWeight: '800', color: '#fff', letterSpacing: '-0.02em', marginBottom: '4px' }}>
+              <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--text-heading)', letterSpacing: '-0.02em', marginBottom: '4px' }}>
                 {c.value}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-subtle)' }}>

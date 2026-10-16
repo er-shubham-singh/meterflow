@@ -48,38 +48,50 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
     <div style={{
       position: 'fixed',
       inset: 0,
-      background: 'rgba(0, 0, 0, 0.8)',
+      background: 'rgba(0, 0, 0, 0.75)',
       backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 100,
-      padding: '20px'
+      padding: '16px'
     }}>
       <div className="glass-panel" style={{
         width: '100%',
         maxWidth: '720px',
-        background: '#0d131f',
+        background: 'var(--bg-secondary)',
         border: '1px solid var(--border-medium)',
         borderRadius: '16px',
-        padding: '28px',
+        padding: '24px',
         maxHeight: '90vh',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        boxShadow: 'var(--shadow-lg)'
       }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#fff' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-heading)' }}>
                 {customer.company || customer.name}
               </h2>
               <span className="badge-tag badge-emerald">{customer.planName || 'Enterprise'}</span>
             </div>
             <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
-              Account: <code style={{ color: '#818cf8' }}>{customer.id}</code> &bull; Email: {customer.email}
+              Account: <code style={{ color: 'var(--violet-400)' }}>{customer.id}</code> &bull; Email: {customer.email}
             </p>
           </div>
 
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+          <button
+            onClick={onClose}
+            aria-label="Close modal"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              padding: '4px'
+            }}
+          >
             <X size={20} />
           </button>
         </div>
@@ -92,20 +104,22 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
           <div>
             {/* Total Accrual Summary */}
             <div style={{
-              background: 'rgba(15, 23, 42, 0.7)',
+              background: 'var(--bg-inset)',
               border: '1px solid var(--border-subtle)',
               borderRadius: '12px',
               padding: '20px',
               marginBottom: '24px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between'
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '12px'
             }}>
               <div>
                 <span style={{ fontSize: '11px', color: 'var(--text-subtle)', textTransform: 'uppercase', fontWeight: '600' }}>
                   Total Accrued (Current Cycle)
                 </span>
-                <div style={{ fontSize: '32px', fontWeight: '800', color: '#10b981', fontFamily: 'var(--font-mono)' }}>
+                <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--emerald-400)', fontFamily: 'var(--font-mono)' }}>
                   {formatCurrency(usageData.financialSummary?.totalAccrued, usageData.plan?.currency)}
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -117,7 +131,7 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
                 <span style={{ fontSize: '11px', color: 'var(--text-subtle)', textTransform: 'uppercase', fontWeight: '600' }}>
                   Budget Utilization
                 </span>
-                <div style={{ fontSize: '22px', fontWeight: '700', color: '#f8fafc', marginTop: '2px' }}>
+                <div style={{ fontSize: '22px', fontWeight: '700', color: 'var(--text-heading)', marginTop: '2px' }}>
                   {usageData.financialSummary?.percentOfBudget}%
                 </div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
@@ -127,7 +141,7 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
             </div>
 
             {/* Itemized Line Items */}
-            <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#fff', marginBottom: '12px' }}>
+            <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-heading)', marginBottom: '12px' }}>
               Metered Line Items & Tiers:
             </h4>
 
@@ -137,7 +151,7 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
                   key={idx}
                   style={{
                     padding: '12px 16px',
-                    background: 'rgba(255, 255, 255, 0.02)',
+                    background: 'var(--bg-card)',
                     border: '1px solid var(--border-subtle)',
                     borderRadius: '8px',
                     display: 'flex',
@@ -147,7 +161,7 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
                 >
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <strong style={{ fontSize: '13px', color: '#f8fafc' }}>{m.meterName}</strong>
+                      <strong style={{ fontSize: '13px', color: 'var(--text-heading)' }}>{m.meterName}</strong>
                       <span className="badge-tag badge-cyan" style={{ fontSize: '9px', padding: '1px 5px' }}>
                         {m.pricingModel}
                       </span>
@@ -158,7 +172,7 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
                   </div>
 
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '15px', fontWeight: '700', color: '#10b981', fontFamily: 'var(--font-mono)' }}>
+                    <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--emerald-400)', fontFamily: 'var(--font-mono)' }}>
                       {formatCurrency(m.amount)}
                     </div>
                   </div>
@@ -167,12 +181,19 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
             </div>
 
             {/* Action Bar */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '12px',
+              borderTop: '1px solid var(--border-subtle)',
+              paddingTop: '16px',
+              flexWrap: 'wrap'
+            }}>
               <button
                 onClick={onClose}
                 style={{
                   padding: '10px 16px',
-                  background: 'transparent',
+                  background: 'var(--bg-card)',
                   border: '1px solid var(--border-subtle)',
                   color: 'var(--text-muted)',
                   borderRadius: '8px',
@@ -188,9 +209,9 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
                 onClick={handleGenerateInvoice}
                 style={{
                   padding: '10px 20px',
-                  background: '#10b981',
+                  background: 'var(--emerald-500)',
                   border: 'none',
-                  color: '#022c22',
+                  color: '#ffffff',
                   borderRadius: '8px',
                   fontWeight: '700',
                   fontSize: '13px',

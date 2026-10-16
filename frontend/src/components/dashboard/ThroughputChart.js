@@ -11,7 +11,7 @@ export default function ThroughputChart({ throughputHistory = [] }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Activity size={18} color="#10b981" />
-          <h2 style={{ fontSize: '15px', fontWeight: '700', color: '#fff' }}>
+          <h2 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text-heading)' }}>
             Event Ingestion Throughput (Past 30s)
           </h2>
         </div>

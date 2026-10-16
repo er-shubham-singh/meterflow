@@ -5,7 +5,7 @@ import Header from '@/components/layout/Header';
 import MeterCard from '@/components/meters/MeterCard';
 import CreateMeterModal from '@/components/meters/CreateMeterModal';
 import { api } from '@/services/api';
-import { Plus, Layers, Sparkles } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export default function MetersPage() {
   const [meters, setMeters] = useState([]);
@@ -56,10 +56,12 @@ export default function MetersPage() {
           alignItems: 'center',
           justifyContent: 'space-between',
           background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%)',
-          border: '1px solid rgba(16, 185, 129, 0.2)'
+          border: '1px solid rgba(16, 185, 129, 0.25)',
+          flexWrap: 'wrap',
+          gap: '16px'
         }}>
           <div>
-            <h2 style={{ fontSize: '18px', fontWeight: '800', color: '#fff', marginBottom: '4px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)', marginBottom: '4px' }}>
               Real-time Sliding Window Aggregations
             </h2>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
@@ -70,8 +72,8 @@ export default function MetersPage() {
           <button
             onClick={() => setShowCreateModal(true)}
             style={{
-              background: '#10b981',
-              color: '#022c22',
+              background: 'var(--emerald-500)',
+              color: '#ffffff',
               fontWeight: '700',
               padding: '10px 18px',
               borderRadius: '8px',
@@ -91,7 +93,7 @@ export default function MetersPage() {
         {/* Meters Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
           gap: '24px'
         }}>
           {meters.map((meter) => (
