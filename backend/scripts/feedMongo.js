@@ -106,8 +106,8 @@ async function feedDatabase() {
         name: 'Enterprise AI & Scale',
         code: 'enterprise-ai-scale',
         description: 'Designed for high-scale AI applications with tiered graduated pricing',
-        baseFee: 499.00,
-        currency: 'USD',
+        baseFee: 39999.00,
+        currency: 'INR',
         active: true,
         rateCards: [
           {
@@ -125,28 +125,28 @@ async function feedDatabase() {
             pricingModel: PRICING_MODELS.PACKAGE,
             freeAllowance: 50000,
             packageSize: 10000,
-            packagePrice: 5.00
+            packagePrice: 400.00
           },
           {
             meterCode: 'gpu_compute_hours',
             pricingModel: PRICING_MODELS.FLAT_FEE,
             freeAllowance: 50,
-            unitPrice: 0.25
+            unitPrice: 20.00
           },
           {
             meterCode: 'monthly_active_users',
             pricingModel: PRICING_MODELS.GRADUATED,
             freeAllowance: 500,
             tiers: [
-              { upTo: 5000, unitPrice: 0.08 },
-              { upTo: null, unitPrice: 0.04 }
+              { upTo: 5000, unitPrice: 6.50 },
+              { upTo: null, unitPrice: 3.25 }
             ]
           },
           {
             meterCode: 'hot_storage_peak',
             pricingModel: PRICING_MODELS.FLAT_FEE,
             freeAllowance: 100,
-            unitPrice: 0.03
+            unitPrice: 2.50
           }
         ]
       },
@@ -155,8 +155,8 @@ async function feedDatabase() {
         name: 'FinTech High-Throughput',
         code: 'fintech-throughput',
         description: 'Volume discount pricing designed for banking and financial gateways',
-        baseFee: 999.00,
-        currency: 'USD',
+        baseFee: 79999.00,
+        currency: 'INR',
         active: true,
         rateCards: [
           {
@@ -185,8 +185,8 @@ async function feedDatabase() {
         name: 'Growth Developer',
         code: 'growth-developer',
         description: 'Pay-as-you-go starter plan for fast-growing startups',
-        baseFee: 49.00,
-        currency: 'USD',
+        baseFee: 3999.00,
+        currency: 'INR',
         active: true,
         rateCards: [
           {
@@ -220,7 +220,7 @@ async function feedDatabase() {
         email: 'billing@anthropic.com',
         billingEmail: 'billing@anthropic.com',
         planId: 'plan_enterprise_ai',
-        budgetLimit: 12500,
+        budgetLimit: 1000000,
         currentPeriodStart: new Date(Date.now() - 14 * 86400000)
       },
       {
@@ -230,7 +230,7 @@ async function feedDatabase() {
         email: 'accounts@scale.ai',
         billingEmail: 'accounts@scale.ai',
         planId: 'plan_enterprise_ai',
-        budgetLimit: 8000,
+        budgetLimit: 650000,
         currentPeriodStart: new Date(Date.now() - 20 * 86400000)
       },
       {
@@ -240,7 +240,7 @@ async function feedDatabase() {
         email: 'finance@acmepayments.com',
         billingEmail: 'finance@acmepayments.com',
         planId: 'plan_fintech_throughput',
-        budgetLimit: 20000,
+        budgetLimit: 1500000,
         currentPeriodStart: new Date(Date.now() - 8 * 86400000)
       },
       {
@@ -250,7 +250,7 @@ async function feedDatabase() {
         email: 'ops@hyperionlabs.io',
         billingEmail: 'ops@hyperionlabs.io',
         planId: 'plan_growth_dev',
-        budgetLimit: 1500,
+        budgetLimit: 120000,
         currentPeriodStart: new Date(Date.now() - 3 * 86400000)
       }
     ];
@@ -351,7 +351,7 @@ async function feedDatabase() {
       subtotal: 1284.00,
       tax: 0,
       total: 1284.00,
-      currency: 'USD',
+      currency: 'INR',
       status: INVOICE_STATUS.FINALIZED,
       billingSystemSync: {
         provider: 'Stripe Billing System',
@@ -370,7 +370,7 @@ async function feedDatabase() {
       invoiceNumber,
       customer: 'Anthropic PBC',
       totalAmount: 1284.00,
-      currency: 'USD',
+      currency: 'INR',
       provider: 'Stripe Billing API & NetSuite',
       signature: 't=1730000000,v1=9fa8102b489c...',
       status: 'DELIVERED',

@@ -39,10 +39,12 @@ export const api = {
     return handleResponse(res);
   },
 
-  async getRecentEvents(limit = 50, customerId = null) {
+  async getRecentEvents(limit = 20, page = 1, customerId = null, eventType = null) {
     const url = new URL(`${API_BASE}/events`);
     url.searchParams.set('limit', limit);
+    if (page) url.searchParams.set('page', page);
     if (customerId) url.searchParams.set('customerId', customerId);
+    if (eventType && eventType !== 'ALL') url.searchParams.set('eventType', eventType);
     const res = await fetch(url.toString());
     return handleResponse(res);
   },
@@ -53,8 +55,11 @@ export const api = {
   },
 
   // Meters
-  async getMeters() {
-    const res = await fetch(`${API_BASE}/meters`);
+  async getMeters(page = null, limit = null) {
+    const url = new URL(`${API_BASE}/meters`);
+    if (page) url.searchParams.set('page', page);
+    if (limit) url.searchParams.set('limit', limit);
+    const res = await fetch(url.toString());
     return handleResponse(res);
   },
 
@@ -88,8 +93,12 @@ export const api = {
   },
 
   // Customers
-  async getCustomers() {
-    const res = await fetch(`${API_BASE}/customers`);
+  async getCustomers(page = null, limit = null, search = '') {
+    const url = new URL(`${API_BASE}/customers`);
+    if (page) url.searchParams.set('page', page);
+    if (limit) url.searchParams.set('limit', limit);
+    if (search) url.searchParams.set('search', search);
+    const res = await fetch(url.toString());
     return handleResponse(res);
   },
 
@@ -108,9 +117,11 @@ export const api = {
   },
 
   // Billing & Invoices
-  async getInvoices(customerId = null) {
+  async getInvoices(customerId = null, page = null, limit = null) {
     const url = new URL(`${API_BASE}/billing/invoices`);
     if (customerId) url.searchParams.set('customerId', customerId);
+    if (page) url.searchParams.set('page', page);
+    if (limit) url.searchParams.set('limit', limit);
     const res = await fetch(url.toString());
     return handleResponse(res);
   },
@@ -124,8 +135,11 @@ export const api = {
     return handleResponse(res);
   },
 
-  async getWebhookLogs() {
-    const res = await fetch(`${API_BASE}/billing/webhooks`);
+  async getWebhookLogs(page = null, limit = null) {
+    const url = new URL(`${API_BASE}/billing/webhooks`);
+    if (page) url.searchParams.set('page', page);
+    if (limit) url.searchParams.set('limit', limit);
+    const res = await fetch(url.toString());
     return handleResponse(res);
   },
 

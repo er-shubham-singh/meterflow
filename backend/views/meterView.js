@@ -25,10 +25,11 @@ export class MeterView {
     };
   }
 
-  static formatList(meters, aggregatesMap = {}) {
+  static formatList(meters, aggregatesMap = {}, pagination = null) {
     return {
       status: 'success',
       count: meters.length,
+      ...(pagination ? { pagination } : {}),
       data: meters.map(m => {
         const agg = aggregatesMap[m.code] || { value: 0, eventCount: 0 };
         return {

@@ -1,8 +1,9 @@
-export function formatCurrency(amount, currency = 'USD') {
-  if (amount === undefined || amount === null || isNaN(amount)) return '$0.00';
-  return new Intl.NumberFormat('en-US', {
+export function formatCurrency(amount, currency = 'INR') {
+  if (amount === undefined || amount === null || isNaN(amount)) return '₹0.00';
+  // Always enforce Indian Rupee formatting (INR) across the entire platform
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency,
+    currency: 'INR',
     minimumFractionDigits: 2,
     maximumFractionDigits: 4
   }).format(amount);

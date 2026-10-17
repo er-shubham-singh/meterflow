@@ -4,67 +4,74 @@ import { Calculator, CheckCircle2 } from 'lucide-react';
 import { formatCurrency } from '@/utils/formatters';
 
 export default function PlanCard({ plan, onSelectPlan, isSelected }) {
+  const getPricingModelBadge = (model) => {
+    switch (model) {
+      case 'GRADUATED':
+        return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
+      case 'VOLUME':
+        return 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30';
+      default:
+        return 'bg-amber-500/15 text-amber-400 border-amber-500/30';
+    }
+  };
+
   return (
-    <div className="glass-panel" style={{
-      padding: '28px',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      border: isSelected ? '2px solid var(--emerald-500)' : '1px solid var(--border-subtle)',
-      background: isSelected ? 'rgba(16, 185, 129, 0.08)' : 'var(--bg-card)'
-    }}>
+    <div
+      className={`glass-panel w-full p-6 sm:p-7 flex flex-col justify-between rounded-xl transition-all duration-200 ${
+        isSelected
+          ? 'border-2 border-emerald-500 bg-emerald-500/10 shadow-lg shadow-emerald-500/10'
+          : 'border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[var(--border-medium)]'
+      }`}
+    >
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)' }}>{plan.name}</h3>
-          <span className="badge-tag badge-violet">{plan.code}</span>
+        <div className="flex items-center justify-between mb-2 gap-2">
+          <h3 className="text-lg font-extrabold text-[var(--text-heading)] truncate">{plan.name}</h3>
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 shrink-0">
+            {plan.code}
+          </span>
         </div>
 
-        <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '20px' }}>
+        <p className="text-xs text-[var(--text-muted)] mb-5 leading-relaxed line-clamp-2">
           {plan.description}
         </p>
 
         {/* Base Subscription Fee */}
-        <div style={{ marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid var(--border-subtle)' }}>
-          <span style={{ fontSize: '11px', color: 'var(--text-subtle)', textTransform: 'uppercase', fontWeight: '600' }}>
+        <div className="mb-5 pb-4 border-b border-[var(--border-subtle)]">
+          <span className="text-[11px] text-[var(--text-subtle)] uppercase font-semibold tracking-wider block">
             Base Recurring Platform Fee
           </span>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--emerald-400)', marginTop: '2px' }}>
-            {formatCurrency(plan.baseFee, plan.currency)}
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '400' }}> / cycle</span>
+          <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 mt-1 font-mono">
+            {formatCurrency(plan.baseFee, 'INR')}
+            <span className="text-xs text-[var(--text-muted)] font-normal font-sans"> / cycle</span>
           </div>
         </div>
 
         {/* Rate Cards Breakdown */}
         <div>
-          <span style={{ fontSize: '11px', color: 'var(--text-subtle)', textTransform: 'uppercase', fontWeight: '600', display: 'block', marginBottom: '10px' }}>
+          <span className="text-[11px] text-[var(--text-subtle)] uppercase font-semibold tracking-wider block mb-2.5">
             Meter Rate Cards ({plan.rateCards?.length || 0})
           </span>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className="flex flex-col gap-2">
             {(plan.rateCards || []).map((rc, idx) => (
               <div
                 key={idx}
-                style={{
-                  background: 'var(--bg-inset)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '8px',
-                  padding: '10px 12px',
-                  fontSize: '12px'
-                }}
+                className="bg-[var(--bg-inset)] border border-[var(--border-subtle)] rounded-lg p-2.5 sm:p-3 text-xs"
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                  <strong style={{ color: 'var(--text-heading)' }}>{rc.meterCode}</strong>
-                  <span className={`badge-tag ${
-                    rc.pricingModel === 'GRADUATED' ? 'badge-emerald' :
-                    rc.pricingModel === 'VOLUME' ? 'badge-cyan' : 'badge-amber'
-                  }`} style={{ fontSize: '9px', padding: '1px 5px' }}>
+                <div className="flex justify-between items-center mb-1 gap-2">
+                  <strong className="text-[var(--text-heading)] font-semibold truncate">{rc.meterCode}</strong>
+                  <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold border uppercase tracking-wider shrink-0 ${getPricingModelBadge(rc.pricingModel)}`}>
                     {rc.pricingModel}
                   </span>
                 </div>
 
-                <div style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
+                <div className="text-[11px] text-[var(--text-subtle)]">
                   {rc.freeAllowance ? `Includes ${rc.freeAllowance.toLocaleString()} free units. ` : ''}
-                  {rc.tiers ? `${rc.tiers.length} tiered steps` : rc.packageSize ? `$${rc.packagePrice} per ${rc.packageSize.toLocaleString()} block` : `$${rc.unitPrice} per unit`}
+                  {rc.tiers
+                    ? `${rc.tiers.length} tiered steps`
+                    : rc.packageSize
+                    ? `₹${rc.packagePrice} per ${rc.packageSize.toLocaleString()} block`
+                    : `₹${rc.unitPrice} per unit`}
                 </div>
               </div>
             ))}
@@ -72,25 +79,14 @@ export default function PlanCard({ plan, onSelectPlan, isSelected }) {
         </div>
       </div>
 
-      <div style={{ marginTop: '24px' }}>
+      <div className="mt-6">
         <button
           onClick={() => onSelectPlan && onSelectPlan(plan)}
-          style={{
-            width: '100%',
-            padding: '10px',
-            borderRadius: '8px',
-            border: '1px solid var(--border-subtle)',
-            background: isSelected ? 'var(--emerald-500)' : 'var(--bg-card)',
-            color: isSelected ? '#ffffff' : 'var(--text-main)',
-            fontWeight: '600',
-            fontSize: '13px',
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px'
-          }}
+          className={`w-full py-2.5 px-4 rounded-lg font-semibold text-xs sm:text-sm cursor-pointer transition-all duration-150 flex items-center justify-center gap-2 ${
+            isSelected
+              ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+              : 'bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-main)] hover:bg-[var(--bg-card-hover)]'
+          }`}
         >
           {isSelected ? <CheckCircle2 size={16} /> : <Calculator size={16} />}
           <span>{isSelected ? 'Currently Selected' : 'Test in Calculator'}</span>

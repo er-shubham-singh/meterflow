@@ -105,7 +105,7 @@ const pricingPlanSchema = new mongoose.Schema(
     },
     currency: {
       type: String,
-      default: 'USD',
+      default: 'INR',
       uppercase: true
     },
     // Array of rate cards for each meter

@@ -58,7 +58,24 @@ export class MeterController {
         aggregatesMap[m.code] = { value: totalVal, eventCount };
       }
 
-      return res.status(200).json(MeterView.formatList(meters, aggregatesMap));
+      const page = req.query.page ? Math.max(1, Number(req.query.page)) : null;
+      const limit = req.query.limit ? Math.min(Math.max(1, Number(req.query.limit)), 100) : null;
+      const total = meters.length;
+
+      let paginatedMeters = meters;
+      let pagination = null;
+
+      if (page && limit) {
+        paginatedMeters = meters.slice((page - 1) * limit, page * limit);
+        pagination = {
+          page,
+          limit,
+          total,
+          totalPages: Math.max(1, Math.ceil(total / limit))
+        };
+      }
+
+      return res.status(200).json(MeterView.formatList(paginatedMeters, aggregatesMap, pagination));
     } catch (err) {
       next(err);
     }

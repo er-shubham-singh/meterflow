@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Header from '@/components/layout/Header';
 import MeterCard from '@/components/meters/MeterCard';
 import CreateMeterModal from '@/components/meters/CreateMeterModal';
+import Pagination from '@/components/common/Pagination';
 import { api } from '@/services/api';
 import { Plus } from 'lucide-react';
 
@@ -11,79 +12,78 @@ export default function MetersPage() {
   const [meters, setMeters] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(6);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
 
-  const loadMeters = useCallback(async () => {
+  const loadMeters = useCallback(async (targetPage = page) => {
     try {
-      const res = await api.getMeters();
-      if (res.data) setMeters(res.data);
+      const res = await api.getMeters(targetPage, limit);
+      if (res && res.data) {
+        setMeters(res.data);
+        if (res.pagination) {
+          setPagination({
+            total: res.pagination.total ?? res.data.length,
+            totalPages: res.pagination.totalPages ?? 1,
+            page: res.pagination.page ?? targetPage,
+            limit: res.pagination.limit ?? limit
+          });
+        }
+      }
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, limit]);
 
   useEffect(() => {
-    loadMeters();
-    const interval = setInterval(loadMeters, 3000);
+    loadMeters(page);
+    const interval = setInterval(() => {
+      loadMeters(page);
+    }, 4000);
     return () => clearInterval(interval);
-  }, [loadMeters]);
+  }, [page, loadMeters]);
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    loadMeters(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleDeleteMeter = async (meterId) => {
     if (!confirm('Are you sure you want to delete this meter?')) return;
     try {
       await api.deleteMeter(meterId);
-      loadMeters();
+      loadMeters(page);
     } catch (err) {
       alert('Error deleting meter: ' + err.message);
     }
   };
 
   return (
-    <div>
+    <div className="w-full min-h-screen">
       <Header
         title="Consumption Meters & Aggregation Formulas"
         subtitle="Define how high-throughput API events are aggregated into billable usage metrics"
-        onRefresh={loadMeters}
+        onRefresh={() => loadMeters(page)}
       />
 
-      <main className="page-container">
+      <main className="page-container w-full max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {/* Banner with Action */}
-        <div className="glass-panel" style={{
-          padding: '24px 28px',
-          marginBottom: '28px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%)',
-          border: '1px solid rgba(16, 185, 129, 0.25)',
-          flexWrap: 'wrap',
-          gap: '16px'
-        }}>
+        <div className="glass-panel p-6 sm:p-7 mb-7 flex items-center justify-between flex-wrap gap-4 rounded-xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-transparent to-indigo-500/10">
           <div>
-            <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)', marginBottom: '4px' }}>
+            <h2 className="text-lg sm:text-xl font-extrabold text-[var(--text-heading)] mb-1">
               Real-time Sliding Window Aggregations
             </h2>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)]">
               Supports SUM (tokens, compute runtime), MAX (peak storage), UNIQUE_COUNT (MAU users), and COUNT.
             </p>
           </div>
 
           <button
             onClick={() => setShowCreateModal(true)}
-            style={{
-              background: 'var(--emerald-500)',
-              color: '#ffffff',
-              fontWeight: '700',
-              padding: '10px 18px',
-              borderRadius: '8px',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '13px'
-            }}
+            className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-2.5 px-4 rounded-lg cursor-pointer flex items-center gap-2 text-xs sm:text-sm transition-all shadow-md shadow-emerald-500/20 shrink-0"
           >
             <Plus size={16} />
             <span>Define New Meter</span>
@@ -91,11 +91,7 @@ export default function MetersPage() {
         </div>
 
         {/* Meters Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '24px'
-        }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {meters.map((meter) => (
             <MeterCard
               key={meter.id}
@@ -104,12 +100,21 @@ export default function MetersPage() {
             />
           ))}
         </div>
+
+        {/* Pagination */}
+        <Pagination
+          page={page}
+          totalPages={pagination.totalPages}
+          total={pagination.total}
+          limit={limit}
+          onPageChange={handlePageChange}
+        />
       </main>
 
       {showCreateModal && (
         <CreateMeterModal
           onClose={() => setShowCreateModal(false)}
-          onCreated={loadMeters}
+          onCreated={() => loadMeters(page)}
         />
       )}
     </div>

@@ -75,34 +75,28 @@ export default function ApiPlayground({ onEventIngested }) {
   };
 
   return (
-    <div className="glass-panel" style={{ padding: '28px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+    <div className="glass-panel w-full p-6 sm:p-7 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)]">
+      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
         <div>
-          <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Terminal size={18} color="#10b981" />
-            API Event Listener Playground
+          <h2 className="text-base sm:text-lg font-extrabold text-[var(--text-heading)] flex items-center gap-2">
+            <Terminal size={18} className="text-emerald-400" />
+            <span>API Event Listener Playground</span>
           </h2>
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             Test raw event ingestion directly via REST into the high-throughput listener pipeline.
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <div className="flex gap-2 flex-wrap">
           {Object.keys(SAMPLE_PAYLOADS).map((k) => (
             <button
               key={k}
               onClick={() => handleTemplateChange(k)}
-              style={{
-                background: selectedTemplate === k ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-card)',
-                border: selectedTemplate === k ? '1px solid var(--emerald-500)' : '1px solid var(--border-subtle)',
-                color: selectedTemplate === k ? 'var(--emerald-400)' : 'var(--text-muted)',
-                padding: '6px 12px',
-                borderRadius: '6px',
-                fontSize: '11px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition-all ${
+                selectedTemplate === k
+                  ? 'bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 font-bold shadow-sm'
+                  : 'bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)] hover:border-[var(--border-medium)]'
+              }`}
             >
               {k.replace('_', ' ').toUpperCase()}
             </button>
@@ -110,27 +104,18 @@ export default function ApiPlayground({ onEventIngested }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* JSON Editor */}
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600' }}>
+        <div className="flex flex-col">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs text-[var(--text-muted)] font-semibold">
               Request Body (POST /api/v1/events):
             </span>
             <button
               onClick={copyCurl}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--text-subtle)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                fontSize: '11px'
-              }}
+              className="bg-transparent border-0 text-[var(--text-subtle)] hover:text-[var(--text-heading)] cursor-pointer flex items-center gap-1 text-xs transition-colors"
             >
-              {copied ? <Check size={12} color="#10b981" /> : <Copy size={12} />}
+              {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
               <span>{copied ? 'Copied cURL' : 'Copy cURL'}</span>
             </button>
           </div>
@@ -139,38 +124,13 @@ export default function ApiPlayground({ onEventIngested }) {
             rows={12}
             value={jsonText}
             onChange={(e) => setJsonText(e.target.value)}
-            style={{
-              width: '100%',
-              background: 'var(--bg-code)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--emerald-400)',
-              fontSize: '12px',
-              lineHeight: '1.5',
-              padding: '14px',
-              borderRadius: '8px',
-              fontFamily: 'var(--font-mono)'
-            }}
+            className="w-full bg-[var(--bg-code)] border border-[var(--border-subtle)] focus:border-emerald-500 text-emerald-400 text-xs leading-relaxed p-3.5 rounded-xl font-mono outline-none resize-y"
           />
 
           <button
             disabled={loading}
             onClick={handleSend}
-            style={{
-              width: '100%',
-              marginTop: '12px',
-              padding: '12px',
-              borderRadius: '8px',
-              border: 'none',
-              background: 'var(--emerald-500)',
-              color: '#ffffff',
-              fontWeight: '700',
-              fontSize: '13px',
-              cursor: loading ? 'wait' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
-            }}
+            className="w-full mt-3 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs rounded-lg cursor-pointer flex items-center justify-center gap-2 shadow-md shadow-emerald-500/20 transition-all disabled:opacity-70 disabled:cursor-wait"
           >
             <Send size={14} />
             <span>{loading ? 'Dispatching...' : 'Dispatch API Event (POST)'}</span>
@@ -178,23 +138,14 @@ export default function ApiPlayground({ onEventIngested }) {
         </div>
 
         {/* Live Response Panel */}
-        <div>
-          <span style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '8px' }}>
+        <div className="flex flex-col">
+          <span className="block text-xs text-[var(--text-muted)] font-semibold mb-2">
             Listener Response / Ingestion Latency:
           </span>
 
-          <pre style={{
-            height: 'calc(100% - 60px)',
-            minHeight: '260px',
-            background: 'var(--bg-code)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '8px',
-            padding: '16px',
-            color: response?.status === 'error' ? 'var(--rose-400)' : 'var(--violet-400)',
-            fontSize: '12px',
-            fontFamily: 'var(--font-mono)',
-            overflowY: 'auto'
-          }}>
+          <pre className={`flex-1 min-h-[260px] max-w-full bg-[var(--bg-code)] border border-[var(--border-subtle)] rounded-xl p-4 text-xs font-mono overflow-auto leading-relaxed ${
+            response?.status === 'error' ? 'text-rose-400' : 'text-indigo-400'
+          }`}>
             {response ? JSON.stringify(response, null, 2) : '// Ready. Press "Dispatch API Event" to send telemetry into the pipeline.'}
           </pre>
         </div>

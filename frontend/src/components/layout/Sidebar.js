@@ -14,12 +14,14 @@ import {
   Radio,
   X,
   Sun,
-  Moon
+  Moon,
+  Sparkles
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Overview', icon: Gauge },
+  { href: '/onboarding', label: 'Onboarding Portal', icon: Sparkles, badge: 'New' },
   { href: '/events', label: 'Live Stream', icon: Activity, badge: 'Live' },
   { href: '/meters', label: 'Meters & Aggregations', icon: Layers },
   { href: '/pricing', label: 'Pricing & Rate Cards', icon: Calculator },
@@ -40,45 +42,22 @@ export default function Sidebar({ isMobile = false }) {
   };
 
   return (
-    <aside style={{
-      width: isMobile ? '100%' : '260px',
-      background: 'var(--bg-sidebar)',
-      borderRight: isMobile ? 'none' : '1px solid var(--border-subtle)',
-      display: 'flex',
-      flexDirection: 'column',
-      flexShrink: 0,
-      position: isMobile ? 'relative' : 'sticky',
-      top: 0,
-      height: '100vh',
-      zIndex: 40,
-      boxShadow: isMobile ? 'none' : 'var(--shadow-card)'
-    }}>
+    <aside
+      className={`flex flex-col shrink-0 h-screen sticky top-0 z-40 bg-[var(--bg-sidebar)] transition-colors duration-200 ${
+        isMobile ? 'w-full relative shadow-none border-0' : 'w-64 border-r border-[var(--border-subtle)] shadow-xl'
+      }`}
+    >
       {/* Brand Header */}
-      <div style={{
-        padding: '20px 20px',
-        borderBottom: '1px solid var(--border-subtle)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #10b981 0%, #6366f1 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)'
-          }}>
-            <Zap size={20} color="#fff" />
+      <div className="p-4 sm:p-5 border-b border-[var(--border-subtle)] flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-emerald-500/25 shrink-0">
+            <Zap size={20} className="text-white" />
           </div>
-          <div>
-            <div style={{ fontSize: '16px', fontWeight: '800', letterSpacing: '-0.02em', color: 'var(--text-heading)' }}>
-              Meter<span style={{ color: '#10b981' }}>Flow</span>
+          <div className="min-w-0">
+            <div className="text-base font-extrabold tracking-tight text-[var(--text-heading)] leading-tight truncate">
+              Meter<span className="text-emerald-400">Flow</span>
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-subtle)', fontWeight: '500' }}>
+            <div className="text-[11px] text-[var(--text-subtle)] font-medium leading-tight truncate">
               Usage Pricing Engine
             </div>
           </div>
@@ -88,33 +67,16 @@ export default function Sidebar({ isMobile = false }) {
           <button
             onClick={() => setMobileNavOpen(false)}
             aria-label="Close navigation"
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--text-muted)',
-              cursor: 'pointer',
-              padding: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '6px'
-            }}
+            className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-muted)] hover:text-[var(--text-heading)] cursor-pointer transition-colors shrink-0"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         )}
       </div>
 
       {/* Navigation List */}
-      <nav style={{ padding: '20px 12px', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <div style={{ 
-          fontSize: '10px', 
-          fontWeight: '700', 
-          color: 'var(--text-subtle)', 
-          textTransform: 'uppercase', 
-          letterSpacing: '0.08em',
-          padding: '0 12px 8px 12px' 
-        }}>
+      <nav className="p-3.5 flex-1 overflow-y-auto flex flex-col gap-1">
+        <div className="text-[10px] font-bold text-[var(--text-subtle)] uppercase tracking-wider px-3 pb-2">
           Metering Platform
         </div>
 
@@ -127,39 +89,19 @@ export default function Sidebar({ isMobile = false }) {
               key={item.href}
               href={item.href}
               onClick={handleNavClick}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '10px 12px',
-                borderRadius: '8px',
-                color: isActive ? 'var(--text-heading)' : 'var(--text-muted)',
-                backgroundColor: isActive ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
-                border: isActive ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid transparent',
-                textDecoration: 'none',
-                fontSize: '13px',
-                fontWeight: isActive ? '600' : '500',
-                transition: 'all 0.15s ease'
-              }}
+              className={`flex items-center justify-between py-2.5 px-3 rounded-lg text-xs sm:text-sm font-medium transition-all duration-150 no-underline ${
+                isActive
+                  ? 'bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/25 shadow-sm'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-heading)] hover:bg-[var(--bg-hover-subtle)]'
+              }`}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Icon size={18} color={isActive ? '#10b981' : 'var(--text-subtle)'} />
-                <span>{item.label}</span>
+              <div className="flex items-center gap-2.5 truncate">
+                <Icon size={18} className={isActive ? 'text-emerald-400' : 'text-[var(--text-subtle)]'} />
+                <span className="truncate">{item.label}</span>
               </div>
               {item.badge && (
-                <span style={{
-                  fontSize: '9px',
-                  fontWeight: '700',
-                  padding: '2px 6px',
-                  borderRadius: '10px',
-                  background: 'rgba(16, 185, 129, 0.2)',
-                  color: 'var(--emerald-400)',
-                  border: '1px solid rgba(16, 185, 129, 0.4)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}>
-                  <span className="pulse-indicator" style={{ width: '5px', height: '5px' }}></span>
+                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 shrink-0">
+                  <span className="pulse-indicator w-1.5 h-1.5"></span>
                   {item.badge}
                 </span>
               )}
@@ -169,19 +111,10 @@ export default function Sidebar({ isMobile = false }) {
       </nav>
 
       {/* Engine Status & Theme Switcher Footer */}
-      <div style={{
-        padding: '14px',
-        margin: '12px',
-        background: 'var(--bg-inset)',
-        border: '1px solid var(--border-subtle)',
-        borderRadius: '10px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Engine Mode</span>
-          <span className="badge-tag badge-emerald" style={{ fontSize: '10px', padding: '1px 6px' }}>
+      <div className="p-3.5 m-3 mb-8 bg-[var(--bg-inset)] border border-[var(--border-subtle)] rounded-xl flex flex-col gap-2.5">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-[var(--text-muted)] font-medium">Engine Mode</span>
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
             <Radio size={10} /> ESM MVC
           </span>
         </div>
@@ -189,31 +122,18 @@ export default function Sidebar({ isMobile = false }) {
         {/* Theme Switcher in Sidebar */}
         <button
           onClick={toggleTheme}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '7px 10px',
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '6px',
-            color: 'var(--text-main)',
-            fontSize: '12px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.15s ease'
-          }}
+          className="flex items-center justify-between py-2 px-2.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] rounded-lg text-[var(--text-main)] text-xs font-semibold cursor-pointer transition-all duration-150 shadow-sm"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {theme === 'dark' ? <Moon size={14} color="#818cf8" /> : <Sun size={14} color="#f59e0b" />}
-            <span>{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
+          <div className="flex items-center gap-2">
+            {theme === 'dark' ? <Moon size={14} className="text-indigo-400" /> : <Sun size={14} className="text-amber-500" />}
+            <span>{theme === 'dark' ? 'Dark Theme' : 'Light Theme'}</span>
           </div>
-          <span style={{ fontSize: '10px', color: 'var(--text-subtle)', textTransform: 'uppercase', fontWeight: '700' }}>
-            Toggle
+          <span className="text-[10px] text-[var(--text-subtle)] uppercase font-bold">
+            Switch
           </span>
         </button>
 
-        <div style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
+        <div className="text-[11px] text-[var(--text-subtle)] leading-tight">
           High-throughput event engine with multi-mode rate cards.
         </div>
       </div>

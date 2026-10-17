@@ -104,9 +104,9 @@ export class PricingEngine {
       subtotal,
       tax,
       total,
-      currency: plan.currency || 'USD',
-      budgetLimit: customer.budgetLimit || 5000,
-      isBudgetExceeded: total >= (customer.budgetLimit || 5000)
+      currency: plan.currency || 'INR',
+      budgetLimit: customer.budgetLimit || 500000,
+      isBudgetExceeded: total >= (customer.budgetLimit || 500000)
     };
   }
 

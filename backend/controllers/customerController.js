@@ -21,37 +21,70 @@ export class CustomerController {
    */
   static async getAll(req, res, next) {
     try {
-      let customers = [];
+      const page = req.query.page ? Math.max(1, Number(req.query.page)) : null;
+      const limit = req.query.limit ? Math.min(Math.max(1, Number(req.query.limit)), 100) : null;
+      const search = (req.query.search || '').trim().toLowerCase();
+
+      let allCustomers = [];
       if (mongoose.connection.readyState === 1) {
-        customers = await Customer.find().lean();
+        allCustomers = await Customer.find().lean();
       }
-      if (!customers || customers.length === 0) {
-        customers = Array.from(memoryStore.customers.values());
+      if (!allCustomers || allCustomers.length === 0) {
+        allCustomers = Array.from(memoryStore.customers.values());
+      }
+
+      if (search) {
+        allCustomers = allCustomers.filter((c) =>
+          (c.name && c.name.toLowerCase().includes(search)) ||
+          (c.company && c.company.toLowerCase().includes(search)) ||
+          (c.email && c.email.toLowerCase().includes(search)) ||
+          (c.id && c.id.toLowerCase().includes(search))
+        );
+      }
+
+      const total = allCustomers.length;
+      let paginatedList = allCustomers;
+
+      let pagination = null;
+      if (page !== null && limit !== null) {
+        const skip = (page - 1) * limit;
+        paginatedList = allCustomers.slice(skip, skip + limit);
+        pagination = {
+          page,
+          limit,
+          total,
+          totalPages: Math.max(1, Math.ceil(total / limit))
+        };
       }
 
       // Attach real-time accrued total calculated by PricingEngine
       const data = await Promise.all(
-        customers.map(async (c) => {
+        paginatedList.map(async (c) => {
           try {
             const calc = await PricingEngine.calculateCustomerUsage(c.id);
             return {
               ...c,
               currentTotalAccrued: calc.total,
-              currency: calc.currency,
+              currency: 'INR',
               planName: calc.plan?.name || 'Enterprise'
             };
           } catch {
             return {
               ...c,
               currentTotalAccrued: 0,
-              currency: 'USD',
+              currency: 'INR',
               planName: 'Enterprise'
             };
           }
         })
       );
 
-      return res.status(200).json({ status: 'success', count: data.length, data });
+      return res.status(200).json({
+        status: 'success',
+        count: data.length,
+        data,
+        pagination: pagination || { page: 1, limit: total, total, totalPages: 1 }
+      });
     } catch (err) {
       next(err);
     }

@@ -58,30 +58,34 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
   };
 
   return (
-    <div className="glass-panel" style={{ padding: '28px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+    <div className="glass-panel w-full p-6 sm:p-7 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)]">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Zap size={20} color="#10b981" />
-            High-Throughput Workload Generator
+          <h2 className="text-base sm:text-lg font-extrabold text-[var(--text-heading)] flex items-center gap-2">
+            <Zap size={20} className="text-emerald-400" />
+            <span>High-Throughput Workload Generator</span>
           </h2>
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             Simulate realistic multi-tenant consumption events directly into the API listener.
           </p>
         </div>
 
-        <span className={`badge-tag ${isRunning ? 'badge-emerald' : 'badge-amber'}`}>
+        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+          isRunning 
+            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
+            : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+        }`}>
           {isRunning ? 'Streaming Live Traffic' : 'Generator Idle'}
         </span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '28px' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Scenario Selection */}
         <div>
-          <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', fontWeight: '600' }}>
+          <label className="block text-xs font-semibold text-[var(--text-muted)] mb-2">
             Workload Scenario Preset:
           </label>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className="flex flex-col gap-2">
             {[
               { id: 'mixed', label: 'Mixed Multi-Tenant', desc: 'LLM tokens, API calls, GPU compute, MAU users' },
               { id: 'ai_tokens', label: 'AI LLM Inference Surge', desc: 'Claude 3.5 Sonnet & GPT-4o prompt/completion tokens' },
@@ -90,17 +94,11 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
             ].map((s) => (
               <label
                 key={s.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '10px',
-                  padding: '10px 12px',
-                  borderRadius: '8px',
-                  background: scenario === s.id ? 'rgba(16, 185, 129, 0.12)' : 'var(--bg-card)',
-                  border: scenario === s.id ? '1px solid var(--emerald-500)' : '1px solid var(--border-subtle)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
-                }}
+                className={`flex items-start gap-2.5 p-3 rounded-xl border cursor-pointer transition-all ${
+                  scenario === s.id
+                    ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm'
+                    : 'bg-[var(--bg-secondary)] border-[var(--border-subtle)] hover:border-[var(--border-medium)]'
+                }`}
               >
                 <input
                   type="radio"
@@ -108,11 +106,11 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
                   value={s.id}
                   checked={scenario === s.id}
                   onChange={(e) => setScenario(e.target.value)}
-                  style={{ marginTop: '2px', accentColor: '#10b981' }}
+                  className="mt-0.5 accent-emerald-500"
                 />
                 <div>
-                  <strong style={{ fontSize: '13px', color: 'var(--text-heading)', display: 'block' }}>{s.label}</strong>
-                  <span style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>{s.desc}</span>
+                  <strong className="text-xs sm:text-sm text-[var(--text-heading)] block font-semibold">{s.label}</strong>
+                  <span className="text-[11px] text-[var(--text-subtle)]">{s.desc}</span>
                 </div>
               </label>
             ))}
@@ -120,13 +118,13 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
         </div>
 
         {/* Streaming Rate & Continuous Controls */}
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="flex flex-col justify-between gap-5">
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600' }}>
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-xs font-semibold text-[var(--text-muted)]">
                 Continuous Ingestion Rate:
               </label>
-              <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--emerald-400)', fontFamily: 'var(--font-mono)' }}>
+              <span className="text-sm font-extrabold text-emerald-400 font-mono">
                 {rate} evt/s
               </span>
             </div>
@@ -138,33 +136,22 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
               step="5"
               value={rate}
               onChange={(e) => setRate(Number(e.target.value))}
-              style={{ width: '100%', accentColor: '#10b981', cursor: 'pointer' }}
+              className="w-full accent-emerald-500 cursor-pointer h-2 bg-[var(--bg-inset)] rounded-lg"
             />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-subtle)', marginTop: '4px' }}>
+            <div className="flex justify-between text-[10px] text-[var(--text-subtle)] mt-1 font-mono">
               <span>5 evt/s</span>
               <span>75 evt/s</span>
               <span>150 evt/s</span>
             </div>
 
-            <div style={{ marginTop: '20px' }}>
+            <div className="mt-5">
               <button
                 onClick={handleToggleRunning}
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: isRunning ? 'var(--rose-500)' : 'var(--emerald-500)',
-                  color: '#ffffff',
-                  fontWeight: '700',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  transition: 'all 0.2s'
-                }}
+                className={`w-full py-3 px-4 rounded-xl font-bold text-sm text-white cursor-pointer flex items-center justify-center gap-2 transition-all shadow-md ${
+                  isRunning 
+                    ? 'bg-rose-500 hover:bg-rose-400 shadow-rose-500/20' 
+                    : 'bg-emerald-500 hover:bg-emerald-400 shadow-emerald-500/20'
+                }`}
               >
                 {isRunning ? <Square size={16} /> : <Play size={16} />}
                 <span>{isRunning ? 'Stop Continuous Streaming' : 'Start Continuous Stream'}</span>
@@ -173,46 +160,26 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
           </div>
 
           {/* Quick Burst Section */}
-          <div style={{
-            marginTop: '20px',
-            padding: '16px',
-            background: 'var(--bg-inset)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '10px'
-          }}>
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '10px' }}>
+          <div className="p-4 bg-[var(--bg-inset)] border border-[var(--border-subtle)] rounded-xl">
+            <div className="text-xs font-semibold text-[var(--text-muted)] mb-2.5">
               Inject Instant Traffic Bursts:
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+            <div className="grid grid-cols-3 gap-2">
               {[50, 150, 300].map((count) => (
                 <button
                   key={count}
                   disabled={burstLoading}
                   onClick={() => handleTriggerBurst(count)}
-                  style={{
-                    padding: '8px',
-                    borderRadius: '6px',
-                    background: 'var(--bg-card)',
-                    border: '1px solid var(--border-subtle)',
-                    color: 'var(--text-main)',
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    cursor: burstLoading ? 'wait' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '4px',
-                    transition: 'all 0.15s ease'
-                  }}
+                  className="py-2 px-3 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-main)] text-xs font-semibold cursor-pointer flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 disabled:cursor-wait"
                 >
-                  <FastForward size={12} color="#38bdf8" />
+                  <FastForward size={12} className="text-cyan-400" />
                   <span>+{count}</span>
                 </button>
               ))}
             </div>
 
             {lastBurstResult && (
-              <div style={{ marginTop: '10px', fontSize: '11px', color: 'var(--emerald-400)', fontFamily: 'var(--font-mono)' }}>
+              <div className="mt-2.5 text-[11px] text-emerald-400 font-mono">
                 Burst: {lastBurstResult.ingested} events in {lastBurstResult.durationMs}ms ({lastBurstResult.throughputPerSec} evt/s)
               </div>
             )}

@@ -48,10 +48,10 @@ const customerSchema = new mongoose.Schema(
       default: 'plan_enterprise_ai',
       index: true
     },
-    // Real-time spending threshold / budget cap in USD
+    // Real-time spending threshold / budget cap in INR
     budgetLimit: {
       type: Number,
-      default: 5000,
+      default: 500000,
       min: 0
     },
     // Start of the current billing cycle

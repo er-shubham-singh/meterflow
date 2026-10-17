@@ -18,26 +18,42 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('meterflow_theme');
-      if (stored === 'light' || stored === 'dark') {
-        setThemeState(stored);
-        document.documentElement.setAttribute('data-theme', stored);
+      const stored = localStorage.getItem('meterflow_theme_active');
+      if (stored === 'light') {
+        setThemeState('light');
+        document.documentElement.setAttribute('data-theme', 'light');
       } else {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const initial = prefersDark ? 'dark' : 'light';
-        setThemeState(initial);
-        document.documentElement.setAttribute('data-theme', initial);
+        setThemeState('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('meterflow_theme_active', 'dark');
       }
     } catch (e) {
+      setThemeState('dark');
       document.documentElement.setAttribute('data-theme', 'dark');
     }
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (mobileNavOpen) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') setMobileNavOpen(false);
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [mobileNavOpen]);
+
   const setTheme = (newTheme) => {
     setThemeState(newTheme);
     try {
-      localStorage.setItem('meterflow_theme', newTheme);
+      localStorage.setItem('meterflow_theme_active', newTheme);
       document.documentElement.setAttribute('data-theme', newTheme);
     } catch (e) {
       // storage unavailable

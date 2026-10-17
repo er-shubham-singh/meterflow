@@ -4,109 +4,86 @@ import { Building2, CreditCard, AlertTriangle, FileText, ChevronRight } from 'lu
 import { formatCurrency } from '@/utils/formatters';
 
 export default function CustomerCard({ customer, onSelect, onGenerateInvoice }) {
-  const accrued = customer.currentTotalAccrued || 0;
-  const budget = customer.budgetLimit || 5000;
+  const accrued = customer?.currentTotalAccrued || 0;
+  const budget = customer?.budgetLimit || 500000;
   const percentUsed = Math.min(100, Math.round((accrued / budget) * 100));
   const isBudgetWarning = percentUsed >= 80;
 
+  const getBarColorClass = () => {
+    if (percentUsed > 90) return 'bg-rose-500';
+    if (percentUsed > 75) return 'bg-amber-400';
+    return 'bg-emerald-500';
+  };
+
   return (
-    <div className="glass-panel" style={{
-      padding: '24px',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      position: 'relative'
-    }}>
+    <div className="glass-panel w-full min-w-0 max-w-full box-border p-5 sm:p-6 flex flex-col justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[var(--border-medium)] transition-all duration-200">
       <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-          <div>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-heading)' }}>{customer.company || customer.name}</h3>
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{customer.email}</div>
+        {/* Header Row */}
+        <div className="flex justify-between items-start gap-3 mb-3.5">
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 pulse-indicator shrink-0" />
+              <h3 className="text-sm sm:text-base font-bold text-[var(--text-heading)] truncate m-0">
+                {customer?.company || customer?.name || 'Customer Account'}
+              </h3>
+            </div>
+            <div className="text-xs text-[var(--text-muted)] truncate pl-4">
+              {customer?.email || 'N/A'}
+            </div>
           </div>
-          <span className="badge-tag badge-emerald" style={{ fontSize: '10px' }}>
-            {customer.planName || 'Enterprise'}
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 shrink-0">
+            {customer?.planName || 'Enterprise'}
           </span>
         </div>
 
-        {/* Real-time Accrued Cost */}
-        <div style={{ margin: '16px 0', background: 'var(--bg-inset)', padding: '14px', borderRadius: '10px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-            <span style={{ fontSize: '11px', color: 'var(--text-subtle)', textTransform: 'uppercase', fontWeight: '600' }}>
-              Realtime Accrued Usage
-            </span>
-            <span style={{ fontSize: '11px', color: isBudgetWarning ? '#fbbf24' : 'var(--text-muted)' }}>
+        {/* Real-time Accrued Cost Container */}
+        <div className="my-3 bg-[var(--bg-inset)] p-4 rounded-xl border border-[var(--border-subtle)]">
+          <div className="flex justify-between items-center text-[11px] font-semibold uppercase tracking-wider text-[var(--text-subtle)] mb-1.5 gap-2">
+            <span>Realtime Accrued Usage</span>
+            <span className={`font-mono text-xs ${isBudgetWarning ? 'text-amber-400 font-bold' : 'text-[var(--text-muted)]'}`}>
               Budget: {formatCurrency(budget)}
             </span>
           </div>
 
-          <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-heading)', fontFamily: 'var(--font-mono)' }}>
+          <div className="text-2xl sm:text-3xl font-extrabold text-[var(--text-heading)] font-mono tracking-tight my-1">
             {formatCurrency(accrued)}
           </div>
 
-          {/* Budget progress bar */}
-          <div style={{
-            height: '6px',
-            background: 'var(--border-medium)',
-            borderRadius: '4px',
-            overflow: 'hidden',
-            marginTop: '8px'
-          }}>
-            <div style={{
-              width: `${percentUsed}%`,
-              height: '100%',
-              background: percentUsed > 90 ? '#f43f5e' : percentUsed > 75 ? '#fbbf24' : '#10b981',
-              borderRadius: '4px',
-              transition: 'width 0.3s'
-            }} />
+          {/* Budget progress bar track */}
+          <div className="mt-3 mb-2">
+            <div className="h-2 bg-[var(--border-subtle)] rounded-full overflow-hidden w-full">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${getBarColorClass()}`}
+                style={{ width: `${Math.max(2, percentUsed)}%` }}
+              />
+            </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '6px' }}>
-            <span style={{ color: 'var(--text-subtle)' }}>Cycle Cap</span>
-            <span style={{ color: isBudgetWarning ? '#fbbf24' : 'var(--emerald-400)', fontWeight: '600' }}>
+          {/* Cycle cap details */}
+          <div className="flex justify-between items-center text-[11px] text-[var(--text-subtle)]">
+            <span>Cycle Cap</span>
+            <span className={`font-semibold font-mono ${isBudgetWarning ? 'text-amber-400' : 'text-emerald-400'}`}>
               {percentUsed}% consumed
             </span>
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+      {/* Action Buttons */}
+      <div className="flex items-center gap-2.5 mt-3 pt-1 w-full">
         <button
+          type="button"
           onClick={() => onSelect && onSelect(customer)}
-          style={{
-            flex: 1,
-            padding: '8px 12px',
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            color: 'var(--text-main)',
-            borderRadius: '6px',
-            fontSize: '12px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px'
-          }}
+          className="flex-1 py-2 px-3.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] hover:text-emerald-400 text-[var(--text-main)] rounded-lg text-xs font-semibold cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 shadow-sm"
         >
           <span>View Breakdown</span>
           <ChevronRight size={14} />
         </button>
 
         <button
-          onClick={() => onGenerateInvoice && onGenerateInvoice(customer.id)}
-          style={{
-            padding: '8px 14px',
-            background: '#10b981',
-            border: 'none',
-            color: '#022c22',
-            borderRadius: '6px',
-            fontSize: '12px',
-            fontWeight: '700',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}
+          type="button"
+          onClick={() => onGenerateInvoice && onGenerateInvoice(customer?.id)}
+          className="py-2 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-xs cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 shrink-0 shadow-md shadow-emerald-500/20 active:scale-95"
         >
           <FileText size={14} />
           <span>Bill Now</span>

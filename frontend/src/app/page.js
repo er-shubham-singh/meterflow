@@ -85,7 +85,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div>
+    <div className="w-full min-h-screen">
       <Header
         title="Metering Engine Overview"
         subtitle="High-throughput API event listener & complex consumption calculator"
@@ -105,34 +105,26 @@ export default function DashboardPage() {
         <ThroughputChart throughputHistory={telemetry?.throughputHistory || []} />
 
         {/* Two-Column Grid: Customers Usage & Live Event Stream */}
-        <div className="dashboard-grid">
+        <div className="dashboard-grid w-full min-w-0 max-w-full">
           {/* Customer Usage Accounts */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Users size={18} color="#38bdf8" />
-                <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-heading)' }}>
+          <div className="live-accounts-column w-full min-w-0 max-w-full">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <Users size={18} className="text-cyan-400" />
+                <h2 className="text-sm sm:text-base font-bold text-[var(--text-heading)]">
                   Live Accounts & Accrued Usage
                 </h2>
               </div>
               <Link
                 href="/customers"
-                style={{
-                  fontSize: '12px',
-                  color: 'var(--emerald-400)',
-                  textDecoration: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  fontWeight: '600'
-                }}
+                className="text-xs text-emerald-400 hover:text-emerald-300 no-underline flex items-center gap-1 font-semibold transition-colors"
               >
                 <span>View All ({customers.length})</span>
                 <ArrowRight size={12} />
               </Link>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="flex flex-col gap-4 w-full min-w-0 max-w-full">
               {customers.slice(0, 3).map((cust) => (
                 <CustomerCard
                   key={cust.id}
@@ -145,25 +137,17 @@ export default function DashboardPage() {
           </div>
 
           {/* Live Ingestion Stream Preview */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Activity size={18} color="#10b981" />
-                <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-heading)' }}>
+          <div className="live-stream-column w-full min-w-0 max-w-full">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <Activity size={18} className="text-emerald-400" />
+                <h2 className="text-sm sm:text-base font-bold text-[var(--text-heading)]">
                   Live Ingestion Stream
                 </h2>
               </div>
               <Link
                 href="/events"
-                style={{
-                  fontSize: '12px',
-                  color: 'var(--emerald-400)',
-                  textDecoration: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  fontWeight: '600'
-                }}
+                className="text-xs text-emerald-400 hover:text-emerald-300 no-underline flex items-center gap-1 font-semibold transition-colors"
               >
                 <span>Full Telemetry Stream</span>
                 <ArrowRight size={12} />

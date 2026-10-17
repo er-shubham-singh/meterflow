@@ -22,31 +22,55 @@ export class BillingController {
    */
   static async getInvoices(req, res, next) {
     try {
+      const page = req.query.page ? Math.max(1, Number(req.query.page)) : null;
+      const limit = req.query.limit ? Math.min(Math.max(1, Number(req.query.limit)), 100) : null;
       const customerId = req.query.customerId || null;
       let invoices = [];
+      let total = 0;
+
+      const filter = customerId ? { customerId } : {};
 
       if (mongoose.connection.readyState === 1) {
         try {
-          const filter = customerId ? { customerId } : {};
-          invoices = await Invoice.find(filter).sort({ createdAt: -1 }).lean();
+          total = await Invoice.countDocuments(filter);
+          if (page && limit) {
+            invoices = await Invoice.find(filter)
+              .sort({ createdAt: -1 })
+              .skip((page - 1) * limit)
+              .limit(limit)
+              .lean();
+          } else {
+            invoices = await Invoice.find(filter).sort({ createdAt: -1 }).lean();
+          }
         } catch {
           invoices = [];
         }
       }
 
       if (!invoices || invoices.length === 0) {
-        invoices = Array.from(memoryStore.invoices.values()).sort(
+        let allInvoices = Array.from(memoryStore.invoices.values()).sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
         if (customerId) {
-          invoices = invoices.filter((i) => i.customerId === customerId);
+          allInvoices = allInvoices.filter((i) => i.customerId === customerId);
+        }
+        total = allInvoices.length;
+        if (page && limit) {
+          invoices = allInvoices.slice((page - 1) * limit, (page - 1) * limit + limit);
+        } else {
+          invoices = allInvoices;
         }
       }
+
+      const pagination = (page && limit)
+        ? { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) }
+        : { page: 1, limit: total, total, totalPages: 1 };
 
       return res.status(200).json({
         status: 'success',
         count: invoices.length,
-        data: invoices
+        data: invoices,
+        pagination
       });
     } catch (err) {
       next(err);
@@ -173,23 +197,47 @@ export class BillingController {
    */
   static async getWebhookLogs(req, res, next) {
     try {
+      const page = req.query.page ? Math.max(1, Number(req.query.page)) : null;
+      const limit = req.query.limit ? Math.min(Math.max(1, Number(req.query.limit)), 100) : null;
       let logs = [];
+      let total = 0;
+
       if (mongoose.connection.readyState === 1) {
         try {
-          logs = await WebhookLog.find().sort({ timestamp: -1 }).limit(50).lean();
+          total = await WebhookLog.countDocuments();
+          if (page && limit) {
+            logs = await WebhookLog.find()
+              .sort({ timestamp: -1 })
+              .skip((page - 1) * limit)
+              .limit(limit)
+              .lean();
+          } else {
+            logs = await WebhookLog.find().sort({ timestamp: -1 }).limit(100).lean();
+          }
         } catch {
           logs = [];
         }
       }
 
       if (!logs || logs.length === 0) {
-        logs = billingFeedService.getWebhookLogs();
+        const allLogs = billingFeedService.getWebhookLogs();
+        total = allLogs.length;
+        if (page && limit) {
+          logs = allLogs.slice((page - 1) * limit, (page - 1) * limit + limit);
+        } else {
+          logs = allLogs;
+        }
       }
+
+      const pagination = (page && limit)
+        ? { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) }
+        : { page: 1, limit: total, total, totalPages: 1 };
 
       return res.status(200).json({
         status: 'success',
         count: logs.length,
-        data: logs
+        data: logs,
+        pagination
       });
     } catch (err) {
       next(err);

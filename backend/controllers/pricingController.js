@@ -34,7 +34,12 @@ export class PricingController {
         }
       }
 
-      return res.status(200).json({ status: 'success', count: plans.length, data: plans });
+      const sanitizedPlans = (plans || []).map((p) => ({
+        ...p,
+        currency: 'INR'
+      }));
+
+      return res.status(200).json({ status: 'success', count: sanitizedPlans.length, data: sanitizedPlans });
     } catch (err) {
       next(err);
     }
@@ -61,7 +66,12 @@ export class PricingController {
         return res.status(404).json({ status: 'error', message: 'Pricing plan not found' });
       }
 
-      return res.status(200).json({ status: 'success', data: plan });
+      const sanitizedPlan = {
+        ...plan,
+        currency: 'INR'
+      };
+
+      return res.status(200).json({ status: 'success', data: sanitizedPlan });
     } catch (err) {
       next(err);
     }
@@ -84,7 +94,7 @@ export class PricingController {
         code,
         description: description || '',
         baseFee: baseFee ? Number(baseFee) : 0,
-        currency: currency || 'USD',
+        currency: currency || 'INR',
         rateCards: rateCards || []
       };
 

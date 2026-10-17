@@ -1,6 +1,6 @@
 'use client';
 
-import { Activity, DollarSign, Layers, ShieldCheck, Zap } from 'lucide-react';
+import { Activity, IndianRupee, Layers, ShieldCheck } from 'lucide-react';
 import { formatCurrency, formatCompactNumber } from '@/utils/formatters';
 
 export default function MetricsOverview({ telemetry, metersCount, totalAccruedRevenue, customersCount }) {
@@ -11,15 +11,15 @@ export default function MetricsOverview({ telemetry, metersCount, totalAccruedRe
       subtext: `${telemetry?.eventsPerSecond || 0} events/sec right now`,
       icon: Activity,
       color: '#10b981',
-      bgGlow: 'rgba(16, 185, 129, 0.12)'
+      bgGlow: 'bg-emerald-500/15 text-emerald-400'
     },
     {
       title: 'Current Accrued Revenue',
       value: formatCurrency(totalAccruedRevenue || 0),
       subtext: `Across ${customersCount || 0} active accounts`,
-      icon: DollarSign,
+      icon: IndianRupee,
       color: '#38bdf8',
-      bgGlow: 'rgba(56, 189, 248, 0.12)'
+      bgGlow: 'bg-cyan-500/15 text-cyan-400'
     },
     {
       title: 'Active Consumption Meters',
@@ -27,7 +27,7 @@ export default function MetricsOverview({ telemetry, metersCount, totalAccruedRe
       subtext: 'SUM, MAX, UNIQUE_COUNT, AVG',
       icon: Layers,
       color: '#818cf8',
-      bgGlow: 'rgba(129, 140, 248, 0.12)'
+      bgGlow: 'bg-indigo-500/15 text-indigo-400'
     },
     {
       title: 'Idempotency Filtered',
@@ -35,54 +35,33 @@ export default function MetricsOverview({ telemetry, metersCount, totalAccruedRe
       subtext: 'Duplicate billable events dropped',
       icon: ShieldCheck,
       color: '#fbbf24',
-      bgGlow: 'rgba(251, 191, 36, 0.12)'
+      bgGlow: 'bg-amber-500/15 text-amber-400'
     }
   ];
 
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-      gap: '20px',
-      marginBottom: '28px'
-    }}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-7 w-full min-w-0 max-w-full">
       {cards.map((c, i) => {
         const Icon = c.icon;
         return (
           <div
             key={i}
-            className="glass-panel"
-            style={{
-              padding: '20px 24px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
+            className="glass-panel w-full min-w-0 box-border p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] hover:border-[var(--border-medium)] transition-all duration-200"
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '600' }}>
+            <div className="flex items-center justify-between mb-3 gap-2">
+              <span className="text-xs sm:text-sm text-[var(--text-muted)] font-semibold truncate">
                 {c.title}
               </span>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '8px',
-                background: c.bgGlow,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <Icon size={18} color={c.color} />
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${c.bgGlow}`}>
+                <Icon size={18} />
               </div>
             </div>
 
             <div>
-              <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--text-heading)', letterSpacing: '-0.02em', marginBottom: '4px' }}>
+              <div className="text-2xl sm:text-3xl font-extrabold text-[var(--text-heading)] tracking-tight mb-1 font-mono">
                 {c.value}
               </div>
-              <div style={{ fontSize: '12px', color: 'var(--text-subtle)' }}>
+              <div className="text-xs text-[var(--text-subtle)] truncate">
                 {c.subtext}
               </div>
             </div>

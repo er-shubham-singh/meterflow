@@ -32,30 +32,26 @@ export default function PricingPage() {
   }, []);
 
   return (
-    <div>
+    <div className="w-full min-h-screen">
       <Header
         title="Pricing Plans & Rate Cards"
         subtitle="Manage graduated usage tiers, package blocks, and flat fees"
         onRefresh={loadPlans}
       />
 
-      <main className="page-container">
+      <main className="page-container w-full max-w-7xl mx-auto">
         {/* Interactive Calculator Section */}
-        <div style={{ marginBottom: '32px' }}>
+        <div className="mb-8">
           <InteractiveTierCalculator selectedPlan={selectedPlan} />
         </div>
 
         {/* Plans Grid */}
-        <div style={{ marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)', marginBottom: '16px' }}>
+        <div className="mb-6">
+          <h2 className="text-lg sm:text-xl font-extrabold text-[var(--text-heading)] mb-4">
             Enterprise Rate Card Plans ({plans.length})
           </h2>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '24px'
-          }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {plans.map((p) => (
               <PlanCard
                 key={p.id}

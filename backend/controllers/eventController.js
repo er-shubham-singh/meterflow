@@ -88,24 +88,36 @@ export class EventController {
    */
   static async getRecentEvents(req, res, next) {
     try {
-      const limit = Math.min(Number(req.query.limit) || 50, 200);
+      const page = Math.max(1, Number(req.query.page) || 1);
+      const limit = Math.min(Math.max(1, Number(req.query.limit) || 20), 200);
+      const skip = (page - 1) * limit;
       const customerId = req.query.customerId || null;
+      const eventType = req.query.eventType || null;
 
       // Query from MongoDB Event collection or engine cache
-      const filter = customerId ? { customerId } : {};
+      const filter = {};
+      if (customerId) filter.customerId = customerId;
+      if (eventType && eventType !== 'ALL') {
+        filter.eventType = new RegExp(`^${eventType}`);
+      }
+
       let events = [];
       let total = 0;
 
       try {
-        events = await Event.find(filter).sort({ timestamp: -1 }).limit(limit).lean();
+        events = await Event.find(filter).sort({ timestamp: -1 }).skip(skip).limit(limit).lean();
         total = await Event.countDocuments(filter);
       } catch {
         // Fallback to engine's buffer
-        events = meteringEngine.getRecentEvents(limit, customerId);
-        total = events.length;
+        let allBuffered = meteringEngine.getRecentEvents(500, customerId);
+        if (eventType && eventType !== 'ALL') {
+          allBuffered = allBuffered.filter(e => e.eventType?.startsWith(eventType));
+        }
+        total = allBuffered.length;
+        events = allBuffered.slice(skip, skip + limit);
       }
 
-      return res.status(200).json(EventView.formatList(events, total, 1, limit));
+      return res.status(200).json(EventView.formatList(events, total, page, limit));
     } catch (err) {
       next(err);
     }

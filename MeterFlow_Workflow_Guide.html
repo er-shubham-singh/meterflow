@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>MeterFlow - Architecture & Workflow Guide</title>
@@ -134,10 +135,29 @@
       letter-spacing: 0.05em;
     }
 
-    .badge-primary { background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid #10b981; }
-    .badge-violet { background: rgba(99, 102, 241, 0.12); color: #4f46e5; border: 1px solid #6366f1; }
-    .badge-amber { background: rgba(245, 158, 11, 0.12); color: #b45309; border: 1px solid #f59e0b; }
-    .badge-blue { background: rgba(6, 182, 212, 0.12); color: #0284c7; border: 1px solid #0284c7; }
+    .badge-primary {
+      background: rgba(16, 185, 129, 0.12);
+      color: #059669;
+      border: 1px solid #10b981;
+    }
+
+    .badge-violet {
+      background: rgba(99, 102, 241, 0.12);
+      color: #4f46e5;
+      border: 1px solid #6366f1;
+    }
+
+    .badge-amber {
+      background: rgba(245, 158, 11, 0.12);
+      color: #b45309;
+      border: 1px solid #f59e0b;
+    }
+
+    .badge-blue {
+      background: rgba(6, 182, 212, 0.12);
+      color: #0284c7;
+      border: 1px solid #0284c7;
+    }
 
     .cover-title {
       font-size: 32pt;
@@ -237,8 +257,13 @@
       color: var(--guide-text);
     }
 
-    .callout-info { border-left-color: #6366f1; }
-    .callout-warning { border-left-color: #f59e0b; }
+    .callout-info {
+      border-left-color: #6366f1;
+    }
+
+    .callout-warning {
+      border-left-color: #f59e0b;
+    }
 
     /* Tables */
     table {
@@ -268,7 +293,8 @@
       background: var(--guide-table-alt);
     }
 
-    code, pre {
+    code,
+    pre {
       font-family: 'JetBrains Mono', Consolas, monospace;
     }
 
@@ -353,10 +379,12 @@
       .no-print {
         display: none !important;
       }
+
       body {
         background: #ffffff !important;
         color: #1e293b !important;
       }
+
       .page {
         page-break-after: always;
       }
@@ -367,6 +395,7 @@
         background: var(--guide-bg);
         padding-bottom: 40px;
       }
+
       .page {
         max-width: 900px;
         margin: 30px auto;
@@ -383,15 +412,19 @@
         padding: 20px 16px;
         margin: 12px;
       }
+
       .cover-meta {
         grid-template-columns: 1fr;
       }
+
       .card-grid {
         grid-template-columns: 1fr;
       }
+
       .cover-title {
         font-size: 24pt;
       }
+
       table {
         display: block;
         overflow-x: auto;
@@ -400,6 +433,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Floating Responsive Theme Toolbar (Screen Only) -->
@@ -446,11 +480,14 @@
         Usage-Based Pricing & Metering Engine
       </div>
       <div class="cover-subtitle">
-        Comprehensive Architectural Guide, End-to-End Ingestion Flow, Sliding Window Aggregations, Complex Tier Pricing Algorithms, and Cloud Deployment Runbook.
+        Comprehensive Architectural Guide, End-to-End Ingestion Flow, Sliding Window Aggregations, Complex Tier Pricing
+        Algorithms, and Cloud Deployment Runbook.
       </div>
 
       <div class="callout" style="margin-top: 30px;">
-        <strong>System Mission:</strong> High-throughput API event listener that calculates complex multi-tenant consumption metrics in real-time and feeds directly into enterprise billing systems (Stripe Billing Engine and Oracle NetSuite ERP).
+        <strong>System Mission:</strong> High-throughput API event listener that calculates complex multi-tenant
+        consumption metrics in real-time and feeds directly into enterprise billing systems (Stripe Billing Engine and
+        Oracle NetSuite ERP).
       </div>
 
       <div class="cover-meta">
@@ -484,63 +521,68 @@
     <h1>1. Architecture & End-to-End Workflow</h1>
 
     <p>
-      The MeterFlow platform decouples raw event telemetry from financial calculation and billing systems. It operates in four coordinated phases: <strong>Ingestion &rarr; Metering &rarr; Rating &rarr; Settlement</strong>.
+      The MeterFlow platform decouples raw event telemetry from financial calculation and billing systems. It operates
+      in four coordinated phases: <strong>Ingestion &rarr; Metering &rarr; Rating &rarr; Settlement</strong>.
     </p>
 
     <div class="flow-diagram">
-+---------------------------------------------------------------------------------+
-|                               API EVENT SOURCES                                 |
-|  [AI Token Inferences]      [API Gateway Requests]      [GPU Cloud Compute]     |
-+---------------------------------------+-----------------------------------------+
-                                        | (HTTP POST /events or /events/batch)
-                                        v
-+---------------------------------------------------------------------------------+
-|                       1. EDGE INGESTION & IDEMPOTENCY                           |
-|  - Idempotency Deduplication Cache (LRU Hash Ring) -> Drops Duplicate Bills     |
-|  - Asynchronous Mongoose Persistence to MongoDB "events" collection             |
-+---------------------------------------+-----------------------------------------+
-                                        |
-                                        v
-+---------------------------------------------------------------------------------+
-|                      2. REAL-TIME METERING & AGGREGATION                        |
-|  - In-Memory Sliding Window Aggregator (Zero-lock concurrent math)              |
-|  - Aggregations: SUM (Tokens), MAX (Storage), COUNT (Calls), UNIQUE (MAU)       |
-|  - Real-time Server-Sent Events (SSE) Broadcast to Next.js Web Console          |
-+---------------------------------------+-----------------------------------------+
-                                        |
-                                        v
-+---------------------------------------------------------------------------------+
-|                         3. PRICING & RATING ENGINE                              |
-|  - Evaluates Rate Cards: Graduated Tiers, Volume Tiers, Packages, Free Credits  |
-|  - Real-time Accrued Cost calculation & Tenant Budget Limit Alarms (80% / 100%) |
-+---------------------------------------+-----------------------------------------+
-                                        |
-                                        v
-+---------------------------------------------------------------------------------+
-|                    4. BILLING FEEDS & SETTLEMENT ENGINE                         |
-|  - Automated Invoice Generator with Line Item Math Breakdown                    |
-|  - Outbound Webhook Delivery: Stripe Usage Record API + NetSuite ERP (HMAC-SHA) |
-|  - Executive Printable Invoice View (Receipt HTML/PDF)                          |
-+---------------------------------------------------------------------------------+
+      +---------------------------------------------------------------------------------+
+      | API EVENT SOURCES |
+      | [AI Token Inferences] [API Gateway Requests] [GPU Cloud Compute] |
+      +---------------------------------------+-----------------------------------------+
+      | (HTTP POST /events or /events/batch)
+      v
+      +---------------------------------------------------------------------------------+
+      | 1. EDGE INGESTION & IDEMPOTENCY |
+      | - Idempotency Deduplication Cache (LRU Hash Ring) -> Drops Duplicate Bills |
+      | - Asynchronous Mongoose Persistence to MongoDB "events" collection |
+      +---------------------------------------+-----------------------------------------+
+      |
+      v
+      +---------------------------------------------------------------------------------+
+      | 2. REAL-TIME METERING & AGGREGATION |
+      | - In-Memory Sliding Window Aggregator (Zero-lock concurrent math) |
+      | - Aggregations: SUM (Tokens), MAX (Storage), COUNT (Calls), UNIQUE (MAU) |
+      | - Real-time Server-Sent Events (SSE) Broadcast to Next.js Web Console |
+      +---------------------------------------+-----------------------------------------+
+      |
+      v
+      +---------------------------------------------------------------------------------+
+      | 3. PRICING & RATING ENGINE |
+      | - Evaluates Rate Cards: Graduated Tiers, Volume Tiers, Packages, Free Credits |
+      | - Real-time Accrued Cost calculation & Tenant Budget Limit Alarms (80% / 100%) |
+      +---------------------------------------+-----------------------------------------+
+      |
+      v
+      +---------------------------------------------------------------------------------+
+      | 4. BILLING FEEDS & SETTLEMENT ENGINE |
+      | - Automated Invoice Generator with Line Item Math Breakdown |
+      | - Outbound Webhook Delivery: Stripe Usage Record API + NetSuite ERP (HMAC-SHA) |
+      | - Executive Printable Invoice View (Receipt HTML/PDF) |
+      +---------------------------------------------------------------------------------+
     </div>
 
     <h2>Core Architecture Components</h2>
     <div class="card-grid">
       <div class="info-card">
         <h4>⚡ Edge Ingestion Listener</h4>
-        <p style="font-size: 8.5pt;">Accepts single and batch telemetry payloads (up to 2,000/batch) with sub-millisecond overhead. Idempotency keys prevent double billing on network retries.</p>
+        <p style="font-size: 8.5pt;">Accepts single and batch telemetry payloads (up to 2,000/batch) with
+          sub-millisecond overhead. Idempotency keys prevent double billing on network retries.</p>
       </div>
       <div class="info-card">
         <h4>⏱️ Metering Aggregator</h4>
-        <p style="font-size: 8.5pt;">Maintains running totals per customer and meter. Supports mathematical formulas with filter expressions (e.g. <code>model == 'claude-3-5-sonnet'</code>).</p>
+        <p style="font-size: 8.5pt;">Maintains running totals per customer and meter. Supports mathematical formulas
+          with filter expressions (e.g. <code>model == 'claude-3-5-sonnet'</code>).</p>
       </div>
       <div class="info-card">
         <h4>🧮 Pricing Engine</h4>
-        <p style="font-size: 8.5pt;">Calculates consumption bills using multi-tier rate cards. Subtracts free allowances and computes graduated tier brackets with exact currency precision.</p>
+        <p style="font-size: 8.5pt;">Calculates consumption bills using multi-tier rate cards. Subtracts free allowances
+          and computes graduated tier brackets with exact currency precision.</p>
       </div>
       <div class="info-card">
         <h4>📦 Outbound Billing Feeds</h4>
-        <p style="font-size: 8.5pt;">Generates finalized invoices and delivers signed HMAC-SHA256 payloads to Stripe Billing API and corporate ERP accounting systems.</p>
+        <p style="font-size: 8.5pt;">Generates finalized invoices and delivers signed HMAC-SHA256 payloads to Stripe
+          Billing API and corporate ERP accounting systems.</p>
       </div>
     </div>
 
@@ -555,7 +597,8 @@
     <h1>2. Consumption Meters & Aggregation Rules</h1>
 
     <p>
-      A <strong>Meter</strong> defines the exact logic of how raw API telemetry translates into billable usage units. MeterFlow supports 6 mathematical aggregation functions:
+      A <strong>Meter</strong> defines the exact logic of how raw API telemetry translates into billable usage units.
+      MeterFlow supports 6 mathematical aggregation functions:
     </p>
 
     <table>
@@ -612,7 +655,8 @@
       <div class="info-card">
         <h4>1. LLM Generative Tokens (<code>llm_tokens_total</code>)</h4>
         <div class="formula-box">SUM(ai.completion.properties.tokens)</div>
-        <p style="font-size: 8pt; color: #64748b; margin-top: 4px;">Tracks token consumption across prompt and completion inferences.</p>
+        <p style="font-size: 8pt; color: #64748b; margin-top: 4px;">Tracks token consumption across prompt and
+          completion inferences.</p>
       </div>
       <div class="info-card">
         <h4>2. API Gateway Invocations (<code>api_requests_total</code>)</h4>
@@ -622,17 +666,21 @@
       <div class="info-card">
         <h4>3. GPU & Cloud Compute Hours (<code>gpu_compute_hours</code>)</h4>
         <div class="formula-box">SUM(cloud.compute.properties.vCpuHours)</div>
-        <p style="font-size: 8pt; color: #64748b; margin-top: 4px;">Dedicated GPU clusters (NVIDIA A100) and vCPU compute runtime.</p>
+        <p style="font-size: 8pt; color: #64748b; margin-top: 4px;">Dedicated GPU clusters (NVIDIA A100) and vCPU
+          compute runtime.</p>
       </div>
       <div class="info-card">
         <h4>4. Monthly Active Users (<code>monthly_active_users</code>)</h4>
         <div class="formula-box">UNIQUE_COUNT(user.session.properties.userId)</div>
-        <p style="font-size: 8pt; color: #64748b; margin-top: 4px;">Deduplicated unique user identities active within the billing cycle.</p>
+        <p style="font-size: 8pt; color: #64748b; margin-top: 4px;">Deduplicated unique user identities active within
+          the billing cycle.</p>
       </div>
     </div>
 
     <div class="callout callout-info">
-      <strong>Property Extraction & Filters:</strong> Meters support arbitrary filtering criteria. For example, a meter can track only events where <code>properties.model === "claude-3-5-sonnet"</code> or <code>properties.region === "us-east-1"</code>.
+      <strong>Property Extraction & Filters:</strong> Meters support arbitrary filtering criteria. For example, a meter
+      can track only events where <code>properties.model === "claude-3-5-sonnet"</code> or
+      <code>properties.region === "us-east-1"</code>.
     </div>
 
     <div class="footer">
@@ -646,27 +694,29 @@
     <h1>3. Complex Pricing Models & Rate Cards</h1>
 
     <p>
-      MeterFlow provides mathematically rigorous pricing engines supporting four distinct billing models with included free credit allowances.
+      MeterFlow provides mathematically rigorous pricing engines supporting four distinct billing models with included
+      free credit allowances.
     </p>
 
     <h2>1. Graduated Tiered Pricing (Marginal Brackets)</h2>
     <p>
-      Usage is partitioned into tiers. Each tier applies its unit rate only to the consumption falling within its specific range.
+      Usage is partitioned into tiers. Each tier applies its unit rate only to the consumption falling within its
+      specific range.
     </p>
 
     <div class="flow-diagram">
-Example Rate Card: LLM Generative Tokens (Free Allowance: 100,000 tokens)
-Tier 1: 0        - 500,000 tokens    @ $0.0020 / token
-Tier 2: 500,001  - 2,500,000 tokens  @ $0.0015 / token
-Tier 3: 2,500,001+                   @ $0.0008 / token
+      Example Rate Card: LLM Generative Tokens (Free Allowance: 100,000 tokens)
+      Tier 1: 0 - 500,000 tokens @ ₹0.0020 / token
+      Tier 2: 500,001 - 2,500,000 tokens @ ₹0.0015 / token
+      Tier 3: 2,500,001+ @ ₹0.0008 / token
 
-If Consumed Quantity = 1,200,000 tokens:
-1. Free Allowance:   100,000 tokens included ($0.00)
-2. Billable Units:   1,200,000 - 100,000 = 1,100,000 billable units
-3. Tier 1 Brackets:  First 500,000 @ $0.0020  = $1,000.00
-4. Tier 2 Brackets:  Remaining 600,000 @ $0.0015 = $900.00
------------------------------------------------------------------------
-Total Accrued Cost = $1,000.00 + $900.00 = $1,900.00
+      If Consumed Quantity = 1,200,000 tokens:
+      1. Free Allowance: 100,000 tokens included (₹0.00)
+      2. Billable Units: 1,200,000 - 100,000 = 1,100,000 billable units
+      3. Tier 1 Brackets: First 500,000 @ ₹0.0020 = ₹1,000.00
+      4. Tier 2 Brackets: Remaining 600,000 @ ₹0.0015 = ₹900.00
+      -----------------------------------------------------------------------
+      Total Accrued Cost = ₹1,000.00 + ₹900.00 = ₹1,900.00
     </div>
 
     <h2>2. Comparison of Pricing Models</h2>
@@ -705,12 +755,14 @@ Total Accrued Cost = $1,000.00 + $900.00 = $1,900.00
     <h2>3. Pre-configured Enterprise Plans</h2>
     <div class="card-grid">
       <div class="info-card">
-        <h4>Enterprise AI & Scale ($499/mo Base)</h4>
-        <p style="font-size: 8pt;">Designed for high-scale generative AI applications. Graduated tokens (100k free, then $0.002/$0.0015/$0.0008), API package ($5 per 10k calls), GPU compute ($0.25/hr).</p>
+        <h4>Enterprise AI & Scale (₹39,999/mo Base)</h4>
+        <p style="font-size: 8pt;">Designed for high-scale generative AI applications. Graduated tokens (100k free, then
+          ₹0.002/₹0.0015/₹0.0008), API package (₹400 per 10k calls), GPU compute (₹20/hr).</p>
       </div>
       <div class="info-card">
-        <h4>FinTech High-Throughput ($999/mo Base)</h4>
-        <p style="font-size: 8pt;">Volume discount pricing for financial transaction gateways. Aggressive volume tiers for API requests ($0.0008 down to $0.0002) with 100k free requests.</p>
+        <h4>FinTech High-Throughput (₹79,999/mo Base)</h4>
+        <p style="font-size: 8pt;">Volume discount pricing for financial transaction gateways. Aggressive volume tiers
+          for API requests (₹0.0008 down to ₹0.0002) with 100k free requests.</p>
       </div>
     </div>
 
@@ -725,12 +777,14 @@ Total Accrued Cost = $1,000.00 + $900.00 = $1,900.00
     <h1>4. Billing Feeds & Webhook Integrations</h1>
 
     <p>
-      Once consumption metrics are calculated, MeterFlow synchronizes directly with upstream financial accounting and payment engines via authenticated webhook pipelines.
+      Once consumption metrics are calculated, MeterFlow synchronizes directly with upstream financial accounting and
+      payment engines via authenticated webhook pipelines.
     </p>
 
     <h2>Stripe Billing Usage Record Integration</h2>
     <p>
-      Formatted according to the <strong>Stripe Billing Meter Events API</strong> specification, signed with <code>HMAC-SHA256</code> to ensure zero tampering:
+      Formatted according to the <strong>Stripe Billing Meter Events API</strong> specification, signed with
+      <code>HMAC-SHA256</code> to ensure zero tampering:
     </p>
 
     <pre>
@@ -746,7 +800,7 @@ Total Accrued Cost = $1,000.00 + $900.00 = $1,900.00
       "livemode": true,
       "quantity": 1100000,
       "total_amount_cents": 190000,
-      "currency": "usd",
+      "currency": "inr",
       "line_item_breakdown": [
         {
           "meter": "LLM Generative Tokens",
@@ -770,7 +824,9 @@ Total Accrued Cost = $1,000.00 + $900.00 = $1,900.00
 
     <div class="callout callout-warning">
       <strong>Budget Limit & Threshold Alarms:</strong>
-      Each tenant account has a <code>budgetLimit</code> (e.g. $10,000). When accrued usage crosses <strong>80%</strong>, the dashboard displays amber telemetry warnings; at <strong>100%</strong>, automated soft or hard quota policies can be triggered.
+      Each tenant account has a <code>budgetLimit</code> (e.g. ₹10,00,000). When accrued usage crosses
+      <strong>80%</strong>, the dashboard displays amber telemetry warnings; at <strong>100%</strong>, automated soft or
+      hard quota policies can be triggered.
     </div>
 
     <div class="footer">
@@ -880,4 +936,5 @@ Total Accrued Cost = $1,000.00 + $900.00 = $1,900.00
   </div>
 
 </body>
+
 </html>

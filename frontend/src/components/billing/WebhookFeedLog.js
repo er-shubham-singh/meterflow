@@ -6,55 +6,49 @@ import { formatCurrency, formatTimestamp } from '@/utils/formatters';
 export default function WebhookFeedLog({ webhookLogs = [] }) {
   if (webhookLogs.length === 0) {
     return (
-      <div className="glass-panel" style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>
+      <div className="glass-panel p-8 text-center text-[var(--text-muted)] rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)]">
         No outbound billing feed webhooks dispatched yet. Generate an invoice to feed directly into billing systems.
       </div>
     );
   }
 
   return (
-    <div className="glass-panel" style={{ overflow: 'hidden' }}>
-      <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Radio size={16} color="#10b981" />
-          <h3 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-heading)' }}>Direct Billing System Outbound Feeds</h3>
+    <div className="glass-panel overflow-hidden w-full min-w-0 max-w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)]">
+      <div className="px-5 py-4 border-b border-[var(--border-subtle)] flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-2">
+          <Radio size={16} className="text-emerald-400" />
+          <h3 className="text-sm font-bold text-[var(--text-heading)]">Direct Billing System Outbound Feeds</h3>
         </div>
-        <span className="badge-tag badge-emerald">HMAC-SHA256 Signed</span>
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+          HMAC-SHA256 Signed
+        </span>
       </div>
 
-      <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
+      <div className="max-h-[350px] overflow-y-auto divide-y divide-[var(--border-subtle)]">
         {webhookLogs.map((log) => (
           <div
             key={log.id}
-            style={{
-              padding: '14px 20px',
-              borderBottom: '1px solid var(--border-subtle)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '10px'
-            }}
+            className="p-4 px-5 flex items-center justify-between flex-wrap gap-2.5 hover:bg-[var(--bg-hover-subtle)] transition-colors"
           >
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <span className="badge-tag badge-violet" style={{ fontSize: '10px' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 uppercase">
                   {log.provider}
                 </span>
-                <strong style={{ fontSize: '13px', color: 'var(--text-heading)' }}>
+                <strong className="text-xs sm:text-sm text-[var(--text-heading)] font-semibold">
                   {log.customer} &ndash; {log.invoiceNumber}
                 </strong>
               </div>
-              <div style={{ fontSize: '11px', color: 'var(--text-subtle)', fontFamily: 'var(--font-mono)' }}>
+              <div className="text-[11px] text-[var(--text-subtle)] font-mono">
                 Signature: {log.signature} &bull; Latency: {log.responseTimeMs}ms
               </div>
             </div>
 
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--emerald-400)', fontFamily: 'var(--font-mono)' }}>
-                {formatCurrency(log.totalAmount, log.currency)}
+            <div className="text-right">
+              <div className="text-sm font-bold text-emerald-400 font-mono">
+                {formatCurrency(log.totalAmount, 'INR')}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--emerald-400)', justifyContent: 'flex-end', marginTop: '2px' }}>
+              <div className="flex items-center gap-1 text-[11px] text-emerald-400 justify-end mt-0.5">
                 <CheckCircle2 size={12} />
                 <span>HTTP {log.statusCode} OK</span>
               </div>

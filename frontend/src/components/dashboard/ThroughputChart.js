@@ -7,31 +7,24 @@ export default function ThroughputChart({ throughputHistory = [] }) {
   const data = throughputHistory.length > 0 ? throughputHistory : Array(30).fill({ count: 0 });
 
   return (
-    <div className="glass-panel" style={{ padding: '24px', marginBottom: '28px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Activity size={18} color="#10b981" />
-          <h2 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text-heading)' }}>
+    <div className="glass-panel w-full min-w-0 max-w-full box-border p-4 sm:p-6 mb-7 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)]">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div className="flex items-center gap-2">
+          <Activity size={18} className="text-emerald-400" />
+          <h2 className="text-sm sm:text-base font-bold text-[var(--text-heading)]">
             Event Ingestion Throughput (Past 30s)
           </h2>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-            Peak: <strong style={{ color: '#34d399' }}>{maxVal} evt/s</strong>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <span className="text-xs text-[var(--text-muted)]">
+            Peak: <strong className="text-emerald-400 font-mono font-bold">{maxVal} evt/s</strong>
           </span>
-          <span className="badge-tag badge-emerald">Realtime Stream</span>
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Realtime Stream</span>
         </div>
       </div>
 
       {/* SVG Histogram / Bar Chart */}
-      <div style={{
-        height: '110px',
-        display: 'flex',
-        alignItems: 'flex-end',
-        gap: '4px',
-        paddingTop: '10px',
-        borderBottom: '1px solid var(--border-subtle)'
-      }}>
+      <div className="h-[110px] flex items-end gap-1 pt-2.5 border-b border-[var(--border-subtle)]">
         {data.slice(-30).map((item, idx) => {
           const heightPercent = Math.max(4, Math.round(((item.count || 0) / maxVal) * 100));
           const isLatest = idx === data.length - 1;
@@ -40,31 +33,21 @@ export default function ThroughputChart({ throughputHistory = [] }) {
             <div
               key={idx}
               title={`${item.count || 0} events/sec`}
-              style={{
-                flex: 1,
-                height: `${heightPercent}%`,
-                background: isLatest 
-                  ? 'linear-gradient(to top, #10b981, #34d399)' 
-                  : 'linear-gradient(to top, rgba(16, 185, 129, 0.4), rgba(99, 102, 241, 0.7))',
-                borderRadius: '3px 3px 0 0',
-                transition: 'height 0.3s ease, background 0.3s ease',
-                position: 'relative'
-              }}
+              className={`flex-1 rounded-t transition-all duration-300 relative ${
+                isLatest
+                  ? 'bg-gradient-to-t from-emerald-500 to-emerald-400 shadow-sm shadow-emerald-500/40'
+                  : 'bg-gradient-to-t from-emerald-500/30 to-indigo-500/60'
+              }`}
+              style={{ height: `${heightPercent}%` }}
             />
           );
         })}
       </div>
 
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginTop: '8px',
-        fontSize: '11px',
-        color: 'var(--text-subtle)'
-      }}>
+      <div className="flex justify-between mt-2 text-[11px] text-[var(--text-subtle)] font-mono">
         <span>30s ago</span>
         <span>15s ago</span>
-        <span style={{ color: '#10b981' }}>Now (Live)</span>
+        <span className="text-emerald-400 font-semibold">Now (Live)</span>
       </div>
     </div>
   );

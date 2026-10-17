@@ -45,134 +45,90 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(0, 0, 0, 0.75)',
-      backdropFilter: 'blur(8px)',
-      WebkitBackdropFilter: 'blur(8px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 100,
-      padding: '16px'
-    }}>
-      <div className="glass-panel" style={{
-        width: '100%',
-        maxWidth: '720px',
-        background: 'var(--bg-secondary)',
-        border: '1px solid var(--border-medium)',
-        borderRadius: '16px',
-        padding: '24px',
-        maxHeight: '90vh',
-        overflowY: 'auto',
-        boxShadow: 'var(--shadow-lg)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '20px' }}>
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="glass-panel w-full max-w-2xl bg-[var(--bg-secondary)] border border-[var(--border-medium)] rounded-2xl p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="flex items-start justify-between mb-5">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h2 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-heading)' }}>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-extrabold text-[var(--text-heading)]">
                 {customer.company || customer.name}
               </h2>
-              <span className="badge-tag badge-emerald">{customer.planName || 'Enterprise'}</span>
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                {customer.planName || 'Enterprise'}
+              </span>
             </div>
-            <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
-              Account: <code style={{ color: 'var(--violet-400)' }}>{customer.id}</code> &bull; Email: {customer.email}
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              Account: <code className="text-indigo-400 font-mono">{customer.id}</code> &bull; Email: {customer.email}
             </p>
           </div>
 
           <button
             onClick={onClose}
             aria-label="Close modal"
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--text-muted)',
-              cursor: 'pointer',
-              padding: '4px'
-            }}
+            className="bg-transparent border-0 text-[var(--text-muted)] hover:text-[var(--text-heading)] cursor-pointer p-1 rounded-md transition-colors"
           >
             <X size={20} />
           </button>
         </div>
 
         {loading ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+          <div className="p-10 text-center text-[var(--text-muted)] text-sm">
             Calculating consumption metrics...
           </div>
         ) : usageData ? (
           <div>
             {/* Total Accrual Summary */}
-            <div style={{
-              background: 'var(--bg-inset)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: '12px',
-              padding: '20px',
-              marginBottom: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '12px'
-            }}>
+            <div className="bg-[var(--bg-inset)] border border-[var(--border-subtle)] rounded-xl p-5 mb-6 flex items-center justify-between flex-wrap gap-3">
               <div>
-                <span style={{ fontSize: '11px', color: 'var(--text-subtle)', textTransform: 'uppercase', fontWeight: '600' }}>
+                <span className="text-[11px] text-[var(--text-subtle)] uppercase font-semibold">
                   Total Accrued (Current Cycle)
                 </span>
-                <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--emerald-400)', fontFamily: 'var(--font-mono)' }}>
-                  {formatCurrency(usageData.financialSummary?.totalAccrued, usageData.plan?.currency)}
+                <div className="text-3xl font-extrabold text-emerald-400 font-mono mt-0.5">
+                  {formatCurrency(usageData.financialSummary?.totalAccrued, 'INR')}
                 </div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                <div className="text-xs text-[var(--text-muted)] mt-0.5">
                   Base Plan: {formatCurrency(usageData.financialSummary?.baseFee)} + Usage: {formatCurrency(usageData.financialSummary?.usageCost)}
                 </div>
               </div>
 
-              <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '11px', color: 'var(--text-subtle)', textTransform: 'uppercase', fontWeight: '600' }}>
+              <div className="text-right">
+                <span className="text-[11px] text-[var(--text-subtle)] uppercase font-semibold">
                   Budget Utilization
                 </span>
-                <div style={{ fontSize: '22px', fontWeight: '700', color: 'var(--text-heading)', marginTop: '2px' }}>
+                <div className="text-xl font-bold text-[var(--text-heading)] mt-0.5">
                   {usageData.financialSummary?.percentOfBudget}%
                 </div>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                <div className="text-[11px] text-[var(--text-muted)]">
                   Cap: {formatCurrency(customer.budgetLimit)}
                 </div>
               </div>
             </div>
 
             {/* Itemized Line Items */}
-            <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-heading)', marginBottom: '12px' }}>
+            <h4 className="text-sm font-bold text-[var(--text-heading)] mb-3">
               Metered Line Items & Tiers:
             </h4>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
+            <div className="flex flex-col gap-2.5 mb-6">
               {(usageData.metrics || []).map((m, idx) => (
                 <div
                   key={idx}
-                  style={{
-                    padding: '12px 16px',
-                    background: 'var(--bg-card)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
-                  }}
+                  className="p-3 px-4 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-lg flex items-center justify-between hover:border-[var(--border-medium)] transition-all"
                 >
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <strong style={{ fontSize: '13px', color: 'var(--text-heading)' }}>{m.meterName}</strong>
-                      <span className="badge-tag badge-cyan" style={{ fontSize: '9px', padding: '1px 5px' }}>
+                    <div className="flex items-center gap-2">
+                      <strong className="text-xs sm:text-sm text-[var(--text-heading)] font-semibold">{m.meterName}</strong>
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
                         {m.pricingModel}
                       </span>
                     </div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-subtle)', marginTop: '3px' }}>
+                    <div className="text-[11px] text-[var(--text-subtle)] mt-1">
                       Raw: {m.quantity.toLocaleString()} {m.unit} &bull; Billable: {m.billableQuantity.toLocaleString()} {m.unit}
                     </div>
                   </div>
 
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--emerald-400)', fontFamily: 'var(--font-mono)' }}>
+                  <div className="text-right">
+                    <div className="text-sm sm:text-base font-bold text-emerald-400 font-mono">
                       {formatCurrency(m.amount)}
                     </div>
                   </div>
@@ -181,47 +137,19 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
             </div>
 
             {/* Action Bar */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              gap: '12px',
-              borderTop: '1px solid var(--border-subtle)',
-              paddingTop: '16px',
-              flexWrap: 'wrap'
-            }}>
+            <div className="flex justify-end gap-3 border-t border-[var(--border-subtle)] pt-4 flex-wrap">
               <button
                 onClick={onClose}
-                style={{
-                  padding: '10px 16px',
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-muted)',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  fontSize: '13px'
-                }}
+                className="px-4 py-2 bg-[var(--bg-card)] hover:bg-[var(--bg-hover-subtle)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)] rounded-lg text-xs font-semibold cursor-pointer transition-all"
               >
                 Close
               </button>
               <button
                 disabled={invoicing}
                 onClick={handleGenerateInvoice}
-                style={{
-                  padding: '10px 20px',
-                  background: 'var(--emerald-500)',
-                  border: 'none',
-                  color: '#ffffff',
-                  borderRadius: '8px',
-                  fontWeight: '700',
-                  fontSize: '13px',
-                  cursor: invoicing ? 'wait' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
+                className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg text-xs font-bold shadow-md shadow-emerald-500/20 cursor-pointer flex items-center gap-2 transition-all disabled:opacity-70 disabled:cursor-wait"
               >
-                <FileText size={16} />
+                <FileText size={15} />
                 <span>{invoicing ? 'Syncing to Stripe...' : 'Finalize Invoice & Push Billing Feed'}</span>
               </button>
             </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
 import { formatCurrency } from '@/utils/formatters';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export default function InteractiveTierCalculator({ selectedPlan }) {
   const [selectedRateCardIndex, setSelectedRateCardIndex] = useState(0);
@@ -40,45 +40,45 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
   }, [currentRateCard, quantity]);
 
   if (!currentRateCard) {
-    return <div className="glass-panel" style={{ padding: '24px' }}>No rate card available to simulate.</div>;
+    return (
+      <div className="glass-panel p-6 rounded-xl border border-[var(--border-subtle)] text-[var(--text-muted)] text-sm">
+        No rate card available to simulate.
+      </div>
+    );
   }
 
   return (
-    <div className="glass-panel" style={{ padding: '28px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+    <div className="glass-panel w-full p-6 sm:p-7 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)]">
+      <div className="flex items-center justify-between mb-5 flex-wrap gap-2.5">
         <div>
-          <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Sparkles size={18} color="#10b981" />
+          <h3 className="text-lg font-extrabold text-[var(--text-heading)] flex items-center gap-2">
+            <Sparkles size={18} className="text-emerald-400" />
             Interactive Tier Simulation Engine
           </h3>
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             Simulate consumption across Graduated, Volume, and Package rate cards in real-time.
           </p>
         </div>
-        <span className="badge-tag badge-emerald">{selectedPlan?.name || 'Selected Plan'}</span>
+        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+          {selectedPlan?.name || 'Selected Plan'}
+        </span>
       </div>
 
       {/* Select Meter to Calculate */}
-      <div style={{ marginBottom: '20px' }}>
-        <label style={{ display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+      <div className="mb-5">
+        <label className="block text-xs text-[var(--text-muted)] font-medium mb-2">
           Choose Meter Rate Card:
         </label>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <div className="flex gap-2 flex-wrap">
           {rateCards.map((rc, idx) => (
             <button
               key={idx}
               onClick={() => setSelectedRateCardIndex(idx)}
-              style={{
-                background: selectedRateCardIndex === idx ? 'rgba(16, 185, 129, 0.15)' : 'var(--bg-card)',
-                border: selectedRateCardIndex === idx ? '1px solid var(--emerald-500)' : '1px solid var(--border-subtle)',
-                color: selectedRateCardIndex === idx ? 'var(--emerald-400)' : 'var(--text-muted)',
-                padding: '6px 12px',
-                borderRadius: '6px',
-                fontSize: '12px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
+              className={`py-1.5 px-3 rounded-lg text-xs font-semibold cursor-pointer transition-all duration-150 ${
+                selectedRateCardIndex === idx
+                  ? 'bg-emerald-500/15 border border-emerald-500 text-emerald-400 shadow-sm'
+                  : 'bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-medium)] hover:text-[var(--text-main)]'
+              }`}
             >
               {rc.meterCode} ({rc.pricingModel})
             </button>
@@ -87,19 +87,19 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
       </div>
 
       {/* Slider & Input */}
-      <div style={{ marginBottom: '28px', background: 'var(--bg-inset)', padding: '20px', borderRadius: '10px' }}>
-        <div className="interactive-calc-controls" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', gap: '10px' }}>
-          <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '600' }}>
+      <div className="mb-7 bg-[var(--bg-inset)] p-4 sm:p-5 rounded-xl border border-[var(--border-subtle)]">
+        <div className="interactive-calc-controls flex justify-between items-center mb-2.5 gap-2.5 flex-wrap">
+          <span className="text-xs sm:text-sm text-[var(--text-muted)] font-semibold">
             Simulated Consumed Units:
           </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="flex items-center gap-2 max-w-full">
             <input
               type="number"
-              style={{ width: '160px', textAlign: 'right', fontSize: '15px', fontWeight: '700' }}
+              className="w-36 max-w-full text-right text-sm sm:text-base font-bold font-mono py-1.5 px-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-medium)] text-[var(--text-main)] focus:border-emerald-500 focus:outline-none"
               value={quantity}
               onChange={(e) => setQuantity(Math.max(0, Number(e.target.value) || 0))}
             />
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>units</span>
+            <span className="text-xs text-[var(--text-muted)]">units</span>
           </div>
         </div>
 
@@ -110,9 +110,9 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
           step="25000"
           value={quantity}
           onChange={(e) => setQuantity(Number(e.target.value))}
-          style={{ width: '100%', accentColor: '#10b981', cursor: 'pointer' }}
+          className="w-full accent-emerald-500 cursor-pointer h-2 bg-[var(--border-medium)] rounded-lg appearance-none mt-2"
         />
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-subtle)', marginTop: '4px' }}>
+        <div className="flex justify-between text-[10px] text-[var(--text-subtle)] font-mono mt-1">
           <span>0 units</span>
           <span>1.0M</span>
           <span>2.5M</span>
@@ -123,39 +123,31 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
       {/* Real-time Calculation Breakdown */}
       {calculation && (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-heading)' }}>Graduated Tier Mathematical Breakdown:</h4>
-            <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--emerald-400)' }}>
+          <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
+            <h4 className="text-sm font-bold text-[var(--text-heading)]">
+              Graduated Tier Mathematical Breakdown:
+            </h4>
+            <div className="text-lg sm:text-xl font-extrabold text-emerald-400 font-mono">
               Total: {formatCurrency(calculation.totalCost)}
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className="flex flex-col gap-2">
             {(calculation.tierBreakdown || []).map((t, idx) => (
               <div
                 key={idx}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '12px 16px',
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: '8px',
-                  flexWrap: 'wrap',
-                  gap: '8px'
-                }}
+                className="flex items-center justify-between p-3 sm:p-3.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-lg flex-wrap gap-2 transition-colors hover:border-[var(--border-medium)]"
               >
                 <div>
-                  <div style={{ fontWeight: '600', color: 'var(--text-heading)', fontSize: '13px' }}>
+                  <div className="font-semibold text-[var(--text-heading)] text-xs sm:text-sm">
                     Tier {t.tier}: Range {t.range}
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-subtle)', marginTop: '2px' }}>
-                    {t.unitsConsumed.toLocaleString()} units @ ${t.unitPrice} per unit
+                  <div className="text-xs text-[var(--text-subtle)] mt-0.5">
+                    {t.unitsConsumed.toLocaleString()} units @ ₹{t.unitPrice} per unit
                   </div>
                 </div>
 
-                <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
+                <div className="text-sm sm:text-base font-bold text-[var(--text-main)] font-mono">
                   {formatCurrency(t.cost)}
                 </div>
               </div>

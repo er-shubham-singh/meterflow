@@ -1,9 +1,9 @@
 export class InvoiceHtmlView {
   static render(invoice, customer) {
     const formatCurrency = (amount) => {
-      return new Intl.NumberFormat('en-US', {
+      return new Intl.NumberFormat('en-IN', {
         style: 'currency',
-        currency: invoice.currency || 'USD'
+        currency: invoice.currency || 'INR'
       }).format(amount);
     };
 
@@ -171,6 +171,17 @@ export class InvoiceHtmlView {
       transition: opacity 0.2s;
     }
     .btn-print:hover { opacity: 0.9; }
+    .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    @media screen and (max-width: 680px) {
+      body { padding: 16px 10px; }
+      .invoice-card { padding: 24px 16px; border-radius: 12px; }
+      .header { flex-direction: column; gap: 16px; align-items: flex-start; }
+      .inv-meta { text-align: left; }
+      .parties-grid { grid-template-columns: 1fr; gap: 20px; }
+      .totals-area { justify-content: stretch; }
+      .totals-box { width: 100%; }
+      table { min-width: 520px; }
+    }
     @media print {
       body { background: white; color: black; padding: 0; }
       .invoice-card { border: none; box-shadow: none; background: white; color: black; }
@@ -212,15 +223,16 @@ export class InvoiceHtmlView {
       </div>
       <div>
         <div class="party-title">Issued By</div>
-        <div class="party-name">MeterFlow Cloud Infrastructure Inc.</div>
+        <div class="party-name">MeterFlow Cloud Infrastructure (India) Pvt. Ltd.</div>
         <div class="party-sub">
-          100 Market Street, Suite 800<br>
-          San Francisco, CA 94105<br>
-          Tax ID: US-EIN-948210492
+          Outer Ring Road, Bellandur<br>
+          Bengaluru, Karnataka 560103, India<br>
+          GSTIN: 29AABCM9482F1Z4
         </div>
       </div>
     </div>
 
+    <div class="table-responsive">
     <table>
       <thead>
         <tr>
@@ -239,7 +251,7 @@ export class InvoiceHtmlView {
               ${item.tierBreakdown && item.tierBreakdown.length > 0 ? `
                 <div style="margin-top: 6px;">
                   ${item.tierBreakdown.map(t => `
-                    <span class="tier-chip">Tier ${t.tier}: ${t.unitsConsumed.toLocaleString()} @ $${t.unitPrice} = ${formatCurrency(t.cost)}</span>
+                    <span class="tier-chip">Tier ${t.tier}: ${t.unitsConsumed.toLocaleString()} @ ₹${t.unitPrice} = ${formatCurrency(t.cost)}</span>
                   `).join('')}
                 </div>
               ` : ''}
@@ -251,6 +263,7 @@ export class InvoiceHtmlView {
         `).join('')}
       </tbody>
     </table>
+    </div>
 
     <div class="totals-area">
       <div class="totals-box">

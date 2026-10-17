@@ -15,8 +15,17 @@ export class EventView {
   }
 
   static formatList(events, total, page = 1, limit = 50) {
+    const totalCount = Number(total) || 0;
+    const pageNum = Math.max(1, Number(page) || 1);
+    const limitNum = Math.max(1, Number(limit) || 50);
+    const totalPages = Math.max(1, Math.ceil(totalCount / limitNum));
     return {
       status: 'success',
+      total: totalCount,
+      totalPages,
+      page: pageNum,
+      limit: limitNum,
+      count: events.length,
       data: events.map(e => ({
         id: e.id,
         customerId: e.customerId,
@@ -26,10 +35,11 @@ export class EventView {
         processedAt: e.processedAt
       })),
       pagination: {
-        page: Number(page),
-        limit: Number(limit),
+        page: pageNum,
+        limit: limitNum,
         count: events.length,
-        total
+        total: totalCount,
+        totalPages
       }
     };
   }
