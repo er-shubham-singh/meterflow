@@ -179,5 +179,75 @@ export const api = {
   // Live SSE stream helper
   createEventSource() {
     return new EventSource(`${API_BASE}/events/stream`);
+  },
+
+  // Analytics & Dashboard (Panels 2 & 3)
+  async getCompanyDashboard() {
+    const res = await fetch(`${API_BASE}/analytics/company-dashboard`);
+    return handleResponse(res);
+  },
+
+  async getPlatformOverview() {
+    const res = await fetch(`${API_BASE}/analytics/platform-overview`);
+    return handleResponse(res);
+  },
+
+  // API Keys (Panel 5)
+  async getApiKeys() {
+    const res = await fetch(`${API_BASE}/api-keys`);
+    return handleResponse(res);
+  },
+
+  async createApiKey(payload) {
+    const res = await fetch(`${API_BASE}/api-keys`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return handleResponse(res);
+  },
+
+  async revokeApiKey(id) {
+    const res = await fetch(`${API_BASE}/api-keys/${id}/revoke`, {
+      method: 'POST'
+    });
+    return handleResponse(res);
+  },
+
+  async getEmployeeDashboard() {
+    const res = await fetch(`${API_BASE}/api-keys/employee-dashboard`);
+    return handleResponse(res);
+  },
+
+  // Providers & Integrations
+  async getProviders() {
+    const res = await fetch(`${API_BASE}/providers`);
+    return handleResponse(res);
+  },
+
+  // Gateway Proxy (Panel 6)
+  async sendGatewayProxy(payload) {
+    const res = await fetch(`${API_BASE}/gateway/proxy`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return handleResponse(res);
+  },
+
+  // Auth & Roles
+  async getMe() {
+    const res = await fetch(`${API_BASE}/auth/me`);
+    return handleResponse(res);
+  },
+
+  async switchRole(role) {
+    const res = await fetch(`${API_BASE}/auth/switch-role`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role })
+    });
+    return handleResponse(res);
   }
 };
+

@@ -1,12 +1,26 @@
 export function formatCurrency(amount, currency = 'INR') {
-  if (amount === undefined || amount === null || isNaN(amount)) return '₹0.00';
-  // Always enforce Indian Rupee formatting (INR) across the entire platform
-  return new Intl.NumberFormat('en-IN', {
+  if (amount === undefined || amount === null || isNaN(amount)) {
+    if (currency === 'USD') return '$0.00';
+    if (currency === 'EUR') return '€0.00';
+    return '₹0.00';
+  }
+
+  let converted = Number(amount);
+  let locale = 'en-IN';
+  if (currency === 'USD') {
+    converted = amount * 0.012;
+    locale = 'en-US';
+  } else if (currency === 'EUR') {
+    converted = amount * 0.011;
+    locale = 'de-DE';
+  }
+
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'INR',
+    currency: currency || 'INR',
     minimumFractionDigits: 2,
-    maximumFractionDigits: 4
-  }).format(amount);
+    maximumFractionDigits: 2
+  }).format(converted);
 }
 
 export function formatCompactNumber(num) {
@@ -43,3 +57,19 @@ export function formatRelativeTime(isoString) {
   if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
   return `${Math.floor(diffSec / 3600)}h ago`;
 }
+
+export function formatMeterName(code) {
+  if (!code) return '';
+  const MAP = {
+    llm_tokens_total: 'LLM Tokens Total',
+    api_requests_total: 'API Requests Total',
+    gpu_compute_hours: 'GPU Compute Hours',
+    monthly_active_users: 'Monthly Active Users',
+    hot_storage_peak: 'Hot Storage Peak'
+  };
+  if (MAP[code]) return MAP[code];
+  return code
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+

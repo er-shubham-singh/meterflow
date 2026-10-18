@@ -14,6 +14,11 @@ import pricingRoutes from './routes/pricingRoutes.js';
 import customerRoutes from './routes/customerRoutes.js';
 import billingRoutes from './routes/billingRoutes.js';
 import simulatorRoutes from './routes/simulatorRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import apiKeyRoutes from './routes/apiKeyRoutes.js';
+import providerRoutes from './routes/providerRoutes.js';
+import gatewayRoutes from './routes/gatewayRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import { meteringEngine } from './services/meteringEngine.js';
 
 // Load environment variables from .env
@@ -40,6 +45,11 @@ app.use('/api/v1/pricing-plans', pricingRoutes);
 app.use('/api/v1/customers', customerRoutes);
 app.use('/api/v1/billing', billingRoutes);
 app.use('/api/v1/simulator', simulatorRoutes);
+app.use('/api/v1/analytics', analyticsRoutes);
+app.use('/api/v1/api-keys', apiKeyRoutes);
+app.use('/api/v1/providers', providerRoutes);
+app.use('/api/v1/gateway', gatewayRoutes);
+app.use('/api/v1/auth', authRoutes);
 
 // System Health & Diagnostics Endpoint
 app.get('/api/v1/health', (req, res) => {

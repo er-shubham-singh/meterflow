@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { X, Plus } from 'lucide-react';
 import { api } from '@/services/api';
+import { useToast } from '@/context/ToastContext';
 
 export default function CreateMeterModal({ onClose, onCreated }) {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     code: '',
@@ -18,13 +20,18 @@ export default function CreateMeterModal({ onClose, onCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.name.trim() || !formData.code.trim()) {
+      showToast('Please provide a Meter Name and Code', 'error');
+      return;
+    }
     setLoading(true);
     try {
       await api.createMeter(formData);
+      showToast('Consumption meter created successfully!', 'success');
       if (onCreated) onCreated();
       onClose();
     } catch (err) {
-      alert('Error creating meter: ' + err.message);
+      showToast('Error creating meter: ' + err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -32,7 +39,7 @@ export default function CreateMeterModal({ onClose, onCreated }) {
 
   return (
     <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="glass-panel w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[var(--bg-secondary)] border border-[var(--border-medium)] rounded-2xl p-6 shadow-2xl">
+      <div className="glass-panel w-full max-w-lg max-h-[80vh] overflow-y-auto bg-[var(--bg-secondary)] border border-[var(--border-medium)] rounded-2xl p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-lg font-bold text-[var(--text-heading)]">Define Consumption Meter</h3>
           <button
@@ -44,7 +51,7 @@ export default function CreateMeterModal({ onClose, onCreated }) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
           <div>
             <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1.5">Meter Name</label>
             <input
@@ -136,7 +143,7 @@ export default function CreateMeterModal({ onClose, onCreated }) {
           <button
             type="submit"
             disabled={loading}
-            className="mt-3 w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-2.5 px-4 rounded-lg cursor-pointer flex items-center justify-center gap-2 text-sm shadow-md shadow-emerald-500/20 transition-all disabled:opacity-70 disabled:cursor-wait"
+            className="mt-3 w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 px-4 min-h-[44px] rounded-xl cursor-pointer flex items-center justify-center gap-2 text-sm shadow-md shadow-emerald-500/20 transition-all disabled:opacity-70 disabled:cursor-wait"
           >
             <Plus size={18} />
             <span>{loading ? 'Creating Meter...' : 'Create Meter'}</span>

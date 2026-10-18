@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
 import { Zap, Play, Square, FastForward, Activity } from 'lucide-react';
+import { useToast } from '@/context/ToastContext';
 
 export default function SimulatorControlPanel({ onSimulationUpdate }) {
+  const { showToast } = useToast();
   const [isRunning, setIsRunning] = useState(false);
   const [rate, setRate] = useState(25);
   const [scenario, setScenario] = useState('mixed');
@@ -34,13 +36,15 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
       if (isRunning) {
         await api.stopSimulator();
         setIsRunning(false);
+        showToast('Workload generator stopped', 'info');
       } else {
         await api.startSimulator(rate, scenario);
         setIsRunning(true);
+        showToast('Continuous traffic stream started', 'success');
       }
       if (onSimulationUpdate) onSimulationUpdate();
     } catch (err) {
-      alert('Error toggling simulator: ' + err.message);
+      showToast('Error toggling simulator: ' + err.message, 'error');
     }
   };
 
@@ -49,9 +53,10 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
     try {
       const res = await api.triggerBurst(count, scenario);
       setLastBurstResult(res.data);
+      showToast(`Injected instant burst of ${count} events!`, 'success');
       if (onSimulationUpdate) onSimulationUpdate();
     } catch (err) {
-      alert('Error triggering burst: ' + err.message);
+      showToast('Error triggering burst: ' + err.message, 'error');
     } finally {
       setBurstLoading(false);
     }
@@ -170,7 +175,7 @@ export default function SimulatorControlPanel({ onSimulationUpdate }) {
                   key={count}
                   disabled={burstLoading}
                   onClick={() => handleTriggerBurst(count)}
-                  className="py-2 px-3 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-main)] text-xs font-semibold cursor-pointer flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 disabled:cursor-wait"
+                  className="py-2.5 px-3 min-h-[44px] rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-main)] text-xs font-semibold cursor-pointer flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 disabled:cursor-wait"
                 >
                   <FastForward size={12} className="text-cyan-400" />
                   <span>+{count}</span>

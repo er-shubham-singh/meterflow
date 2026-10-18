@@ -13,3 +13,7 @@ export { PricingPlan } from './PricingPlan.js';
 export { Event } from './Event.js';
 export { Invoice } from './Invoice.js';
 export { WebhookLog } from './WebhookLog.js';
+export { ApiKey } from './ApiKey.js';
+export { ApiProvider } from './ApiProvider.js';
+export { Team } from './Team.js';
+export { User } from './User.js';

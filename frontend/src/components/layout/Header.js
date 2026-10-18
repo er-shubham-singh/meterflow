@@ -1,150 +1,200 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { api, API_BASE } from '@/services/api';
-import { Zap, RefreshCw, Trash2, Cpu, Menu, Sun, Moon, Sparkles } from 'lucide-react';
+import { 
+  Bell, 
+  Calendar, 
+  Download, 
+  Search, 
+  Menu, 
+  Zap, 
+  RefreshCw,
+  Sun,
+  Moon
+} from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useCurrency } from '@/context/CurrencyContext';
+import { api } from '@/services/api';
 
-export default function Header({ title, subtitle, onRefresh }) {
+export default function Header({ 
+  title = 'Dashboard', 
+  subtitle = 'Overview of your API usage and costs', 
+  onRefresh, 
+  onExport 
+}) {
   const { theme, toggleTheme, toggleMobileNav } = useTheme();
-  const [telemetry, setTelemetry] = useState({ eventsPerSecond: 0, totalIngested: 0 });
+  const { currency, setCurrency } = useCurrency();
+  const [currentUser, setCurrentUser] = useState({
+    name: 'Rahul Sharma',
+    roleLabel: 'Admin'
+  });
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isBursting, setIsBursting] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
-    let isMounted = true;
-    const fetchTelemetry = async () => {
-      try {
-        const res = await api.getTelemetry();
-        if (isMounted && res.telemetry) {
-          setTelemetry(res.telemetry);
-        }
-      } catch (err) { // eslint-disable-line no-unused-vars
-        // fallback
-      }
-    };
-
-    fetchTelemetry();
-    const interval = setInterval(fetchTelemetry, 2000);
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
+    api.getMe()
+      .then(res => {
+        if (res.data) setCurrentUser(res.data);
+      })
+      .catch(() => {});
   }, []);
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    if (onRefresh) await onRefresh();
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
 
   const handleQuickBurst = async () => {
     setIsBursting(true);
     try {
-      await api.triggerBurst(100, 'mixed');
+      await api.sendGatewayProxy({
+        provider: 'openai',
+        body: { model: 'gpt-4o-mini', messages: [{ role: 'user', content: 'Telemetry pulse' }] }
+      });
       if (onRefresh) onRefresh();
-    } catch (err) {
-      alert('Error triggering burst: ' + err.message);
+    } catch {
+      // fallback
     } finally {
-      setTimeout(() => setIsBursting(false), 600);
+      setTimeout(() => setIsBursting(false), 400);
     }
   };
 
-  const handleResetUsage = async () => {
-    if (!confirm('Are you sure you want to reset all usage counters and idempotency state?')) return;
-    setIsResetting(true);
-    try {
-      await api.resetAllUsage();
-      if (onRefresh) onRefresh();
-    } catch (err) {
-      alert('Error resetting usage: ' + err.message);
-    } finally {
-      setIsResetting(false);
+  const handleExportClick = () => {
+    if (onExport) {
+      onExport();
+      return;
     }
+    // Default CSV export
+    const csvContent = "data:text/csv;charset=utf-8,Date,Requests,Cost_INR,Provider\n2026-10-18,245230,12450,OpenAI\n";
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `meterflow_export_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
-    <header className="app-header h-[70px] border-b border-[var(--border-subtle)] bg-[var(--bg-header)] backdrop-blur-md flex items-center justify-between sticky top-0 z-40 w-full max-w-full box-border transition-colors px-4 sm:px-6">
-      {/* Left: Mobile Menu Toggle + Title */}
-      <div className="header-brand-section flex items-center gap-2.5 min-w-0 flex-1 overflow-hidden mr-2">
+    <header className="h-[68px] border-b border-[var(--border-subtle)] bg-[var(--bg-header)] flex items-center justify-between sticky top-0 z-30 w-full px-4 sm:px-6 transition-colors shadow-sm">
+      {/* Left: Mobile Menu Toggle + Title with Fluid Typography */}
+      <div className="flex items-center gap-3 min-w-0 pr-2">
         <button
           onClick={toggleMobileNav}
-          className="mobile-menu-btn bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-main)] w-9 h-9 rounded-lg cursor-pointer flex items-center justify-center shrink-0"
-          aria-label="Open navigation menu"
+          className="md:hidden bg-[var(--bg-secondary)] border border-[var(--border-subtle)] text-[var(--text-main)] w-9 h-9 rounded-lg flex items-center justify-center shrink-0 cursor-pointer"
+          aria-label="Open menu"
         >
-          <Menu size={20} />
+          <Menu size={18} />
         </button>
 
-        <div className="header-title-group min-w-0 flex-1 overflow-hidden">
-          <h1 className="header-title text-sm sm:text-base font-bold text-[var(--text-heading)] m-0 truncate">
-            {title || 'Dashboard'}
+        <div className="min-w-0">
+          <h1 className="text-[clamp(0.85rem,2.5vw,1.15rem)] font-bold text-[var(--text-heading)] m-0 leading-tight">
+            {title}
           </h1>
           {subtitle && (
-            <p className="header-subtitle text-xs text-[var(--text-muted)] m-0 mt-0.5 truncate">
+            <p className="text-xs text-[var(--text-muted)] m-0 truncate hidden sm:block">
               {subtitle}
             </p>
           )}
         </div>
       </div>
 
-      {/* Right Controls */}
-      <div className="header-actions flex items-center gap-2 shrink-0 ml-auto">
-        {/* Live Ticker */}
-        <div className="header-ticker flex items-center gap-2.5 bg-[var(--bg-inset)] border border-[var(--border-subtle)] py-1.5 px-3.5 rounded-full">
-          <span className="pulse-indicator"></span>
-          <span className="text-xs text-[var(--text-muted)] font-medium">Rate:</span>
-          <span className="text-xs font-bold text-emerald-400 font-mono">
-            {telemetry.eventsPerSecond} <span className="text-[10px] text-[var(--text-subtle)]">evt/s</span>
-          </span>
+      {/* Right Controls (Matching Panel 2 + Multi-Currency Selector) */}
+      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 ml-auto">
+        {/* Global Multi-Currency Selector (INR ₹ / USD $ / EUR €) */}
+        <div className="flex items-center bg-[var(--bg-inset)] border border-[var(--border-subtle)] rounded-lg p-0.5 shadow-sm">
+          {[
+            { id: 'INR', symbol: '₹' },
+            { id: 'USD', symbol: '$' },
+            { id: 'EUR', symbol: '€' }
+          ].map((c) => (
+            <button
+              key={c.id}
+              onClick={() => setCurrency(c.id)}
+              className={`px-2 py-1 rounded text-[11px] font-bold transition-all cursor-pointer ${
+                currency === c.id
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title={`Switch currency to ${c.id}`}
+            >
+              <span>{c.symbol}</span>
+              <span className="hidden xl:inline ml-0.5">{c.id}</span>
+            </button>
+          ))}
         </div>
 
-        {/* Onboarding Quick Link */}
-        <Link
-          href="/onboarding"
-          title="Open Customer Onboarding Portal & Architecture Wizard"
-          className="header-onboarding-btn hidden lg:flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-400 py-1.5 px-3 rounded-lg text-xs font-semibold cursor-pointer transition-all shrink-0"
-        >
-          <Sparkles size={13} />
-          <span>Onboarding</span>
-        </Link>
+        {/* Search Input (Hidden on mobile) */}
+        <div className="relative hidden xl:block w-44 lg:w-52">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search APIs, keys..."
+            className="w-full bg-[var(--bg-inset)] border border-[var(--border-subtle)] focus:border-blue-500 text-xs text-[var(--text-main)] pl-8 pr-3 py-1.5 rounded-lg outline-none transition-all placeholder:text-slate-400"
+          />
+        </div>
 
-        {/* Quick Burst Button */}
+        {/* Date Filter Range (Matching Panel 2: Oct 1, 2026 - Oct 31, 2026) */}
+        <div className="hidden md:flex items-center gap-1.5 bg-[var(--bg-inset)] border border-[var(--border-subtle)] px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)]">
+          <Calendar size={13} className="text-blue-500" />
+          <span>Oct 1 - Oct 31, 2026</span>
+        </div>
+
+        {/* Export Button (Matching Panel 2) */}
+        <button
+          onClick={handleExportClick}
+          className="flex items-center gap-1.5 bg-white border border-[var(--border-subtle)] hover:bg-slate-50 text-[var(--text-heading)] px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold cursor-pointer transition-all shadow-sm"
+          title="Export CSV Report"
+        >
+          <Download size={13} className="text-slate-600" />
+          <span className="hidden sm:inline">Export</span>
+        </button>
+
+        {/* Quick Test Pulse */}
         <button
           onClick={handleQuickBurst}
           disabled={isBursting}
-          title="Send a batch of 100 mixed meter events to the ingestion pipeline"
-          className="header-burst-btn flex items-center justify-center gap-1.5 bg-gradient-to-br from-emerald-500/20 to-indigo-500/20 border border-emerald-500/40 hover:border-emerald-500/60 text-emerald-400 py-1.5 px-3 rounded-lg text-xs font-semibold cursor-pointer transition-all hover:shadow-sm shadow-emerald-500/10 disabled:opacity-70 disabled:cursor-wait shrink-0"
+          className="flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold cursor-pointer transition-all disabled:opacity-50"
+          title="Send a quick live test API pulse"
         >
-          <Zap size={14} />
-          <span className="burst-btn-text">{isBursting ? 'Ingesting...' : 'Burst (100)'}</span>
+          <Zap size={13} className="text-blue-600" />
+          <span className="hidden lg:inline">{isBursting ? 'Pulse...' : 'Test Pulse'}</span>
         </button>
 
-        {/* Theme Toggle Button */}
+        {/* Refresh Button */}
         <button
-          onClick={toggleTheme}
-          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          aria-label="Toggle dark/light theme"
-          className="flex items-center justify-center bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-main)] w-9 h-9 rounded-lg cursor-pointer transition-all shadow-sm shrink-0"
+          onClick={handleManualRefresh}
+          className="w-8 h-8 rounded-lg border border-[var(--border-subtle)] hover:bg-[var(--bg-inset)] flex items-center justify-center text-slate-500 hover:text-slate-900 cursor-pointer transition-all"
+          title="Refresh metrics"
         >
-          {theme === 'dark' ? (
-            <Sun size={17} className="text-amber-400" />
-          ) : (
-            <Moon size={17} className="text-indigo-400" />
-          )}
+          <RefreshCw size={14} className={isRefreshing ? 'animate-spin text-blue-600' : ''} />
         </button>
 
-        {/* Reset Usage Button */}
-        <button
-          onClick={handleResetUsage}
-          disabled={isResetting}
-          title="Reset all customer usage and event counters"
-          aria-label="Reset usage counters"
-          className="flex items-center justify-center bg-transparent border border-[var(--border-subtle)] hover:border-rose-500/50 hover:text-rose-400 text-[var(--text-muted)] w-9 h-9 rounded-lg cursor-pointer transition-all shrink-0"
-        >
-          <Trash2 size={16} />
-        </button>
+        {/* Notification Bell */}
+        <div className="relative">
+          <button
+            className="w-8 h-8 rounded-lg border border-[var(--border-subtle)] hover:bg-[var(--bg-inset)] flex items-center justify-center text-slate-500 hover:text-slate-900 cursor-pointer transition-all"
+            title="Notifications"
+          >
+            <Bell size={15} />
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-600"></span>
+          </button>
+        </div>
 
-        {/* Backend Node Status */}
-        <div className="header-node-status flex items-center gap-1.5 text-xs text-[var(--text-muted)] pl-2.5 border-l border-[var(--border-subtle)]">
-          <Cpu size={14} className="text-indigo-400" />
-          <span className="text-[11px] font-medium">
-            {API_BASE.includes('localhost') ? ':5001' : 'Render Live'}
-          </span>
+        {/* User Profile Avatar Pill */}
+        <div className="flex items-center gap-2 pl-2 border-l border-[var(--border-subtle)]">
+          <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+            {currentUser.name ? currentUser.name[0] : 'R'}
+          </div>
+          <div className="hidden lg:block text-left">
+            <div className="text-xs font-bold text-[var(--text-heading)] leading-tight">
+              {currentUser.name || 'Rahul Sharma'}
+            </div>
+            <div className="text-[10px] text-slate-400 font-medium">
+              {currentUser.roleLabel || 'Admin'}
+            </div>
+          </div>
         </div>
       </div>
     </header>

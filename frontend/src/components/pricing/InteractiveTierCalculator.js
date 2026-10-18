@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
-import { formatCurrency } from '@/utils/formatters';
-import { Sparkles } from 'lucide-react';
+import { formatCurrency, formatMeterName } from '@/utils/formatters';
+import { Sparkles, Download, Check } from 'lucide-react';
 
 export default function InteractiveTierCalculator({ selectedPlan }) {
   const [selectedRateCardIndex, setSelectedRateCardIndex] = useState(0);
@@ -80,7 +80,7 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
                   : 'bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-medium)] hover:text-[var(--text-main)]'
               }`}
             >
-              {rc.meterCode} ({rc.pricingModel})
+              {formatMeterName(rc.meterCode)} ({rc.pricingModel})
             </button>
           ))}
         </div>
@@ -152,6 +152,30 @@ export default function InteractiveTierCalculator({ selectedPlan }) {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Export Quote Button (P3.2) */}
+          <div className="mt-5 pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between flex-wrap gap-3">
+            <span className="text-xs text-[var(--text-muted)]">
+              Accurate mathematical quote for {quantity.toLocaleString()} units ({formatMeterName(currentRateCard?.meterCode)})
+            </span>
+            <button
+              onClick={() => {
+                const header = "Plan,Meter,Units,TotalCost_INR\n";
+                const row = `"${selectedPlan?.name || 'Plan'}","${formatMeterName(currentRateCard?.meterCode)}",${quantity},${calculation.totalCost}\n`;
+                const blob = new Blob([header + row], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `meterflow_quote_${(currentRateCard?.meterCode || 'quote')}_${Date.now()}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="py-2.5 px-4 min-h-[44px] rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs flex items-center gap-2 cursor-pointer transition-all shadow-md shadow-emerald-500/20"
+            >
+              <Download size={14} />
+              <span>Export Quote (CSV)</span>
+            </button>
           </div>
         </div>
       )}

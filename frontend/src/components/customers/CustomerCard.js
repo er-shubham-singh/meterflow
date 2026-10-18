@@ -70,11 +70,11 @@ export default function CustomerCard({ customer, onSelect, onGenerateInvoice }) 
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-2.5 mt-3 pt-1 w-full">
+      <div className="flex items-center gap-2.5 mt-4 pt-3 border-t border-[var(--border-subtle)] w-full">
         <button
           type="button"
           onClick={() => onSelect && onSelect(customer)}
-          className="flex-1 py-2 px-3.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] hover:text-emerald-400 text-[var(--text-main)] rounded-lg text-xs font-semibold cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 shadow-sm"
+          className="flex-1 py-2.5 px-3.5 min-h-[44px] bg-[var(--bg-card)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] hover:text-emerald-400 text-[var(--text-main)] rounded-xl text-xs font-semibold cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 shadow-sm my-0.5"
         >
           <span>View Breakdown</span>
           <ChevronRight size={14} />
@@ -83,7 +83,7 @@ export default function CustomerCard({ customer, onSelect, onGenerateInvoice }) 
         <button
           type="button"
           onClick={() => onGenerateInvoice && onGenerateInvoice(customer?.id)}
-          className="py-2 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-xs cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 shrink-0 shadow-md shadow-emerald-500/20 active:scale-95"
+          className="py-2.5 px-4 min-h-[44px] bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 shrink-0 shadow-md shadow-emerald-500/20 active:scale-95 my-0.5"
         >
           <FileText size={14} />
           <span>Bill Now</span>

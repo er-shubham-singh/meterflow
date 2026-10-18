@@ -1,5 +1,7 @@
 import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { ToastProvider } from '@/context/ToastContext';
+import { CurrencyProvider } from '@/context/CurrencyContext';
 import AppShell from '@/components/layout/AppShell';
 
 export const metadata = {
@@ -26,11 +28,11 @@ export default function RootLayout({ children }) {
                 if (stored === 'light') {
                   document.documentElement.setAttribute('data-theme', 'light');
                 } else {
-                  document.documentElement.setAttribute('data-theme', 'dark');
-                  localStorage.setItem('meterflow_theme_active', 'dark');
+                  document.documentElement.setAttribute('data-theme', 'light');
+                  localStorage.setItem('meterflow_theme_active', 'light');
                 }
               } catch (e) {
-                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.setAttribute('data-theme', 'light');
               }
             `
           }}
@@ -38,9 +40,13 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <ThemeProvider>
-          <AppShell>
-            {children}
-          </AppShell>
+          <ToastProvider>
+            <CurrencyProvider>
+              <AppShell>
+                {children}
+              </AppShell>
+            </CurrencyProvider>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

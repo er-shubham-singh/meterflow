@@ -7,8 +7,10 @@ import CreateMeterModal from '@/components/meters/CreateMeterModal';
 import Pagination from '@/components/common/Pagination';
 import { api } from '@/services/api';
 import { Plus } from 'lucide-react';
+import { useToast } from '@/context/ToastContext';
 
 export default function MetersPage() {
+  const { showToast, showConfirm } = useToast();
   const [meters, setMeters] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -52,12 +54,19 @@ export default function MetersPage() {
   };
 
   const handleDeleteMeter = async (meterId) => {
-    if (!confirm('Are you sure you want to delete this meter?')) return;
+    const confirmed = await showConfirm({
+      title: 'Delete Consumption Meter',
+      message: 'Are you sure you want to delete this meter? Historical events mapped to this meter may be affected.',
+      confirmText: 'Delete Meter',
+      isDestructive: true
+    });
+    if (!confirmed) return;
     try {
       await api.deleteMeter(meterId);
+      showToast('Consumption meter deleted', 'success');
       loadMeters(page);
     } catch (err) {
-      alert('Error deleting meter: ' + err.message);
+      showToast('Error deleting meter: ' + err.message, 'error');
     }
   };
 
@@ -83,7 +92,7 @@ export default function MetersPage() {
 
           <button
             onClick={() => setShowCreateModal(true)}
-            className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-2.5 px-4 rounded-lg cursor-pointer flex items-center gap-2 text-xs sm:text-sm transition-all shadow-md shadow-emerald-500/20 shrink-0"
+            className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 px-5 min-h-[44px] rounded-xl cursor-pointer flex items-center gap-2 text-xs sm:text-sm transition-all shadow-md shadow-emerald-500/20 shrink-0"
           >
             <Plus size={16} />
             <span>Define New Meter</span>

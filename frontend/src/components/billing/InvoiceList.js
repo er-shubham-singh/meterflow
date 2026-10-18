@@ -1,6 +1,6 @@
 'use client';
 
-import { FileText, ExternalLink, CheckCircle } from 'lucide-react';
+import { FileText, ExternalLink, CheckCircle, Download } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/formatters';
 import { api } from '@/services/api';
 
@@ -12,6 +12,18 @@ export default function InvoiceList({ invoices = [], onSelectInvoice }) {
       </div>
     );
   }
+
+  const handleExportCsv = (inv) => {
+    const headers = "InvoiceNumber,Customer,PeriodStart,PeriodEnd,Total_INR,Status\n";
+    const row = `"${inv.invoiceNumber}","${inv.customerName}","${inv.periodStart}","${inv.periodEnd}",${inv.total},"Synced to Stripe"\n`;
+    const blob = new Blob([headers + row], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${inv.invoiceNumber || 'invoice'}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="glass-panel overflow-hidden w-full min-w-0 max-w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)]">
@@ -55,16 +67,26 @@ export default function InvoiceList({ invoices = [], onSelectInvoice }) {
                   </span>
                 </td>
                 <td className="py-3 px-4 text-right whitespace-nowrap">
-                  <a
-                    href={api.getInvoiceHtmlUrl(inv.id)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-heading)] px-3 py-1.5 rounded-md text-xs font-semibold transition-all hover:shadow-sm"
-                  >
-                    <FileText size={12} />
-                    <span>Print View</span>
-                    <ExternalLink size={10} className="text-[var(--text-muted)]" />
-                  </a>
+                  <div className="flex items-center justify-end gap-1.5">
+                    <button
+                      onClick={() => handleExportCsv(inv)}
+                      title="Download Invoice CSV"
+                      className="inline-flex items-center gap-1 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-muted)] hover:text-[var(--text-heading)] px-2.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer"
+                    >
+                      <Download size={11} />
+                      <span className="hidden sm:inline">CSV</span>
+                    </button>
+                    <a
+                      href={api.getInvoiceHtmlUrl(inv.id)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-heading)] px-3 py-1.5 rounded-md text-xs font-semibold transition-all hover:shadow-sm"
+                    >
+                      <FileText size={12} />
+                      <span>Print View</span>
+                      <ExternalLink size={10} className="text-[var(--text-muted)]" />
+                    </a>
+                  </div>
                 </td>
               </tr>
             ))}

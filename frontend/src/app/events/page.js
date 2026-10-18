@@ -6,7 +6,7 @@ import LiveEventTable from '@/components/events/LiveEventTable';
 import EventPayloadModal from '@/components/events/EventPayloadModal';
 import Pagination from '@/components/common/Pagination';
 import { api } from '@/services/api';
-import { Filter, RefreshCw, Radio } from 'lucide-react';
+import { Filter, RefreshCw, Radio, Pause, Play } from 'lucide-react';
 
 export default function EventsPage() {
   const [events, setEvents] = useState([]);
@@ -16,6 +16,8 @@ export default function EventsPage() {
   const [limit, setLimit] = useState(15);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
   const [loading, setLoading] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const [pausedBufferCount, setPausedBufferCount] = useState(0);
 
   const fetchEvents = useCallback(async (targetPage = page, type = filterType) => {
     try {
@@ -47,6 +49,11 @@ export default function EventsPage() {
         try {
           const payload = JSON.parse(e.data);
           if (payload.type === 'EVENT_INGESTED' && payload.event) {
+            if (isPaused) {
+              setPausedBufferCount((c) => c + 1);
+              return;
+            }
+
             setPagination((prev) => {
               const newTotal = prev.total + 1;
               return {
@@ -66,6 +73,7 @@ export default function EventsPage() {
           } else if (payload.type === 'USAGE_RESET') {
             setEvents([]);
             setPagination({ total: 0, totalPages: 1 });
+            setPausedBufferCount(0);
           }
         } catch (err) {
           console.error(err);
@@ -78,7 +86,17 @@ export default function EventsPage() {
     return () => {
       if (eventSource) eventSource.close();
     };
-  }, [page, limit, filterType, fetchEvents]);
+  }, [page, limit, filterType, fetchEvents, isPaused]);
+
+  const handleTogglePause = () => {
+    if (isPaused) {
+      setIsPaused(false);
+      setPausedBufferCount(0);
+      fetchEvents(page, filterType);
+    } else {
+      setIsPaused(true);
+    }
+  };
 
   const handleFilterChange = (type) => {
     setFilterType(type);
@@ -124,10 +142,24 @@ export default function EventsPage() {
             })}
           </div>
 
-          <div className="flex items-center gap-3 self-end sm:self-auto">
+          <div className="flex items-center gap-2.5 self-end sm:self-auto flex-wrap">
+            {/* Pause / Resume Controls (P3.1) */}
+            <button
+              onClick={handleTogglePause}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer border ${
+                isPaused
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                  : 'bg-[var(--bg-secondary)] text-[var(--text-heading)] border-[var(--border-subtle)] hover:border-[var(--border-medium)]'
+              }`}
+              title={isPaused ? 'Resume live stream' : 'Pause live stream to inspect events'}
+            >
+              {isPaused ? <Play size={12} className="text-amber-300" /> : <Pause size={12} className="text-slate-400" />}
+              <span>{isPaused ? `Resume (${pausedBufferCount} buffered)` : 'Pause Stream'}</span>
+            </button>
+
             <div className="flex items-center gap-1.5 text-xs text-[var(--text-subtle)] bg-[var(--bg-secondary)] px-2.5 py-1.5 rounded-md border border-[var(--border-subtle)]">
-              <Radio size={12} className="text-emerald-400 animate-pulse" />
-              <span>Live Ingest</span>
+              <Radio size={12} className={isPaused ? 'text-amber-400' : 'text-emerald-400 animate-pulse'} />
+              <span>{isPaused ? 'Stream Paused' : 'Live Ingest'}</span>
             </div>
             <button
               onClick={() => fetchEvents(page, filterType)}

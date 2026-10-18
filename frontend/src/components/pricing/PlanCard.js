@@ -1,7 +1,7 @@
 'use client';
 
 import { Calculator, CheckCircle2 } from 'lucide-react';
-import { formatCurrency } from '@/utils/formatters';
+import { formatCurrency, formatMeterName } from '@/utils/formatters';
 
 export default function PlanCard({ plan, onSelectPlan, isSelected }) {
   const getPricingModelBadge = (model) => {
@@ -59,7 +59,7 @@ export default function PlanCard({ plan, onSelectPlan, isSelected }) {
                 className="bg-[var(--bg-inset)] border border-[var(--border-subtle)] rounded-lg p-2.5 sm:p-3 text-xs"
               >
                 <div className="flex justify-between items-center mb-1 gap-2">
-                  <strong className="text-[var(--text-heading)] font-semibold truncate">{rc.meterCode}</strong>
+                  <strong className="text-[var(--text-heading)] font-semibold truncate">{formatMeterName(rc.meterCode)}</strong>
                   <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold border uppercase tracking-wider shrink-0 ${getPricingModelBadge(rc.pricingModel)}`}>
                     {rc.pricingModel}
                   </span>

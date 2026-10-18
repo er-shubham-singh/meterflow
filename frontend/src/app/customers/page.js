@@ -7,8 +7,10 @@ import CustomerDetailModal from '@/components/customers/CustomerDetailModal';
 import Pagination from '@/components/common/Pagination';
 import { api } from '@/services/api';
 import { Users, Plus, UserPlus, Search } from 'lucide-react';
+import { useToast } from '@/context/ToastContext';
 
 export default function CustomersPage() {
+  const { showToast } = useToast();
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -63,23 +65,28 @@ export default function CustomersPage() {
 
   const handleCreateCustomer = async (e) => {
     e.preventDefault();
+    if (!newCust.name.trim() || !newCust.company.trim() || !newCust.email.trim()) {
+      showToast('Please fill in contact name, company, and email.', 'error');
+      return;
+    }
     try {
       await api.createCustomer(newCust);
+      showToast('Customer account created successfully!', 'success');
       setShowAddModal(false);
       setNewCust({ name: '', company: '', email: '', budgetLimit: 10000 });
       loadCustomers(1, searchQuery);
     } catch (err) {
-      alert('Error creating customer: ' + err.message);
+      showToast('Error creating customer: ' + err.message, 'error');
     }
   };
 
   const handleGenerateInvoice = async (customerId) => {
     try {
       await api.generateInvoice(customerId);
-      alert('Invoice generated and synced to billing feed!');
+      showToast('Invoice generated and synced to billing feed!', 'success');
       loadCustomers(page, searchQuery);
     } catch (err) {
-      alert('Error generating invoice: ' + err.message);
+      showToast('Error generating invoice: ' + err.message, 'error');
     }
   };
 
@@ -162,13 +169,12 @@ export default function CustomersPage() {
       {/* Add Customer Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-panel w-full max-w-md bg-[var(--bg-secondary)] border border-[var(--border-medium)] p-6 rounded-2xl shadow-2xl">
+          <div className="glass-panel w-full max-w-md bg-[var(--bg-secondary)] border border-[var(--border-medium)] p-6 rounded-2xl shadow-2xl max-h-[80vh] overflow-y-auto">
             <h3 className="text-lg font-extrabold text-[var(--text-heading)] mb-4">Add Customer Account</h3>
-            <form onSubmit={handleCreateCustomer} className="flex flex-col gap-3.5">
+            <form onSubmit={handleCreateCustomer} noValidate className="flex flex-col gap-3.5">
               <div>
                 <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1">Contact Name</label>
                 <input
-                  required
                   type="text"
                   className="w-full px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] focus:border-emerald-500 rounded-lg text-sm text-[var(--text-heading)] outline-none"
                   value={newCust.name}
@@ -178,7 +184,6 @@ export default function CustomersPage() {
               <div>
                 <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1">Company</label>
                 <input
-                  required
                   type="text"
                   className="w-full px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] focus:border-emerald-500 rounded-lg text-sm text-[var(--text-heading)] outline-none"
                   value={newCust.company}
@@ -188,7 +193,6 @@ export default function CustomersPage() {
               <div>
                 <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1">Email</label>
                 <input
-                  required
                   type="email"
                   className="w-full px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] focus:border-emerald-500 rounded-lg text-sm text-[var(--text-heading)] outline-none"
                   value={newCust.email}
@@ -198,7 +202,6 @@ export default function CustomersPage() {
               <div>
                 <label className="block text-xs font-semibold text-[var(--text-muted)] mb-1">Budget Limit (₹)</label>
                 <input
-                  required
                   type="number"
                   className="w-full px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] focus:border-emerald-500 rounded-lg text-sm text-[var(--text-heading)] outline-none"
                   value={newCust.budgetLimit}
@@ -209,13 +212,13 @@ export default function CustomersPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 bg-[var(--bg-card)] hover:bg-[var(--bg-hover-subtle)] border border-[var(--border-subtle)] text-[var(--text-heading)] rounded-lg text-xs font-semibold cursor-pointer transition-all"
+                  className="px-4 py-2.5 min-h-[44px] bg-[var(--bg-card)] hover:bg-[var(--bg-hover-subtle)] border border-[var(--border-subtle)] text-[var(--text-heading)] rounded-xl text-xs font-semibold cursor-pointer transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg text-xs font-bold shadow-md shadow-emerald-500/20 cursor-pointer transition-all"
+                  className="px-5 py-2.5 min-h-[44px] bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 cursor-pointer transition-all"
                 >
                   Create
                 </button>

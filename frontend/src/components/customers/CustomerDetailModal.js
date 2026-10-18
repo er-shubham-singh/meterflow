@@ -1,11 +1,11 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
 import { X, FileText, ExternalLink, ShieldCheck } from 'lucide-react';
-import { formatCurrency, formatCompactNumber } from '@/utils/formatters';
+import { formatCurrency, formatCompactNumber, formatMeterName } from '@/utils/formatters';
+import { useToast } from '@/context/ToastContext';
 
 export default function CustomerDetailModal({ customer, onClose, onInvoiceGenerated }) {
+  const { showToast } = useToast();
   const [usageData, setUsageData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [invoicing, setInvoicing] = useState(false);
@@ -35,10 +35,11 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
     setInvoicing(true);
     try {
       const res = await api.generateInvoice(customer.id);
+      showToast('Invoice generated and synced to billing feed!', 'success');
       if (onInvoiceGenerated) onInvoiceGenerated(res.data);
       onClose();
     } catch (err) {
-      alert('Error generating invoice: ' + err.message);
+      showToast('Error generating invoice: ' + err.message, 'error');
     } finally {
       setInvoicing(false);
     }
@@ -46,7 +47,7 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
 
   return (
     <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="glass-panel w-full max-w-2xl bg-[var(--bg-secondary)] border border-[var(--border-medium)] rounded-2xl p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="glass-panel w-full max-w-2xl bg-[var(--bg-secondary)] border border-[var(--border-medium)] rounded-2xl p-6 max-h-[80vh] overflow-y-auto shadow-2xl">
         <div className="flex items-start justify-between mb-5">
           <div>
             <div className="flex items-center gap-2">
@@ -117,7 +118,7 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
                 >
                   <div>
                     <div className="flex items-center gap-2">
-                      <strong className="text-xs sm:text-sm text-[var(--text-heading)] font-semibold">{m.meterName}</strong>
+                      <strong className="text-xs sm:text-sm text-[var(--text-heading)] font-semibold">{formatMeterName(m.meterName)}</strong>
                       <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
                         {m.pricingModel}
                       </span>
@@ -140,14 +141,14 @@ export default function CustomerDetailModal({ customer, onClose, onInvoiceGenera
             <div className="flex justify-end gap-3 border-t border-[var(--border-subtle)] pt-4 flex-wrap">
               <button
                 onClick={onClose}
-                className="px-4 py-2 bg-[var(--bg-card)] hover:bg-[var(--bg-hover-subtle)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)] rounded-lg text-xs font-semibold cursor-pointer transition-all"
+                className="px-4 py-2.5 min-h-[44px] bg-[var(--bg-card)] hover:bg-[var(--bg-hover-subtle)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-heading)] rounded-lg text-xs font-semibold cursor-pointer transition-all"
               >
                 Close
               </button>
               <button
                 disabled={invoicing}
                 onClick={handleGenerateInvoice}
-                className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg text-xs font-bold shadow-md shadow-emerald-500/20 cursor-pointer flex items-center gap-2 transition-all disabled:opacity-70 disabled:cursor-wait"
+                className="px-5 py-3 min-h-[44px] bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 cursor-pointer flex items-center gap-2 transition-all disabled:opacity-70 disabled:cursor-wait"
               >
                 <FileText size={15} />
                 <span>{invoicing ? 'Syncing to Stripe...' : 'Finalize Invoice & Push Billing Feed'}</span>

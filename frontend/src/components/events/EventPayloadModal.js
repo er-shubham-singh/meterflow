@@ -15,7 +15,7 @@ export default function EventPayloadModal({ event, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="glass-panel w-full max-w-2xl max-h-[90vh] flex flex-col bg-[var(--bg-secondary)] border border-[var(--border-medium)] rounded-2xl p-6 shadow-2xl">
+      <div className="glass-panel w-full max-w-2xl max-h-[80vh] overflow-y-auto flex flex-col bg-[var(--bg-secondary)] border border-[var(--border-medium)] rounded-2xl p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-base font-bold text-[var(--text-heading)]">API Ingestion Payload</h3>

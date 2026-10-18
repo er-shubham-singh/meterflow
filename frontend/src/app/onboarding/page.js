@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Header from '@/components/layout/Header';
 import Link from 'next/link';
+import { useToast } from '@/context/ToastContext';
 import { 
   Zap, 
   CheckCircle2, 
@@ -155,6 +156,7 @@ const PRICING_TIERS = [
 ];
 
 export default function OnboardingPage() {
+  const { showToast } = useToast();
   const [activeStep, setActiveStep] = useState(1);
   const [copiedToken, setCopiedToken] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
@@ -226,14 +228,15 @@ export default function OnboardingPage() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (!formData.companyName || !formData.email) {
-      alert('Please fill in your Company Name and Email.');
+    if (!formData.companyName.trim() || !formData.email.trim()) {
+      showToast('Please fill in your Company Name and Email.', 'error');
       return;
     }
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
       setFormSubmitted(true);
+      showToast('Enterprise onboarding application submitted successfully!', 'success');
     }, 900);
   };
 
@@ -803,7 +806,7 @@ export default function OnboardingPage() {
 
                 <a
                   href="#partner-form"
-                  className={`w-full py-3 rounded-xl text-xs font-bold text-center transition-all cursor-pointer block ${
+                  className={`w-full py-3.5 px-4 min-h-[44px] my-1 rounded-xl text-xs font-bold text-center transition-all cursor-pointer flex items-center justify-center ${
                     tier.popular
                       ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20'
                       : 'bg-[var(--bg-inset)] hover:bg-[var(--bg-card-hover)] text-[var(--text-main)] border border-[var(--border-medium)]'
@@ -851,7 +854,7 @@ export default function OnboardingPage() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleFormSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <form onSubmit={handleFormSubmit} noValidate className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-muted)] mb-2 uppercase tracking-wide">
                     Company / Organization Name *
@@ -960,7 +963,7 @@ export default function OnboardingPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="px-8 py-3.5 min-h-[44px] my-1 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 flex items-center gap-2 cursor-pointer disabled:opacity-50 transition-all"
                   >
                     {isSubmitting ? (
                       <>
