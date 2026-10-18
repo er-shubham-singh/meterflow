@@ -6,7 +6,7 @@
   <title>MeterFlow — 12-Page Enterprise Business Deck</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -29,7 +29,7 @@
       height: 100vh;
       min-height: 100vh;
       max-height: 100vh;
-      padding: 48px 64px 36px 64px;
+      padding: 44px 64px 32px 64px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -40,24 +40,12 @@
       overflow: hidden;
       box-sizing: border-box;
     }
-    /* Subtle background accents */
-    .bg-accent-gradient {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 600px;
-      height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
-      pointer-events: none;
-    }
     /* Header */
     .slide-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #E2E8F0;
-      padding-bottom: 14px;
+      padding-bottom: 12px;
       position: relative;
       z-index: 2;
     }
@@ -70,36 +58,25 @@
       width: 32px;
       height: 32px;
       border-radius: 8px;
-      background: linear-gradient(135deg, #10B981, #059669);
+      background: #00C875;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 900;
       font-size: 16px;
       color: #FFFFFF;
-      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
     }
     .brand-title {
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 800;
       color: #0F172A;
       letter-spacing: -0.02em;
-    }
-    .brand-title span {
-      color: #059669;
-    }
-    .brand-tag {
-      font-size: 12px;
-      color: #64748B;
-      font-weight: 500;
-      padding-left: 12px;
-      border-left: 1px solid #CBD5E1;
     }
     .slide-num-pill {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       font-weight: 700;
-      color: #047857;
+      color: #059669;
       background: #ECFDF5;
       border: 1px solid #A7F3D0;
       padding: 4px 12px;
@@ -113,50 +90,60 @@
       justify-content: center;
       position: relative;
       z-index: 2;
-      padding: 16px 0;
-    }
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 14px;
-      border-radius: 999px;
-      background: #ECFDF5;
-      border: 1px solid #A7F3D0;
-      color: #047857;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      width: fit-content;
+      padding: 10px 0;
     }
     .hero-title {
-      font-size: 44px;
+      font-size: 46px;
       font-weight: 900;
       line-height: 1.15;
       color: #0F172A;
       letter-spacing: -0.03em;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
     .hero-title span {
-      color: #059669;
+      color: #00C875;
+    }
+    .green-accent-bar {
+      width: 48px;
+      height: 3px;
+      background: #00C875;
+      border-radius: 2px;
+      margin: 16px 0;
+    }
+    .green-accent-bar-center {
+      width: 48px;
+      height: 3px;
+      background: #00C875;
+      border-radius: 2px;
+      margin: 12px auto 14px auto;
     }
     .hero-desc {
       font-size: 15px;
       color: #475569;
       line-height: 1.6;
-      max-width: 680px;
-      margin-bottom: 22px;
+      max-width: 600px;
+      margin-bottom: 28px;
+    }
+    .btn-green-pill {
+      display: inline-block;
+      padding: 13px 32px;
+      border-radius: 999px;
+      background: #00C875;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0, 200, 117, 0.25);
     }
     .title-center {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     .section-title {
       font-size: 28px;
       font-weight: 800;
       color: #0F172A;
       letter-spacing: -0.02em;
-      margin-bottom: 6px;
     }
     .section-subtitle {
       font-size: 13.5px;
@@ -184,17 +171,22 @@
     .card {
       background: #FFFFFF;
       border: 1px solid #E2E8F0;
-      border-radius: 14px;
-      padding: 18px 20px;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-      transition: all 0.2s ease;
+      border-radius: 12px;
+      padding: 20px 22px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     }
-    .card-num {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+    .icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #ECFDF5;
+      color: #00C875;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      margin-bottom: 12px;
       font-weight: 700;
-      color: #059669;
-      margin-bottom: 6px;
     }
     .card-title {
       font-size: 14.5px;
@@ -203,345 +195,435 @@
       margin-bottom: 6px;
     }
     .card-desc {
-      font-size: 12.5px;
+      font-size: 12px;
       color: #475569;
       line-height: 1.55;
     }
-    /* Highlight layout */
+    /* Highlight layout for Slide 4 */
     .highlight-split {
       display: grid;
-      grid-template-columns: 1.15fr 1.85fr;
+      grid-template-columns: 1fr 2fr;
       gap: 20px;
       align-items: stretch;
     }
     .highlight-card {
       background: #FFFFFF;
-      border: 2px solid #10B981;
-      border-radius: 16px;
-      padding: 26px 24px;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 28px 24px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.08);
     }
-    .highlight-big {
-      font-size: 44px;
+    .highlight-green-title {
+      font-size: 32px;
       font-weight: 900;
-      color: #059669;
-      font-family: 'JetBrains Mono', monospace;
-      margin: 10px 0;
+      color: #00C875;
+      line-height: 1.15;
+      margin-bottom: 8px;
     }
-    /* Bottom Banner (Exact FirstStore demo.pdf aesthetic) */
+    /* Device frame for Slide 1 */
+    .device-mockup {
+      border: 8px solid #0F172A;
+      border-radius: 20px;
+      background: #FFFFFF;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+      overflow: hidden;
+      width: 100%;
+    }
+    .mockup-header {
+      background: #F8FAFC;
+      padding: 10px 16px;
+      border-bottom: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mockup-body {
+      padding: 16px 18px;
+    }
+    /* Bottom Banner (Exact demo.pdf aesthetic) */
     .banner-footer {
       border: 1px solid #A7F3D0;
-      background: #ECFDF5;
-      border-radius: 10px;
-      padding: 12px 24px;
+      background: #FFFFFF;
+      border-radius: 8px;
+      padding: 11px 24px;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
       color: #047857;
       font-weight: 600;
-      font-size: 13.5px;
+      font-size: 13px;
       letter-spacing: -0.01em;
       position: relative;
       z-index: 2;
     }
-    /* Code snippet block */
-    .code-box {
-      background: #0F172A;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 18px 22px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: #34D399;
-      line-height: 1.7;
-    }
-    .code-purple { color: #A5B4FC; }
-    .code-yellow { color: #FDE047; }
-    .code-cyan { color: #67E8F9; }
-    .code-muted { color: #94A3B8; }
   </style>
 </head>
 <body>
 
-  <!-- SLIDE 1: Cover -->
+  <!-- SLIDE 1: Cover (Faithful to Page 1 of demo.pdf) -->
   <div class="slide">
-    <div class="bg-accent-gradient"></div>
     <div class="slide-header">
       <div class="brand-wrap">
         <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
-        <div class="brand-tag">Usage-Based Pricing & Metering Engine</div>
+        <div class="brand-title">MeterFlow</div>
       </div>
       <div class="slide-num-pill">SLIDE 01 / 12</div>
     </div>
     <div class="slide-body">
-      <div style="display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 40px; align-items: center;">
+      <div style="display: grid; grid-template-columns: 1.1fr 1.3fr; gap: 48px; align-items: center;">
+        <!-- Left: Hero Headline & CTA -->
         <div>
-          <div class="hero-tag">Enterprise Solution Architecture & Business Deck 2026</div>
-          <h1 class="hero-title">Monetize Every API Event.<br>Power Usage-Based <span>Revenue.</span></h1>
+          <h1 class="hero-title">
+            Own a MeterFlow.<br>
+            Power Pricing in Your <br>
+            <span>Stack.</span>
+          </h1>
+          <div class="green-accent-bar"></div>
           <p class="hero-desc">
-            MeterFlow bridges high-throughput streaming telemetry directly with automated billing ledgers, calculating complex graduated tiers in Indian Rupees (₹) under 2 milliseconds with zero event loss.
+            Become a MeterFlow Enterprise Partner and build a future-ready consumption monetization engine backed by sub-millisecond listeners, real-time ledgers, and a growing enterprise network.
           </p>
-          <div style="display: flex; gap: 14px; margin-top: 6px;">
-            <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 12px 18px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-              <span style="font-size: 11px; color: #64748B; display: block; font-weight: 500;">Ingestion Throughput</span>
-              <strong style="font-size: 20px; color: #059669; font-family: 'JetBrains Mono'; font-weight: 800;">100,000+ evt/s</strong>
-            </div>
-            <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 12px 18px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-              <span style="font-size: 11px; color: #64748B; display: block; font-weight: 500;">Median Latency</span>
-              <strong style="font-size: 20px; color: #4F46E5; font-family: 'JetBrains Mono'; font-weight: 800;">&lt; 1.8 ms</strong>
-            </div>
-            <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 12px 18px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-              <span style="font-size: 11px; color: #64748B; display: block; font-weight: 500;">Idempotency Precision</span>
-              <strong style="font-size: 20px; color: #D97706; font-family: 'JetBrains Mono'; font-weight: 800;">99.999%</strong>
-            </div>
+          <div style="margin-top: 24px;">
+            <a href="#" class="btn-green-pill">Partner With Us</a>
           </div>
         </div>
-        <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 24px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; border-bottom: 1px solid #F1F5F9; padding-bottom: 10px;">
-            <div style="font-size: 11px; color: #059669; font-weight: 700; font-family: 'JetBrains Mono';">● COCKPIT TELEMETRY SNAPSHOT</div>
-            <span style="font-size: 10px; background: #ECFDF5; color: #047857; font-weight: 700; padding: 2px 8px; border-radius: 999px;">LIVE ENGINE</span>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div style="background: #F8FAFC; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0;">
-              <span style="font-size: 11px; color: #64748B;">Active Customers</span>
-              <div style="font-size: 22px; font-weight: 800; color: #0F172A; font-family: 'JetBrains Mono'; margin-top: 2px;">1,480</div>
+
+        <!-- Right: Device Mockup (Exact layout from demo.pdf Page 1) -->
+        <div>
+          <div class="device-mockup">
+            <div class="mockup-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 12px; font-weight: 800; color: #0F172A;">MeterFlow</span>
+                <span style="font-size: 11px; color: #64748B;">| Ingestion Dashboard</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 10px; background: #ECFDF5; color: #00C875; border: 1px solid #A7F3D0; font-weight: 800; padding: 2px 8px; border-radius: 999px;">● Live</span>
+              </div>
             </div>
-            <div style="background: #F8FAFC; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0;">
-              <span style="font-size: 11px; color: #64748B;">Daily Invoiced</span>
-              <div style="font-size: 22px; font-weight: 800; color: #059669; font-family: 'JetBrains Mono'; margin-top: 2px;">₹4,82,310</div>
-            </div>
-            <div style="background: #F8FAFC; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0;">
-              <span style="font-size: 11px; color: #64748B;">Active Meters</span>
-              <div style="font-size: 22px; font-weight: 800; color: #4F46E5; font-family: 'JetBrains Mono'; margin-top: 2px;">42 Meters</div>
-            </div>
-            <div style="background: #F8FAFC; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0;">
-              <span style="font-size: 11px; color: #64748B;">Engine Availability</span>
-              <div style="font-size: 22px; font-weight: 800; color: #0284C7; font-family: 'JetBrains Mono'; margin-top: 2px;">99.99%</div>
+
+            <div class="mockup-body">
+              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;">
+                <div style="font-size: 12px; font-weight: 800; color: #0F172A;">Your engine is live 🎉</div>
+                <div style="font-size: 11px; color: #64748B; margin-top: 2px;">
+                  Telemetry events are streaming in real-time. As soon as the first event arrives, it will appear here in sub-2ms.
+                </div>
+              </div>
+
+              <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 8px;">Engine Status</div>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px;">
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 10px 6px; border-radius: 8px; text-align: center;">
+                  <div style="font-size: 16px; font-weight: 900; color: #0F172A; font-family: 'JetBrains Mono';">142k+</div>
+                  <div style="font-size: 9.5px; color: #64748B; margin-top: 3px; white-space: nowrap;">Ingested / sec</div>
+                </div>
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 10px 6px; border-radius: 8px; text-align: center;">
+                  <div style="font-size: 16px; font-weight: 900; color: #00C875; font-family: 'JetBrains Mono';">1.2ms</div>
+                  <div style="font-size: 9.5px; color: #64748B; margin-top: 3px; white-space: nowrap;">Median Latency</div>
+                </div>
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 10px 6px; border-radius: 8px; text-align: center;">
+                  <div style="font-size: 16px; font-weight: 900; color: #4F46E5; font-family: 'JetBrains Mono';">42</div>
+                  <div style="font-size: 9.5px; color: #64748B; margin-top: 3px; white-space: nowrap;">Active Meters</div>
+                </div>
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 10px 6px; border-radius: 8px; text-align: center;">
+                  <div style="font-size: 16px; font-weight: 900; color: #0F172A; font-family: 'JetBrains Mono';">0</div>
+                  <div style="font-size: 9.5px; color: #64748B; margin-top: 3px; white-space: nowrap;">Dropped Evts</div>
+                </div>
+              </div>
+
+              <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 8px;">Active Live Telemetry Stream</div>
+              <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <span style="font-size: 10px; font-weight: 800; color: #00C875; font-family: 'JetBrains Mono';">#EVT-12345</span>
+                  <span style="font-size: 10px; color: #64748B; margin-left: 6px;">21/08/2026, 01:18:23</span>
+                  <div style="font-size: 11px; font-weight: 700; color: #0F172A; margin-top: 2px;">Customer: Rajesh Kumar • 250 Tokens</div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 13px; font-weight: 900; color: #00C875; font-family: 'JetBrains Mono';">₹12.50</div>
+                  <span style="font-size: 9px; background: #00C875; color: #fff; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Reconciled</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="banner-footer">
-      Empowering modern enterprises with high-throughput consumption monetization.
+      Empowering modern enterprises to build the next generation of consumption monetization.
     </div>
   </div>
 
-  <!-- SLIDE 2: Problem -->
+  <!-- SLIDE 2: Problem (Faithful to Page 2 of demo.pdf) -->
   <div class="slide">
     <div class="slide-header">
       <div class="brand-wrap">
         <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
+        <div class="brand-title">MeterFlow</div>
       </div>
       <div class="slide-num-pill">SLIDE 02 / 12</div>
     </div>
     <div class="slide-body">
       <div class="title-center">
-        <h2 class="section-title">The Shift to Consumption is Breaking Legacy Billing</h2>
-        <p class="section-subtitle">60%+ of modern software and AI companies are adopting usage pricing, but legacy subscription engines fail under high throughput.</p>
+        <h2 class="section-title">Consumption Monetization is Evolving</h2>
+        <div class="green-accent-bar-center"></div>
+        <p class="section-subtitle">Become a MeterFlow Enterprise Partner and build a future-ready usage pricing engine backed by technology, streaming listeners, and an automated ledger network.</p>
       </div>
       <div class="grid-6">
         <div class="card">
-          <div class="card-num">01. INGESTION BOTTLENECKS</div>
-          <div class="card-title">High-Throughput Failure</div>
-          <div class="card-desc">Legacy billing tools choke and lock relational databases when hit with thousands of concurrent API requests and token streams per second.</div>
+          <div class="icon-box">📈</div>
+          <div class="card-title">Growing Customer Expectations</div>
+          <div class="card-desc">Modern cloud & AI consumers expect pay-as-you-go, real-time consumption transparency across every compute request.</div>
         </div>
         <div class="card">
-          <div class="card-num">02. BILLING SURPRISES</div>
-          <div class="card-title">Delayed Visibility</div>
-          <div class="card-desc">End-of-month batch runs cause massive bill shocks for customers, sparking disputes, chargebacks, and catastrophic customer churn.</div>
+          <div class="icon-box">📍</div>
+          <div class="card-title">Strong Developer Demand</div>
+          <div class="card-desc">Software platforms continue to switch to usage-based pricing because customers value fairness, precision, and zero upfront waste.</div>
         </div>
         <div class="card">
-          <div class="card-num">03. MATHEMATICAL COMPLEXITY</div>
-          <div class="card-title">Aggregation Math Limits</div>
-          <div class="card-desc">Inability to compute sliding 30-day peak concurrency, unique distinct user IDs, or weighted multi-cluster GPU durations natively.</div>
+          <div class="icon-box">💻</div>
+          <div class="card-title">Technology Gap</div>
+          <div class="card-desc">Many companies lack access to the distributed tools, stream processors, and digital infrastructure needed to meter accurately.</div>
         </div>
         <div class="card">
-          <div class="card-num">04. IDEMPOTENCY FAILURE</div>
-          <div class="card-title">Double-Billing Retries</div>
-          <div class="card-desc">Network retries and replay requests duplicate billing without distributed idempotency keys, destroying customer trust.</div>
+          <div class="icon-box">⚡</div>
+          <div class="card-title">The MeterFlow Opportunity</div>
+          <div class="card-desc">MeterFlow empowers engineering teams with turnkey technology, operational support, and a high-throughput event network.</div>
         </div>
         <div class="card">
-          <div class="card-num">05. DEV OVERHEAD</div>
-          <div class="card-title">Brittle Custom Glue Scripts</div>
-          <div class="card-desc">Engineering teams waste 30%+ of their development sprints maintaining fragile cron jobs connecting application logs to payment gateways.</div>
+          <div class="icon-box">🔄</div>
+          <div class="card-title">Future-Ready Business Model</div>
+          <div class="card-desc">Operate a monetization architecture designed for changing customer consumption habits and evolving market trends.</div>
         </div>
         <div class="card">
-          <div class="card-num">06. AUDIT VULNERABILITIES</div>
-          <div class="card-title">Zero Ledger Traceability</div>
-          <div class="card-desc">Finance and enterprise compliance teams cannot tie an itemized rupee charged on an invoice back to a verified raw timestamped payload.</div>
+          <div class="icon-box">👥</div>
+          <div class="card-title">Community-Led Growth</div>
+          <div class="card-desc">Build a strong enterprise presence while benefiting from an auditable, multi-tenant automated ledger network.</div>
         </div>
       </div>
     </div>
     <div class="banner-footer">
-      Modern businesses cannot run high-scale AI and API products on batch-based legacy billing engines.
+      Empowering modern enterprises to build the next generation of consumption monetization.
     </div>
   </div>
 
-  <!-- SLIDE 3: Solution -->
+  <!-- SLIDE 3: What is MeterFlow? (Faithful to Page 3 of demo.pdf) -->
   <div class="slide">
     <div class="slide-header">
       <div class="brand-wrap">
         <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
+        <div class="brand-title">MeterFlow</div>
       </div>
       <div class="slide-num-pill">SLIDE 03 / 12</div>
     </div>
     <div class="slide-body">
       <div class="title-center">
         <h2 class="section-title">What is MeterFlow?</h2>
-        <p class="section-subtitle">A unified, developer-first consumption metering platform that ingests raw telemetry, executes math instantly, and dispatches audited billing feeds.</p>
+        <div class="green-accent-bar-center"></div>
+        <p class="section-subtitle">MeterFlow is a unified metering network that enables engineering teams to operate modern consumption-based products using a unified technology and ledger ecosystem.</p>
       </div>
       <div class="grid-6">
         <div class="card">
-          <div class="card-num">PILLAR 01</div>
-          <div class="card-title">Sub-Millisecond Ingestion</div>
-          <div class="card-desc">Stateless event listener accepting over 100,000 events/second with sub-2ms response times and zero queue backlog.</div>
+          <div class="icon-box">🏢</div>
+          <div class="card-title">Partner-Owned Architecture</div>
+          <div class="card-desc">Operate your own MeterFlow ingestion pipeline with complete ownership, tenant isolation, and day-to-day control.</div>
         </div>
         <div class="card">
-          <div class="card-num">PILLAR 02</div>
-          <div class="card-title">Dynamic Mathematical Engine</div>
-          <div class="card-desc">Out-of-the-box support for SUM, COUNT, MAX, and UNIQUE distinct calculations without custom SQL or map-reduce jobs.</div>
+          <div class="icon-box">⚙️</div>
+          <div class="card-title">Technology Enabled</div>
+          <div class="card-desc">Access high-throughput event listeners and calculation workers designed to simplify billing operations and improve efficiency.</div>
         </div>
         <div class="card">
-          <div class="card-num">PILLAR 03</div>
-          <div class="card-title">Graduated Rate Cards in ₹</div>
-          <div class="card-desc">Graduated volume pricing, package blocks, minimum commitments, and overage protections tailored for Indian & global markets.</div>
+          <div class="icon-box">⭐</div>
+          <div class="card-title">Brand Recognition</div>
+          <div class="card-desc">Build your consumption pricing under an enterprise-grade metering brand with mathematical precision and long-term vision.</div>
         </div>
         <div class="card">
-          <div class="card-num">PILLAR 04</div>
-          <div class="card-title">Continuous Real-Time Ledger</div>
-          <div class="card-desc">Live customer balances, margin accruals, and spend limits recalculate continuously within milliseconds of event emission.</div>
+          <div class="icon-box">🌐</div>
+          <div class="card-title">Network Benefits</div>
+          <div class="card-desc">Leverage a connected ecosystem of automated webhooks built to support partner growth, Stripe sync, and ERP expansion.</div>
         </div>
         <div class="card">
-          <div class="card-num">PILLAR 05</div>
-          <div class="card-title">Automated GST Invoicing</div>
-          <div class="card-desc">Generate itemized PDF invoices with SAC/HSN codes, automated CGST/SGST/IGST tax calculation, and payment reconciliation.</div>
+          <div class="icon-box">🎧</div>
+          <div class="card-title">Operational Support</div>
+          <div class="card-desc">Receive guidance, mathematical modeling assistance, and dedicated architecture support throughout your journey.</div>
         </div>
         <div class="card">
-          <div class="card-num">PILLAR 06</div>
-          <div class="card-title">Developer Experience</div>
-          <div class="card-desc">Interactive API playground, synthetic traffic simulator, and drop-in client SDKs for Node.js, Python, Go, and cURL.</div>
+          <div class="icon-box">📈</div>
+          <div class="card-title">Scalable Opportunity</div>
+          <div class="card-desc">Start with one meter and explore future growth opportunities as your API ingestion traffic scales to millions of events.</div>
         </div>
       </div>
     </div>
     <div class="banner-footer">
-      From Event Emission to Settled Invoices in Real Time — One Scalable Platform.
+      Your Telemetry. Our Technology. Shared Growth.
     </div>
   </div>
 
-  <!-- SLIDE 4: Advantage -->
+  <!-- SLIDE 4: The MeterFlow Advantage (Faithful to Page 4 of demo.pdf) -->
   <div class="slide">
     <div class="slide-header">
       <div class="brand-wrap">
         <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
+        <div class="brand-title">MeterFlow</div>
       </div>
       <div class="slide-num-pill">SLIDE 04 / 12</div>
     </div>
     <div class="slide-body">
       <div class="title-center">
-        <h2 class="section-title">The MeterFlow Enterprise Advantage</h2>
-        <p class="section-subtitle">Engineered for extreme scale, mathematical precision, and zero-loss reliability under massive workloads.</p>
+        <h2 class="section-title">The MeterFlow Advantage</h2>
+        <div class="green-accent-bar-center"></div>
+        <p class="section-subtitle">MeterFlow combines the reliability of distributed streaming listeners with the precision of modern accounting, creating a model designed for long-term partner growth.</p>
       </div>
       <div class="highlight-split">
+        <!-- Big highlight on left like 0% Royalty in demo.pdf -->
         <div class="highlight-card">
           <div>
-            <div style="font-size: 11px; font-weight: 800; color: #047857; letter-spacing: 0.05em; text-transform: uppercase;">ZERO EVENT LOSS GUARANTEED</div>
-            <div class="highlight-big">99.999%</div>
-            <div style="font-size: 18px; font-weight: 800; color: #0F172A; margin-bottom: 8px;">Cryptographic Idempotency Guard</div>
+            <div class="highlight-green-title">
+              0% Platform Fee<br>
+              First 100k Events
+            </div>
+            <div style="font-size: 17px; font-weight: 800; color: #0F172A; margin: 18px 0 8px 0;">
+              0% Platform Fee in Year One
+            </div>
             <p style="font-size: 13px; color: #475569; line-height: 1.6;">
-              Every incoming event emission is verified against distributed Redis hashes. Duplicate webhooks, network retries, and replay attacks are rejected instantly with zero erroneous charges.
+              Focus on building your product and onboarding customers from day one without recurring minimum commitments during your initial launch.
             </p>
           </div>
-          <div style="padding-top: 14px; border-top: 1px solid #E2E8F0; font-family: 'JetBrains Mono'; font-size: 11px; color: #059669; font-weight: 700;">
-            ✓ Stress-tested at 500,000 burst events
+          <div style="border-top: 1px solid #E2E8F0; padding-top: 14px; font-size: 12px; color: #00C875; font-weight: 700;">
+            ✓ Up to 100,000 monthly events free forever
           </div>
         </div>
+
+        <!-- 5 cards on right like demo.pdf Page 4 -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
           <div class="card">
-            <div class="card-title">Real-Time Margin Protection</div>
-            <div class="card-desc">Set dynamic budget thresholds and automated webhook alerts before customer overages become uncollectable debt.</div>
+            <div class="icon-box">🛡️</div>
+            <div class="card-title">99.999% Idempotency Guard</div>
+            <div class="card-desc">Every event is verified against unique distributed Redis hashes to completely eliminate double-billing on retries.</div>
           </div>
           <div class="card">
-            <div class="card-title">Multi-Model Monetization</div>
-            <div class="card-desc">Support prepaid credits, postpaid graduated tiers, and hybrid platform subscriptions in a single unified ledger.</div>
+            <div class="icon-box">🏬</div>
+            <div class="card-title">Real-Time Ledger. Real Trust.</div>
+            <div class="card-desc">Unlike opaque month-end batch jobs, MeterFlow operates an open ledger where customers view consumption live.</div>
           </div>
           <div class="card">
-            <div class="card-title">Granular Cryptographic Audit</div>
-            <div class="card-desc">Trace every single rupee charged on an invoice back to raw timestamped JSON payloads and unique event IDs.</div>
+            <div class="icon-box">🔄</div>
+            <div class="card-title">Omni Billing Feeds</div>
+            <div class="card-desc">Itemized usage data feeds automatically into Stripe, Razorpay, NetSuite, Zoho, and external ERP financial systems.</div>
           </div>
           <div class="card">
-            <div class="card-title">High Availability & SLA</div>
-            <div class="card-desc">99.99% uptime guarantee with multi-zone active redundancy in ap-south-1 Mumbai and zero single point of failure.</div>
+            <div class="icon-box">🚚</div>
+            <div class="card-title">Managed Telemetry Pipeline</div>
+            <div class="card-desc">Stateless HTTP event queues and workers are managed by MeterFlow, allowing developers to focus on core features.</div>
+          </div>
+          <div class="card" style="grid-column: span 2;">
+            <div class="icon-box">🚀</div>
+            <div class="card-title">Built for Future Consumption Commerce</div>
+            <div class="card-desc">Designed to support evolving models including GPU compute seconds, LLM tokens, active seats, and multi-tier rate cards.</div>
           </div>
         </div>
       </div>
     </div>
     <div class="banner-footer">
-      Bringing together high-throughput streaming telemetry and bulletproof revenue accounting in a single ecosystem.
+      Bringing together streaming telemetry, digital metering, and local trust in a single ecosystem.
     </div>
   </div>
 
-  <!-- SLIDE 5: Architecture -->
+  <!-- SLIDE 5: What You Get as a Partner (Faithful to Page 5 of demo.pdf) -->
   <div class="slide">
     <div class="slide-header">
       <div class="brand-wrap">
         <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
+        <div class="brand-title">MeterFlow</div>
       </div>
       <div class="slide-num-pill">SLIDE 05 / 12</div>
     </div>
     <div class="slide-body">
       <div class="title-center">
+        <h2 class="section-title">What You Get as a MeterFlow Partner</h2>
+        <div class="green-accent-bar-center"></div>
+        <p class="section-subtitle">From technology and stream queues to ledger accounting and developer experience, MeterFlow provides the infrastructure needed to build and scale.</p>
+      </div>
+      <div class="grid-6">
+        <div class="card">
+          <div class="icon-box">🖥️</div>
+          <div class="card-title">Technology Infrastructure</div>
+          <div class="card-desc">Access a centralized platform for telemetry ingestion, idempotency deduplication, and operational control.</div>
+        </div>
+        <div class="card">
+          <div class="icon-box">🚚</div>
+          <div class="card-title">Automated Dispatch Network</div>
+          <div class="card-desc">Outbound invoice and threshold webhooks are broadcast reliably, reducing integration burden on engineering.</div>
+        </div>
+        <div class="card">
+          <div class="icon-box">📢</div>
+          <div class="card-title">Monetization & Rate Cards</div>
+          <div class="card-desc">Benefit from graduated pricing brackets, package volume commitments, and overage protections in Indian Rupees (₹).</div>
+        </div>
+        <div class="card">
+          <div class="icon-box">🎓</div>
+          <div class="card-title">Training & Guidance</div>
+          <div class="card-desc">Receive interactive onboarding assistance, SDK documentation, and sample apps to help launch your product effectively.</div>
+        </div>
+        <div class="card">
+          <div class="icon-box">🎧</div>
+          <div class="card-title">Tenant Service Framework</div>
+          <div class="card-desc">Leverage customer self-serve dashboards designed to streamline usage visibility, budget caps, and invoice downloads.</div>
+        </div>
+        <div class="card">
+          <div class="icon-box">🌐</div>
+          <div class="card-title">Network Expansion Opportunities</div>
+          <div class="card-desc">Become part of a growing usage-based software ecosystem with future opportunities for multi-cloud expansion and scale.</div>
+        </div>
+      </div>
+    </div>
+    <div class="banner-footer">
+      One Ecosystem. Multiple Growth Enablers.
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Technical Architecture -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="brand-wrap">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-title">MeterFlow</div>
+      </div>
+      <div class="slide-num-pill">SLIDE 06 / 12</div>
+    </div>
+    <div class="slide-body">
+      <div class="title-center">
         <h2 class="section-title">High-Throughput Technical Architecture</h2>
-        <p class="section-subtitle">Clean MVC separation, asynchronous queueing, and stateless aggregation processors engineered for sub-2ms latency.</p>
+        <div class="green-accent-bar-center"></div>
+        <p class="section-subtitle">Clean MVC separation, stateless asynchronous worker pools, and sub-2ms latency.</p>
       </div>
       <div class="grid-4" style="margin-bottom: 16px;">
         <div class="card">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-            <span class="card-num">TIER 01</span>
-            <span style="font-size: 10px; background: #EEF2FF; color: #4F46E5; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Edge Sources</span>
-          </div>
+          <div style="font-size: 11px; font-weight: 800; color: #4F46E5; margin-bottom: 6px;">TIER 01 • EDGE</div>
           <div class="card-title">Client Ingestion</div>
           <div class="card-desc">REST POST /api/v1/events, Webhooks, Python/Node/Go SDKs, streaming telemetry from apps and cloud clusters.</div>
         </div>
         <div class="card">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-            <span class="card-num">TIER 02</span>
-            <span style="font-size: 10px; background: #ECFDF5; color: #059669; padding: 2px 6px; border-radius: 4px; font-weight: 600;">&lt; 2ms Latency</span>
-          </div>
+          <div style="font-size: 11px; font-weight: 800; color: #00C875; margin-bottom: 6px;">TIER 02 • &lt; 2MS</div>
           <div class="card-title">Listener Gateway</div>
           <div class="card-desc">Stateless rate-limiting, bearer token auth, schema validation, and distributed Redis idempotency cache deduplication.</div>
         </div>
         <div class="card">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-            <span class="card-num">TIER 03</span>
-            <span style="font-size: 10px; background: #FEF3C7; color: #D97706; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Real-Time Math</span>
-          </div>
+          <div style="font-size: 11px; font-weight: 800; color: #D97706; margin-bottom: 6px;">TIER 03 • ENGINE</div>
           <div class="card-title">Metering Engine</div>
           <div class="card-desc">Sliding window aggregators, SUM/COUNT/MAX rules, tier rate card evaluation, and instantaneous ledger recalculation.</div>
         </div>
         <div class="card">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-            <span class="card-num">TIER 04</span>
-            <span style="font-size: 10px; background: #E0F2FE; color: #0284C7; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Settlement</span>
-          </div>
+          <div style="font-size: 11px; font-weight: 800; color: #0284C7; margin-bottom: 6px;">TIER 04 • SETTLEMENT</div>
           <div class="card-title">Invoicing & ERP Feeds</div>
           <div class="card-desc">Transactional MongoDB ledger, GST PDF invoice generator, automated webhook dispatcher to Stripe, Razorpay & NetSuite.</div>
         </div>
       </div>
-      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 20px; display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-        <span style="color: #64748B;">Ingestion Benchmark:</span>
-        <span style="color: #059669; font-weight: 700;">142,500 evt/s Horizontal Capacity</span>
-        <span style="color: #4F46E5; font-weight: 700;">1.2ms Ingestion Worker Latency</span>
-        <span style="color: #D97706; font-weight: 700;">Zero Dropped Packets Under Load</span>
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 20px; display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
+        <span style="color: #64748B;">Pipeline Benchmark:</span>
+        <span style="color: #00C875;">142,500 evt/s Ingestion Capacity</span>
+        <span style="color: #4F46E5;">1.2ms Median Latency</span>
+        <span style="color: #D97706;">Zero Dropped Packets Under Load</span>
       </div>
     </div>
     <div class="banner-footer">
@@ -549,67 +631,50 @@
     </div>
   </div>
 
-  <!-- SLIDE 6: Aggregators -->
+  <!-- SLIDE 7: Consumption Math & Aggregations -->
   <div class="slide">
     <div class="slide-header">
       <div class="brand-wrap">
         <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
+        <div class="brand-title">MeterFlow</div>
       </div>
-      <div class="slide-num-pill">SLIDE 06 / 12</div>
+      <div class="slide-num-pill">SLIDE 07 / 12</div>
     </div>
     <div class="slide-body">
       <div class="title-center">
         <h2 class="section-title">Arbitrarily Complex Consumption Math at Scale</h2>
+        <div class="green-accent-bar-center"></div>
         <p class="section-subtitle">Define any billing metric without writing custom map-reduce jobs or database triggers.</p>
       </div>
       <div class="grid-6">
         <div class="card">
-          <div style="display: flex; justify-content: space-between;">
-            <span class="card-num">FORMULA 01</span>
-            <span style="font-size: 11px; font-family: 'JetBrains Mono'; color: #059669; font-weight: 800;">SUM</span>
-          </div>
-          <div class="card-title">Cumulative Total</div>
+          <div class="icon-box">➕</div>
+          <div class="card-title">SUM (Cumulative Total)</div>
           <div class="card-desc">LLM Prompt/Completion Tokens, Storage GB-Hours, Transaction Volume in ₹, or bytes transferred over CDN.</div>
         </div>
         <div class="card">
-          <div style="display: flex; justify-content: space-between;">
-            <span class="card-num">FORMULA 02</span>
-            <span style="font-size: 11px; font-family: 'JetBrains Mono'; color: #4F46E5; font-weight: 800;">COUNT</span>
-          </div>
-          <div class="card-title">Discrete Occurrence</div>
+          <div class="icon-box">🔢</div>
+          <div class="card-title">COUNT (Discrete Occurrence)</div>
           <div class="card-desc">API Calls executed, Webhooks delivered, SMS notifications sent, or database queries evaluated.</div>
         </div>
         <div class="card">
-          <div style="display: flex; justify-content: space-between;">
-            <span class="card-num">FORMULA 03</span>
-            <span style="font-size: 11px; font-family: 'JetBrains Mono'; color: #D97706; font-weight: 800;">MAX</span>
-          </div>
-          <div class="card-title">Peak Utilization</div>
+          <div class="icon-box">📊</div>
+          <div class="card-title">MAX (Peak Utilization)</div>
           <div class="card-desc">Peak concurrent seats, highest RAM allocation, peak bandwidth spike, or active channel capacity in a cycle.</div>
         </div>
         <div class="card">
-          <div style="display: flex; justify-content: space-between;">
-            <span class="card-num">FORMULA 04</span>
-            <span style="font-size: 11px; font-family: 'JetBrains Mono'; color: #0284C7; font-weight: 800;">UNIQUE</span>
-          </div>
-          <div class="card-title">Distinct Cardinality</div>
+          <div class="icon-box">🆔</div>
+          <div class="card-title">UNIQUE (Distinct Cardinality)</div>
           <div class="card-desc">Distinct monthly active user IDs (MAU), unique visited tenant domains, unique customer IP addresses.</div>
         </div>
         <div class="card">
-          <div style="display: flex; justify-content: space-between;">
-            <span class="card-num">FORMULA 05</span>
-            <span style="font-size: 11px; font-family: 'JetBrains Mono'; color: #E11D48; font-weight: 800;">WEIGHTED_DURATION</span>
-          </div>
-          <div class="card-title">Time × Multiplier</div>
+          <div class="icon-box">⏱️</div>
+          <div class="card-title">WEIGHTED_DURATION</div>
           <div class="card-desc">GPU cluster compute seconds multiplied by hardware class coefficient (e.g. Nvidia A100 vs H100 GPU tiers).</div>
         </div>
         <div class="card">
-          <div style="display: flex; justify-content: space-between;">
-            <span class="card-num">FORMULA 06</span>
-            <span style="font-size: 11px; font-family: 'JetBrains Mono'; color: #0D9488; font-weight: 800;">RATE_WINDOW</span>
-          </div>
-          <div class="card-title">Throughput Bursts</div>
+          <div class="icon-box">⚡</div>
+          <div class="card-title">RATE_WINDOW (Bursts)</div>
           <div class="card-desc">Price dynamic traffic bursts over rolling 60-second sliding windows to penalize abusive traffic spikes.</div>
         </div>
       </div>
@@ -619,69 +684,54 @@
     </div>
   </div>
 
-  <!-- SLIDE 7: Monetization Models -->
+  <!-- SLIDE 8: Monetization Models -->
   <div class="slide">
     <div class="slide-header">
       <div class="brand-wrap">
         <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
+        <div class="brand-title">MeterFlow</div>
       </div>
-      <div class="slide-num-pill">SLIDE 07 / 12</div>
+      <div class="slide-num-pill">SLIDE 08 / 12</div>
     </div>
     <div class="slide-body">
       <div class="title-center">
         <h2 class="section-title">Sophisticated Monetization Models in INR (₹)</h2>
+        <div class="green-accent-bar-center"></div>
         <p class="section-subtitle">Empower your product team to launch and iterate on revenue models without touching backend code.</p>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
-        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-          <div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-              <span class="card-title">Graduated Tier Pricing</span>
-              <span style="font-size: 10px; background: #ECFDF5; color: #047857; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono'; font-weight: 700;">Volume Discount</span>
-            </div>
-            <div class="card-desc" style="margin-bottom: 12px;">Customers pay descending unit prices as their volume grows, incentivizing scale without price shocks.</div>
-          </div>
-          <div style="background: #F8FAFC; padding: 10px 14px; border-radius: 8px; font-family: 'JetBrains Mono'; font-size: 11px; color: #059669; border: 1px solid #E2E8F0; font-weight: 600;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="card">
+          <div style="font-size: 11px; font-weight: 800; color: #00C875; margin-bottom: 4px;">VOLUME DISCOUNT</div>
+          <div class="card-title">Graduated Tier Pricing</div>
+          <div class="card-desc" style="margin-bottom: 10px;">Customers pay descending unit prices as their volume grows, incentivizing scale without price shocks.</div>
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 8px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; color: #059669;">
             Tier 1: ₹0.05 (1-100k) • Tier 2: ₹0.03 (100k-1M) • Tier 3: ₹0.015 (1M+)
           </div>
         </div>
 
-        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-          <div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-              <span class="card-title">Pre-Purchased Volume Blocks</span>
-              <span style="font-size: 10px; background: #EEF2FF; color: #4F46E5; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono'; font-weight: 700;">Package Commit</span>
-            </div>
-            <div class="card-desc" style="margin-bottom: 12px;">Upfront cash collection with automatic overage buffers to prevent service interruption.</div>
-          </div>
-          <div style="background: #F8FAFC; padding: 10px 14px; border-radius: 8px; font-family: 'JetBrains Mono'; font-size: 11px; color: #4F46E5; border: 1px solid #E2E8F0; font-weight: 600;">
+        <div class="card">
+          <div style="font-size: 11px; font-weight: 800; color: #4F46E5; margin-bottom: 4px;">PACKAGE COMMIT</div>
+          <div class="card-title">Pre-Purchased Volume Blocks</div>
+          <div class="card-desc" style="margin-bottom: 10px;">Upfront cash collection with automatic overage buffers to prevent service interruption.</div>
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 8px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; color: #4F46E5;">
             ₹4,999 for 500,000 API requests • Overage at ₹0.012 per extra request
           </div>
         </div>
 
-        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-          <div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-              <span class="card-title">Platform Base Fee + Overage</span>
-              <span style="font-size: 10px; background: #FEF3C7; color: #D97706; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono'; font-weight: 700;">Hybrid SaaS</span>
-            </div>
-            <div class="card-desc" style="margin-bottom: 12px;">Guarantees recurring baseline revenue while retaining uncapped upside from high-usage enterprise customers.</div>
-          </div>
-          <div style="background: #F8FAFC; padding: 10px 14px; border-radius: 8px; font-family: 'JetBrains Mono'; font-size: 11px; color: #D97706; border: 1px solid #E2E8F0; font-weight: 600;">
+        <div class="card">
+          <div style="font-size: 11px; font-weight: 800; color: #D97706; margin-bottom: 4px;">HYBRID SAAS</div>
+          <div class="card-title">Platform Base Fee + Overage</div>
+          <div class="card-desc" style="margin-bottom: 10px;">Guarantees recurring baseline revenue while retaining uncapped upside from high-usage enterprise customers.</div>
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 8px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; color: #D97706;">
             ₹2,499/mo base subscription includes 50,000 events + metered delta
           </div>
         </div>
 
-        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-          <div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-              <span class="card-title">Prepaid Wallet Drawdown</span>
-              <span style="font-size: 10px; background: #E0F2FE; color: #0284C7; padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono'; font-weight: 700;">Drawdown Ledger</span>
-            </div>
-            <div class="card-desc" style="margin-bottom: 12px;">Zero payment default risk with automated notifications when customer balance drops below 20%.</div>
-          </div>
-          <div style="background: #F8FAFC; padding: 10px 14px; border-radius: 8px; font-family: 'JetBrains Mono'; font-size: 11px; color: #0284C7; border: 1px solid #E2E8F0; font-weight: 600;">
+        <div class="card">
+          <div style="font-size: 11px; font-weight: 800; color: #0284C7; margin-bottom: 4px;">DRAWDOWN LEDGER</div>
+          <div class="card-title">Prepaid Wallet Drawdown</div>
+          <div class="card-desc" style="margin-bottom: 10px;">Zero payment default risk with automated notifications when customer balance drops below 20%.</div>
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 8px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; color: #0284C7;">
             Customer tops up ₹50,000 wallet • Metered consumption auto-draws live
           </div>
         </div>
@@ -692,216 +742,134 @@
     </div>
   </div>
 
-  <!-- SLIDE 8: Invoicing & Feeds -->
+  <!-- SLIDE 9: How the Partnership Works (Faithful to Page 6 of demo.pdf) -->
   <div class="slide">
     <div class="slide-header">
       <div class="brand-wrap">
         <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
-      </div>
-      <div class="slide-num-pill">SLIDE 08 / 12</div>
-    </div>
-    <div class="slide-body">
-      <div class="title-center">
-        <h2 class="section-title">Automated Invoicing & ERP Financial Feeds</h2>
-        <p class="section-subtitle">Eliminate billing surprises and streamline reconciliation with automated, auditable GST invoices.</p>
-      </div>
-      <div class="grid-6">
-        <div class="card">
-          <div class="card-num">01. CADENCE AUTOMATION</div>
-          <div class="card-title">Flexible Billing Cycles</div>
-          <div class="card-desc">Trigger invoices automatically on monthly anniversary dates, calendar month-ends, or budget threshold spikes.</div>
-        </div>
-        <div class="card">
-          <div class="card-num">02. TRANSPARENCY</div>
-          <div class="card-title">Itemized Line Items</div>
-          <div class="card-desc">Break down every single meter with exact volume consumed, tier brackets applied, and net rupee totals.</div>
-        </div>
-        <div class="card">
-          <div class="card-num">03. TAX COMPLIANCE</div>
-          <div class="card-title">Indian GST Support</div>
-          <div class="card-desc">Full compliance with HSN/SAC codes, automatic CGST, SGST, IGST calculations and formal tax receipts.</div>
-        </div>
-        <div class="card">
-          <div class="card-num">04. REAL-TIME BROADCAST</div>
-          <div class="card-title">Webhook Event Feeds</div>
-          <div class="card-desc">Real-time HTTP webhooks broadcast invoice.created, invoice.paid, and threshold.breached events to external services.</div>
-        </div>
-        <div class="card">
-          <div class="card-num">05. FINANCIAL SYNC</div>
-          <div class="card-title">Direct ERP Feeds</div>
-          <div class="card-desc">Turnkey ledger sync into Stripe, Razorpay, NetSuite, Zoho Books, Tally, and QuickBooks.</div>
-        </div>
-        <div class="card">
-          <div class="card-num">06. SELF-SERVE</div>
-          <div class="card-title">Customer Usage Portal</div>
-          <div class="card-desc">Give tenants live visibility into current accruals, budget limits, and on-demand PDF receipts.</div>
-        </div>
-      </div>
-    </div>
-    <div class="banner-footer">
-      Eliminate billing surprises and streamline reconciliation with automated, auditable invoices.
-    </div>
-  </div>
-
-  <!-- SLIDE 9: Developer Experience -->
-  <div class="slide">
-    <div class="slide-header">
-      <div class="brand-wrap">
-        <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
+        <div class="brand-title">MeterFlow</div>
       </div>
       <div class="slide-num-pill">SLIDE 09 / 12</div>
     </div>
     <div class="slide-body">
       <div class="title-center">
-        <h2 class="section-title">Built for Developers, Trusted by Finance</h2>
-        <p class="section-subtitle">Integrate your first consumption meter and start streaming live telemetry in under 5 minutes.</p>
+        <h2 class="section-title">How the Partnership Works</h2>
+        <div class="green-accent-bar-center"></div>
+        <p class="section-subtitle">A simple and structured onboarding process designed to help partners launch and grow their MeterFlow business with confidence.</p>
       </div>
-      <div style="display: grid; grid-template-columns: 1.1fr 1.9fr; gap: 24px; align-items: center;">
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div class="card">
-            <div class="card-title">Interactive API Playground</div>
-            <div class="card-desc">Execute live POST /api/v1/events and benchmark server latency directly inside the browser.</div>
+
+      <!-- 5-Step Process Timeline from demo.pdf Page 6 -->
+      <div style="position: relative; margin: 30px 0;">
+        <!-- Connecting green line -->
+        <div style="position: absolute; top: 20px; left: 10%; right: 10%; height: 2px; background: #00C875; z-index: 1;"></div>
+
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; position: relative; z-index: 2;">
+          <div style="text-align: center;">
+            <div style="width: 42px; height: 42px; border-radius: 50%; background: #ECFDF5; border: 2px solid #00C875; color: #00C875; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; font-size: 18px; font-weight: 800; box-shadow: 0 4px 10px rgba(0,200,117,0.15);">
+              📝
+            </div>
+            <div style="font-size: 15px; font-weight: 800; color: #0F172A; margin-bottom: 6px;">Apply</div>
+            <div style="font-size: 11.5px; color: #64748B; line-height: 1.5; padding: 0 8px;">
+              Submit your interest and share basic technical details with our architecture team.
+            </div>
           </div>
-          <div class="card">
-            <div class="card-title">Synthetic Traffic Simulator</div>
-            <div class="card-desc">Simulate burst traffic with 100 to 1,000 mixed events to stress-test your rate curves.</div>
+
+          <div style="text-align: center;">
+            <div style="width: 42px; height: 42px; border-radius: 50%; background: #ECFDF5; border: 2px solid #00C875; color: #00C875; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; font-size: 18px; font-weight: 800; box-shadow: 0 4px 10px rgba(0,200,117,0.15);">
+              🔍
+            </div>
+            <div style="font-size: 15px; font-weight: 800; color: #0F172A; margin-bottom: 6px;">Evaluation</div>
+            <div style="font-size: 11.5px; color: #64748B; line-height: 1.5; padding: 0 8px;">
+              Our team reviews ingestion throughput, meter formulas, and rate card suitability.
+            </div>
           </div>
-          <div class="card">
-            <div class="card-title">Drop-in Language SDKs</div>
-            <div class="card-desc">Official drop-in SDKs for Node.js, Python, Go, Java, and raw REST webhooks.</div>
+
+          <div style="text-align: center;">
+            <div style="width: 42px; height: 42px; border-radius: 50%; background: #ECFDF5; border: 2px solid #00C875; color: #00C875; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; font-size: 18px; font-weight: 800; box-shadow: 0 4px 10px rgba(0,200,117,0.15);">
+              📑
+            </div>
+            <div style="font-size: 15px; font-weight: 800; color: #0F172A; margin-bottom: 6px;">Agreement</div>
+            <div style="font-size: 11.5px; color: #64748B; line-height: 1.5; padding: 0 8px;">
+              Finalize SLA commitments, billing currency in INR (₹), and issue bearer tokens.
+            </div>
           </div>
-        </div>
-        <div class="code-box">
-          <span class="code-muted">// Ingest streaming consumption in 3 lines of code</span><br>
-          <span class="code-purple">import</span> { MeterFlow } <span class="code-purple">from</span> <span class="code-yellow">'@meterflow/sdk'</span>;<br>
-          <span class="code-purple">const</span> client = <span class="code-purple">new</span> MeterFlow({ apiKey: <span class="code-yellow">'mf_live_sec_8f93e2b...'</span> });<br><br>
-          <span class="code-muted">// Stream telemetry event</span><br>
-          <span class="code-purple">await</span> client.events.emit({<br>
-          &nbsp;&nbsp;customerId: <span class="code-yellow">'cust_enterprise_01'</span>,<br>
-          &nbsp;&nbsp;meterType: <span class="code-yellow">'api_tokens'</span>,<br>
-          &nbsp;&nbsp;quantity: <span class="code-cyan">250</span>,<br>
-          &nbsp;&nbsp;idempotencyKey: <span class="code-yellow">'evt_981a8b2'</span>,<br>
-          &nbsp;&nbsp;metadata: { region: <span class="code-yellow">'ap-south-1'</span> }<br>
-          });
+
+          <div style="text-align: center;">
+            <div style="width: 42px; height: 42px; border-radius: 50%; background: #ECFDF5; border: 2px solid #00C875; color: #00C875; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; font-size: 18px; font-weight: 800; box-shadow: 0 4px 10px rgba(0,200,117,0.15);">
+              🚀
+            </div>
+            <div style="font-size: 15px; font-weight: 800; color: #0F172A; margin-bottom: 6px;">Launch</div>
+            <div style="font-size: 11.5px; color: #64748B; line-height: 1.5; padding: 0 8px;">
+              Connect API endpoints, stream live events, and start auto-generating invoices.
+            </div>
+          </div>
+
+          <div style="text-align: center;">
+            <div style="width: 42px; height: 42px; border-radius: 50%; background: #ECFDF5; border: 2px solid #00C875; color: #00C875; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; font-size: 18px; font-weight: 800; box-shadow: 0 4px 10px rgba(0,200,117,0.15);">
+              📈
+            </div>
+            <div style="font-size: 15px; font-weight: 800; color: #0F172A; margin-bottom: 6px;">Grow</div>
+            <div style="font-size: 11.5px; color: #64748B; line-height: 1.5; padding: 0 8px;">
+              Leverage the MeterFlow ecosystem to build and scale your usage revenue.
+            </div>
+          </div>
         </div>
       </div>
     </div>
     <div class="banner-footer">
-      Zero steep learning curves: start streaming events with 3 lines of code.
+      From application to launch, we're with you every step of the way.
     </div>
   </div>
 
-  <!-- SLIDE 10: Onboarding Process -->
+  <!-- SLIDE 10: Investment & Partnership Model (Faithful to Page 7 of demo.pdf) -->
   <div class="slide">
     <div class="slide-header">
       <div class="brand-wrap">
         <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
+        <div class="brand-title">MeterFlow</div>
       </div>
       <div class="slide-num-pill">SLIDE 10 / 12</div>
     </div>
     <div class="slide-body">
       <div class="title-center">
-        <h2 class="section-title">Smooth 5-Step Customer Onboarding Journey</h2>
-        <p class="section-subtitle">A structured, frictionless journey from sandbox evaluation to production scale inspired by Ricoz franchise models.</p>
+        <h2 class="section-title">Investment & Partnership Model</h2>
+        <div class="green-accent-bar-center"></div>
+        <p class="section-subtitle">A transparent partnership structure designed to help enterprises enter the future of consumption pricing with lower barriers and long-term growth potential.</p>
       </div>
-      <div class="grid-5" style="margin-bottom: 20px;">
-        <div class="card">
-          <div style="width: 32px; height: 32px; border-radius: 50%; background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono'; font-weight: 800; font-size: 12px; margin-bottom: 10px;">01</div>
-          <div class="card-title">Connect & Org Setup</div>
-          <div class="card-desc">Establish tenant boundaries, configure ledger currency in INR (₹), and issue bearer secrets.</div>
-        </div>
-        <div class="card">
-          <div style="width: 32px; height: 32px; border-radius: 50%; background: #EEF2FF; border: 1px solid #C7D2FE; color: #4F46E5; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono'; font-weight: 800; font-size: 12px; margin-bottom: 10px;">02</div>
-          <div class="card-title">Define Meter Rules</div>
-          <div class="card-desc">Select mathematical formula (SUM, COUNT, MAX, UNIQUE) and property keys to aggregate.</div>
-        </div>
-        <div class="card">
-          <div style="width: 32px; height: 32px; border-radius: 50%; background: #FEF3C7; border: 1px solid #FDE68A; color: #D97706; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono'; font-weight: 800; font-size: 12px; margin-bottom: 10px;">03</div>
-          <div class="card-title">Configure Rate Cards</div>
-          <div class="card-desc">Establish graduated volume brackets, package blocks, and minimum billing rules in INR (₹).</div>
-        </div>
-        <div class="card">
-          <div style="width: 32px; height: 32px; border-radius: 50%; background: #E0F2FE; border: 1px solid #BAE6FD; color: #0284C7; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono'; font-weight: 800; font-size: 12px; margin-bottom: 10px;">04</div>
-          <div class="card-title">Simulate & Benchmark</div>
-          <div class="card-desc">Run synthetic traffic bursts to stress-test your rate curves and verify calculation latency.</div>
-        </div>
-        <div class="card">
-          <div style="width: 32px; height: 32px; border-radius: 50%; background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono'; font-weight: 800; font-size: 12px; margin-bottom: 10px;">05</div>
-          <div class="card-title">Go Live & Scale</div>
-          <div class="card-desc">Switch to live production traffic with automated GST invoices and ERP webhook feeds.</div>
-        </div>
-      </div>
-      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 20px; display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-        <span style="color: #64748B;">Implementation Timelines:</span>
-        <span style="color: #059669; font-weight: 700;">Sandbox Setup: &lt; 5 Minutes</span>
-        <span style="color: #4F46E5; font-weight: 700;">Production Testing: 1 Business Day</span>
-        <span style="color: #D97706; font-weight: 700;">Enterprise Cluster: 48 Hours</span>
-      </div>
-    </div>
-    <div class="banner-footer">
-      From initial signup to first live metered invoice in less than 24 hours.
-    </div>
-  </div>
 
-  <!-- SLIDE 11: Commercial Tiers -->
-  <div class="slide">
-    <div class="slide-header">
-      <div class="brand-wrap">
-        <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
+      <!-- Big top card with ₹25,000 like demo.pdf Page 7 -->
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+        <div>
+          <div style="font-size: 16px; font-weight: 800; color: #0F172A;">Partner Investment</div>
+          <div style="font-size: 12.5px; color: #64748B; margin-top: 4px;">One-time onboarding fee based on market, territory, and business potential.</div>
+        </div>
+        <div style="font-size: 38px; font-weight: 900; color: #00C875; font-family: 'JetBrains Mono';">
+          ₹25,000
+        </div>
       </div>
-      <div class="slide-num-pill">SLIDE 11 / 12</div>
-    </div>
-    <div class="slide-body">
-      <div class="title-center">
-        <h2 class="section-title">Commercial Partnership & Investment Model</h2>
-        <p class="section-subtitle">Predictable, transparent unit economics natively priced in Indian Rupees (₹) with zero hidden fees.</p>
+
+      <!-- 4 benefit cards like demo.pdf Page 7 -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px;">
+        <div class="card">
+          <div class="icon-box">🏦</div>
+          <div class="card-title">No Setup Fee</div>
+          <div class="card-desc">MeterFlow does not charge any additional hidden setup fees for cloud sandbox activation.</div>
+        </div>
+        <div class="card">
+          <div class="icon-box">👑</div>
+          <div class="card-title">0% Royalty**</div>
+          <div class="card-desc">Zero platform percentage charges during the first year of operations up to 100,000 monthly events.</div>
+        </div>
+        <div class="card">
+          <div class="icon-box">📊</div>
+          <div class="card-title">Minimal Royalty Thereafter</div>
+          <div class="card-desc">A simple volume-based pricing structure ranging from ₹0.002 to ₹0.005 per ingested event.</div>
+        </div>
       </div>
-      <div class="grid-4" style="grid-template-columns: repeat(3, 1fr); gap: 20px;">
-        <div class="card" style="padding: 24px;">
-          <div style="font-size: 11px; font-weight: 800; color: #64748B; letter-spacing: 0.05em;">DEVELOPER SANDBOX</div>
-          <div style="font-size: 34px; font-weight: 900; color: #0F172A; font-family: 'JetBrains Mono'; margin: 8px 0;">₹0</div>
-          <div style="font-size: 11px; color: #64748B; margin-bottom: 16px;">Free Forever for Prototypes</div>
-          <div style="border-top: 1px solid #E2E8F0; padding-top: 14px; font-size: 12.5px; color: #334155; line-height: 1.8;">
-            ✓ 100,000 events / month<br>
-            ✓ 3 Active Meters<br>
-            ✓ Standard SUM & COUNT<br>
-            ✓ API Playground Access<br>
-            ✓ Community GitHub Support
-          </div>
-        </div>
 
-        <div class="card" style="background: #FFFFFF; border: 2px solid #10B981; padding: 24px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1);">
-          <div style="display: flex; justify-content: space-between;">
-            <div style="font-size: 11px; font-weight: 800; color: #047857; letter-spacing: 0.05em;">GROWTH PARTNER</div>
-            <span style="font-size: 10px; background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857; font-weight: 800; padding: 2px 8px; border-radius: 999px;">MOST POPULAR</span>
-          </div>
-          <div style="font-size: 34px; font-weight: 900; color: #059669; font-family: 'JetBrains Mono'; margin: 8px 0;">₹9,999</div>
-          <div style="font-size: 11px; color: #64748B; margin-bottom: 16px;">per month for scaling SaaS</div>
-          <div style="border-top: 1px solid #E2E8F0; padding-top: 14px; font-size: 12.5px; color: #334155; line-height: 1.8;">
-            ✓ 5,000,000 events / month<br>
-            ✓ Unlimited Consumption Meters<br>
-            ✓ All Math (MAX, UNIQUE, WEIGHTED)<br>
-            ✓ Automated GST Invoicing & Feeds<br>
-            ✓ Overages at ₹0.002 / event
-          </div>
-        </div>
-
-        <div class="card" style="padding: 24px;">
-          <div style="font-size: 11px; font-weight: 800; color: #4F46E5; letter-spacing: 0.05em;">ENTERPRISE SCALE</div>
-          <div style="font-size: 34px; font-weight: 900; color: #0F172A; font-family: 'JetBrains Mono'; margin: 8px 0;">₹49,999</div>
-          <div style="font-size: 11px; color: #64748B; margin-bottom: 16px;">per month for high-throughput</div>
-          <div style="border-top: 1px solid #E2E8F0; padding-top: 14px; font-size: 12.5px; color: #334155; line-height: 1.8;">
-            ✓ 50,000,000+ events / month<br>
-            ✓ Dedicated VPC Ingestion Cluster<br>
-            ✓ Custom NetSuite / SAP Connectors<br>
-            ✓ 99.999% Zero-Loss SLA<br>
-            ✓ 24/7 Dedicated Architect
-          </div>
-        </div>
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 20px; text-align: center;">
+        <span style="font-size: 12.5px; font-weight: 700; color: #0F172A;">Full Ownership: </span>
+        <span style="font-size: 12.5px; color: #64748B;">Partners retain complete data ownership and operational control of their metering ledger.</span>
       </div>
     </div>
     <div class="banner-footer">
@@ -909,55 +877,129 @@
     </div>
   </div>
 
-  <!-- SLIDE 12: Team & Closing -->
+  <!-- SLIDE 11: Meet the Team (Faithful to Page 8 of demo.pdf) -->
   <div class="slide">
     <div class="slide-header">
       <div class="brand-wrap">
         <div class="brand-icon">⚡</div>
-        <div class="brand-title">Meter<span>Flow</span></div>
+        <div class="brand-title">MeterFlow</div>
+      </div>
+      <div class="slide-num-pill">SLIDE 11 / 12</div>
+    </div>
+    <div class="slide-body">
+      <div class="title-center">
+        <h2 class="section-title">Meet the Team Behind MeterFlow</h2>
+        <div class="green-accent-bar-center"></div>
+        <p class="section-subtitle">Backed by experience, driven by purpose — our leadership combines product, finance, and ops to deliver seamless Partner success.</p>
+      </div>
+
+      <!-- 3 executive cards like demo.pdf Page 8 -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        <div class="card" style="padding: 24px;">
+          <div style="width: 48px; height: 48px; border-radius: 50%; background: #ECFDF5; border: 2px solid #00C875; color: #00C875; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; margin-bottom: 12px;">
+            SS
+          </div>
+          <div style="font-size: 16px; font-weight: 800; color: #0F172A;">Shubham Singh</div>
+          <div style="font-size: 12px; font-weight: 700; color: #00C875; margin-top: 2px;">Chief Executive Officer (CEO)</div>
+          <div style="font-size: 11px; color: #64748B; margin-bottom: 12px;">Tech Systems Lead</div>
+          <p class="card-desc">
+            Founder of MeterFlow, driving tech-led metering innovation. With a strong grasp of operations, product, and growth, he brings startup agility and strategic vision to help brands scale faster and smarter in today's competitive API commerce landscape.
+          </p>
+        </div>
+
+        <div class="card" style="padding: 24px;">
+          <div style="width: 48px; height: 48px; border-radius: 50%; background: #EEF2FF; border: 2px solid #4F46E5; color: #4F46E5; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; margin-bottom: 12px;">
+            AM
+          </div>
+          <div style="font-size: 16px; font-weight: 800; color: #0F172A;">Arjun Mehta</div>
+          <div style="font-size: 12px; font-weight: 700; color: #4F46E5; margin-top: 2px;">Chief Operating Officer (COO)</div>
+          <div style="font-size: 11px; color: #64748B; margin-bottom: 12px;">Ex-Streaming Architect</div>
+          <p class="card-desc">
+            An operations mastermind, growth enabler, and P&L strategist. Held senior infrastructure leadership roles at distributed technology companies, delivering results through strategic execution, operational rigor, and scalable low-latency growth models.
+          </p>
+        </div>
+
+        <div class="card" style="padding: 24px;">
+          <div style="width: 48px; height: 48px; border-radius: 50%; background: #FEF3C7; border: 2px solid #D97706; color: #D97706; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; margin-bottom: 12px;">
+            PS
+          </div>
+          <div style="font-size: 16px; font-weight: 800; color: #0F172A;">Priyanka Sharma</div>
+          <div style="font-size: 12px; font-weight: 700; color: #D97706; margin-top: 2px;">Chief People & Finance Officer (CFO)</div>
+          <div style="font-size: 11px; color: #64748B; margin-bottom: 12px;">Fintech Billing Strategist</div>
+          <p class="card-desc">
+            Financial leader and strategist at MeterFlow, managing capital efficiency, Indian GST automated tax reconciliation, and organizational strength. With a balanced lens on numbers and compliance, she ensures every engine operates profitably.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="banner-footer">
+      Backed by experience, driven by purpose — our leadership combines product, finance, and ops.
+    </div>
+  </div>
+
+  <!-- SLIDE 12: Closing / Contact (Faithful to Page 9 of demo.pdf) -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="brand-wrap">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-title">MeterFlow</div>
       </div>
       <div class="slide-num-pill">SLIDE 12 / 12</div>
     </div>
     <div class="slide-body">
       <div class="title-center">
-        <h2 class="section-title">Meet the Team & Begin Onboarding</h2>
-        <p class="section-subtitle">Backed by distributed systems engineers and fintech billing strategists committed to your revenue success.</p>
+        <h2 class="section-title">Own a MeterFlow. Build the Future of Commerce.</h2>
+        <div class="green-accent-bar-center"></div>
+        <p class="section-subtitle">
+          Join a growing network of enterprises redefining consumption pricing through technology, trust, and local ownership. Whether you're looking to launch your first metered API or expand an existing venture, MeterFlow provides the ecosystem, support, and infrastructure to help you succeed.
+        </p>
       </div>
-      <div class="grid-4" style="grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 18px;">
-        <div class="card">
-          <div style="width: 42px; height: 42px; border-radius: 50%; background: #ECFDF5; border: 1px solid #A7F3D0; color: #047857; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; margin-bottom: 10px;">SS</div>
-          <div class="card-title">Shubham Singh</div>
-          <div style="font-size: 11.5px; color: #059669; font-weight: 700; margin-bottom: 4px;">Lead Architect & CEO</div>
-          <div style="font-size: 10.5px; color: #64748B; margin-bottom: 8px;">Tech Systems Lead</div>
-          <div class="card-desc">Driving high-throughput metering infrastructure with startup agility and distributed systems rigor.</div>
+
+      <!-- 2 Cards from demo.pdf Page 9 -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 980px; margin: 0 auto; width: 100%;">
+        <!-- Left: Company details -->
+        <div class="card" style="padding: 28px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+              <div class="icon-box" style="margin-bottom: 0;">🏢</div>
+              <div style="font-size: 14px; font-weight: 900; color: #0F172A; letter-spacing: 0.02em;">
+                METERFLOW CLOUD TECHNOLOGIES PVT. LTD.
+              </div>
+            </div>
+
+            <div style="font-size: 12.5px; color: #475569; line-height: 1.8; margin-top: 14px;">
+              📍 E-Wing, 402, Cyber Tower, Near Metro Station, Sector 62, Noida, NCR, India<br>
+              ✉️ care@meterflow.co.in<br>
+              📞 +91 98765 43210
+            </div>
+          </div>
+
+          <div style="font-size: 11px; color: #64748B; border-top: 1px solid #E2E8F0; padding-top: 14px; margin-top: 20px;">
+            CIN: U72900UP2026PTC198420 • GSTIN: 09AAACM4820P1Z4
+          </div>
         </div>
-        <div class="card">
-          <div style="width: 42px; height: 42px; border-radius: 50%; background: #EEF2FF; border: 1px solid #C7D2FE; color: #4F46E5; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; margin-bottom: 10px;">AM</div>
-          <div class="card-title">Arjun Mehta</div>
-          <div style="font-size: 11.5px; color: #4F46E5; font-weight: 700; margin-bottom: 4px;">VP of Distributed Infrastructure</div>
-          <div style="font-size: 10.5px; color: #64748B; margin-bottom: 8px;">Ex-Streaming Architect</div>
-          <div class="card-desc">Specialist in low-latency event listeners, distributed Redis caching, and zero-loss queuing.</div>
-        </div>
-        <div class="card">
-          <div style="width: 42px; height: 42px; border-radius: 50%; background: #FEF3C7; border: 1px solid #FDE68A; color: #D97706; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; margin-bottom: 10px;">PS</div>
-          <div class="card-title">Priyanka Sharma</div>
-          <div style="font-size: 11.5px; color: #D97706; font-weight: 700; margin-bottom: 4px;">Head of Billing & Compliance</div>
-          <div style="font-size: 10.5px; color: #64748B; margin-bottom: 8px;">Fintech Billing Strategist</div>
-          <div class="card-desc">Oversees Indian GST automated tax reconciliation, multi-tenant auditing, and enterprise ERP integrations.</div>
-        </div>
-      </div>
-      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-        <div>
-          <div style="font-size: 14.5px; font-weight: 800; color: #0F172A;">MeterFlow Cloud Technologies Pvt. Ltd.</div>
-          <div style="font-size: 12px; color: #64748B; margin-top: 2px;">E-Wing 402, Cyber Tower, Sector 62, Noida, NCR, India • partner@meterflow.io • +91 98765 43210</div>
-        </div>
-        <div style="font-family: 'JetBrains Mono'; font-size: 12px; color: #059669; font-weight: 700;">
-          Book an Architecture Discovery Call →
+
+        <!-- Right: Still have questions? -->
+        <div class="card" style="padding: 28px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+              <span style="font-size: 20px;">💡</span>
+              <div style="font-size: 16px; font-weight: 800; color: #0F172A;">Still have questions?</div>
+            </div>
+            <p style="font-size: 12.5px; color: #475569; line-height: 1.6; margin-bottom: 20px;">
+              Book a discovery call to understand our Partnership model, investment plans, and how you can be part of the MeterFlow journey.
+            </p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;">
+            <a href="#" class="btn-green-pill" style="text-align: center; padding: 13px 20px; width: 100%; box-sizing: border-box; font-size: 14px;">Book a Discovery Call</a>
+            <a href="#" style="text-align: center; padding: 13px 20px; border-radius: 999px; border: 1px solid #00C875; color: #00C875; font-weight: 700; font-size: 14px; text-decoration: none; background: #FFFFFF; width: 100%; box-sizing: border-box;">Partner With Us</a>
+          </div>
         </div>
       </div>
     </div>
-    <div class="banner-footer">
-      © 2026 MeterFlow Cloud Technologies Pvt. Ltd. All rights reserved.
+    <div style="text-align: center; font-size: 11.5px; color: #64748B; padding-top: 10px;">
+      © 2026 MeterFlow | Powered by MeterFlow Cloud Technologies Pvt. Ltd.
     </div>
   </div>
 
