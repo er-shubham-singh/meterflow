@@ -80,12 +80,14 @@ export default function Sidebar({ isMobile = false }) {
 
   return (
     <aside
-      className={`flex flex-col shrink-0 h-screen sticky top-0 z-40 bg-[#0B132B] text-slate-300 transition-colors duration-200 ${
-        isMobile ? 'w-full relative shadow-none border-0' : 'w-64 border-r border-slate-800/80 shadow-2xl'
+      className={`flex flex-col bg-[#0B132B] text-slate-300 transition-colors duration-200 ${
+        isMobile
+          ? 'w-full h-full max-h-[100dvh] relative shadow-none border-0 overflow-hidden'
+          : 'w-64 shrink-0 h-screen sticky top-0 z-40 border-r border-slate-800/80 shadow-2xl'
       }`}
     >
       {/* Brand Header */}
-      <div className="p-4 sm:p-5 border-b border-slate-800/80 flex items-center justify-between gap-3">
+      <div className="p-4 sm:p-5 border-b border-slate-800/80 flex items-center justify-between gap-3 shrink-0">
         <Link href="/" className="flex items-center gap-3 min-w-0 no-underline">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 shrink-0">
             <Zap size={18} className="text-white fill-white" />
@@ -101,7 +103,7 @@ export default function Sidebar({ isMobile = false }) {
           <button
             onClick={() => setMobileNavOpen(false)}
             aria-label="Close navigation"
-            className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-800/60 border border-slate-700 text-slate-400 hover:text-white cursor-pointer transition-colors shrink-0"
+            className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-800/60 border border-slate-700 text-slate-400 hover:text-white cursor-pointer transition-colors shrink-0 active:scale-95"
           >
             <X size={18} />
           </button>
@@ -109,7 +111,7 @@ export default function Sidebar({ isMobile = false }) {
       </div>
 
       {/* Organization Badge (Matching Panel 2) */}
-      <div className="p-3 mx-3 my-2 bg-slate-900/90 border border-slate-800 rounded-xl flex items-center gap-3">
+      <div className="p-3 mx-3 my-2 bg-slate-900/90 border border-slate-800 rounded-xl flex items-center gap-3 shrink-0">
         <div className="w-9 h-9 rounded-lg bg-purple-600/80 text-white font-bold text-sm flex items-center justify-center shrink-0">
           A
         </div>
@@ -120,7 +122,7 @@ export default function Sidebar({ isMobile = false }) {
       </div>
 
       {/* Navigation List */}
-      <nav className="px-3 py-2 flex-1 overflow-y-auto flex flex-col gap-1">
+      <nav className="px-3 py-2 flex-1 overflow-y-auto overscroll-contain min-h-0 flex flex-col gap-1">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -155,7 +157,7 @@ export default function Sidebar({ isMobile = false }) {
       </nav>
 
       {/* Role Switcher Pill & Active User Status */}
-      <div className="p-3 m-3 bg-slate-900/90 border border-slate-800 rounded-xl flex flex-col gap-2">
+      <div className="p-3 m-3 bg-slate-900/90 border border-slate-800 rounded-xl flex flex-col gap-2 shrink-0">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2 min-w-0">
             <div className="w-6 h-6 rounded-full bg-blue-600/30 border border-blue-500/50 flex items-center justify-center text-[10px] text-blue-300 font-bold">

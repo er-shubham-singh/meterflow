@@ -36,17 +36,29 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     if (mobileNavOpen) {
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      const originalTouchAction = document.body.style.touchAction;
+
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+
       const handleKeyDown = (e) => {
         if (e.key === 'Escape') setMobileNavOpen(false);
       };
       window.addEventListener('keydown', handleKeyDown);
+
       return () => {
-        document.body.style.overflow = '';
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+        document.body.style.touchAction = originalTouchAction;
         window.removeEventListener('keydown', handleKeyDown);
       };
     } else {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.touchAction = '';
     }
   }, [mobileNavOpen]);
 

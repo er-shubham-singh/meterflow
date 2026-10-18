@@ -398,13 +398,17 @@
     -webkit-backdrop-filter: blur(8px);
     z-index: 998;
     animation: fadeIn 0.2s ease-out;
+    touch-action: none;
   }
   .mobile-drawer {
     display: flex;
+    flex-direction: column;
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
+    height: 100dvh;
+    max-height: 100dvh;
     width: 295px;
     max-width: 85vw;
     z-index: 999;
@@ -412,7 +416,7 @@
     border-right: 1px solid var(--border-subtle);
     box-shadow: 8px 0 32px rgba(0, 0, 0, 0.6);
     animation: slideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow-y: auto;
+    overflow: hidden;
   }
   .metrics-overview-grid {
     grid-template-columns: repeat(2, 1fr) !important;
