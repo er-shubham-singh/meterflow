@@ -59,7 +59,7 @@ export function CurrencyProvider({ children }) {
   };
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency, format }}>
+    <CurrencyContext.Provider value={{ currency, setCurrency, format, formatCurrency: format }}>
       {children}
     </CurrencyContext.Provider>
   );
@@ -68,10 +68,12 @@ export function CurrencyProvider({ children }) {
 export function useCurrency() {
   const context = useContext(CurrencyContext);
   if (!context) {
+    const defaultFormat = (amount) => `₹${Number(amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
     return {
       currency: 'INR',
       setCurrency: () => {},
-      format: (amount) => `₹${Number(amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+      format: defaultFormat,
+      formatCurrency: defaultFormat
     };
   }
   return context;

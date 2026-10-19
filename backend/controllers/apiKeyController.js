@@ -89,35 +89,51 @@ export const apiKeyController = {
   async getEmployeeDashboard(req, res) {
     try {
       const keys = Array.from(memoryStore.apiKeys.values());
-      const employeeData = memoryStore.employeeDashboard || {
-        employeeName: 'Amit Kumar',
-        role: 'Developer',
-        team: 'Development Team',
-        myUsageThisMonth: 12450,
-        myUsageChange: '+10%',
-        estimatedCostInr: 850,
-        estimatedCostChange: '+8%',
-        monthlyLimit: 20000,
-        limitPercent: 62,
-        usageByApi: [
-          { name: 'OpenAI', requests: 6230, percent: 50, color: '#10B981' },
-          { name: 'Internal API', requests: 3450, percent: 28, color: '#2563EB' },
-          { name: 'Brevo (Email)', requests: 1820, percent: 15, color: '#6366F1' },
-          { name: 'Google Maps', requests: 950, percent: 7, color: '#F59E0B' }
-        ],
-        recentRequests: [
-          { time: '10:24 AM', api: 'OpenAI', endpoint: '/v1/chat/completions', status: 200 },
-          { time: '10:22 AM', api: 'Internal API', endpoint: '/v1/orders', status: 200 },
-          { time: '10:21 AM', api: 'Brevo', endpoint: '/v3/smtp/email', status: 200 },
-          { time: '10:18 AM', api: 'Google Maps', endpoint: '/maps/api/geocode', status: 200 },
-          { time: '10:15 AM', api: 'OpenAI', endpoint: '/v1/embeddings', status: 200 }
-        ]
-      };
+      const active = memoryStore.activeUser;
+      const isDev = active && (active.role === 'developer' || active.role === 'employee');
+
+      const employeeName = isDev ? active.name : 'Vikash Yadav';
+      const role = isDev ? (active.roleLabel || 'Growth Engineer') : 'Growth Engineer';
+      const team = isDev ? (active.teamName || 'Marketing Team') : 'Marketing Team';
+      const monthlyLimit = isDev ? (active.monthlyLimitInr || 10000) : 10000;
+      const myUsageThisMonth = isDev ? (active.monthlyRequests || 18220) : 18220;
+      const estimatedCostInr = isDev ? (active.monthlyCostInr || 980) : 980;
+      const limitPercent = Math.min(100, Math.round((estimatedCostInr / monthlyLimit) * 100));
+
+      // Get recent activity for this employee
+      const recent = (memoryStore.recentActivity || []).filter(a => a.employee === employeeName).slice(0, 10);
+      const recentRequests = recent.length > 0 ? recent.map(r => ({
+        time: r.time,
+        api: r.api,
+        endpoint: r.api === 'OpenAI' ? '/v1/chat/completions' : r.api === 'Brevo' ? '/v3/smtp/email' : '/v1/gateway/proxy',
+        status: r.status
+      })) : [
+        { time: 'Just now', api: 'Brevo', endpoint: '/v3/smtp/email', status: 200 },
+        { time: '10:24 AM', api: 'Twilio', endpoint: '/v1/messages', status: 200 },
+        { time: '10:18 AM', api: 'Razorpay', endpoint: '/v1/orders', status: 200 }
+      ];
 
       res.status(200).json({
         success: true,
         data: {
-          ...employeeData,
+          employeeName,
+          role,
+          team,
+          myUsageThisMonth,
+          myUsageChange: '+12%',
+          estimatedCostInr,
+          estimatedCostChange: '+8%',
+          monthlyLimit,
+          limitPercent,
+          remainingBudgetInr: Math.max(0, monthlyLimit - estimatedCostInr),
+          apiKey: isDev ? active.apiKey : 'sk_mf_live_vikash_3311defa7890',
+          allowedProviders: isDev && active.allowedProviders ? active.allowedProviders : ['Brevo', 'Twilio', 'Razorpay'],
+          usageByApi: [
+            { name: 'Brevo (Email)', requests: Math.round(myUsageThisMonth * 0.45), percent: 45, color: '#6366F1' },
+            { name: 'Twilio (SMS)', requests: Math.round(myUsageThisMonth * 0.35), percent: 35, color: '#10B981' },
+            { name: 'Razorpay', requests: Math.round(myUsageThisMonth * 0.20), percent: 20, color: '#2563EB' }
+          ],
+          recentRequests,
           apiKeys: keys
         }
       });

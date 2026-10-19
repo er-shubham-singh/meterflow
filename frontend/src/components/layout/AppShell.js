@@ -1,10 +1,18 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function AppShell({ children }) {
+  const pathname = usePathname();
   const { mobileNavOpen, setMobileNavOpen } = useTheme();
+
+  // Standalone pages (Login and Public Landing) don't render the dashboard sidebar
+  const isStandalonePage = pathname === '/login' || pathname === '/landing';
+  if (isStandalonePage) {
+    return <main className="w-full min-h-screen">{children}</main>;
+  }
 
   return (
     <div className="app-shell">

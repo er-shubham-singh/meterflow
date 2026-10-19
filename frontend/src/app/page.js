@@ -19,11 +19,21 @@ import {
   Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const { isEmployee } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState('daily'); // 'daily' | 'weekly'
+
+  useEffect(() => {
+    if (isEmployee) {
+      router.replace('/employee-portal');
+    }
+  }, [isEmployee, router]);
 
   const loadData = useCallback(async () => {
     try {

@@ -2,6 +2,7 @@ import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { ToastProvider } from '@/context/ToastContext';
 import { CurrencyProvider } from '@/context/CurrencyContext';
+import { AuthProvider } from '@/context/AuthContext';
 import AppShell from '@/components/layout/AppShell';
 
 export const metadata = {
@@ -40,13 +41,15 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <ThemeProvider>
-          <ToastProvider>
-            <CurrencyProvider>
-              <AppShell>
-                {children}
-              </AppShell>
-            </CurrencyProvider>
-          </ToastProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <CurrencyProvider>
+                <AppShell>
+                  {children}
+                </AppShell>
+              </CurrencyProvider>
+            </ToastProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

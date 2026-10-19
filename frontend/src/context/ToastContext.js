@@ -5,6 +5,7 @@ import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 
 const ToastContext = createContext({
   showToast: () => {},
+  addToast: () => {},
   showConfirm: () => Promise.resolve(false)
 });
 
@@ -48,7 +49,7 @@ export function ToastProvider({ children }) {
   };
 
   return (
-    <ToastContext.Provider value={{ showToast, showConfirm }}>
+    <ToastContext.Provider value={{ showToast, addToast: showToast, showConfirm }}>
       {children}
 
       {/* Floating Toast Notifications (Top Right) */}
@@ -123,6 +124,7 @@ export function useToast() {
   if (!context) {
     return {
       showToast: () => {},
+      addToast: () => {},
       showConfirm: () => Promise.resolve(false)
     };
   }

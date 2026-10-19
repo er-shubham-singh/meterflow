@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   Bell, 
   Calendar, 
@@ -11,10 +13,16 @@ import {
   RefreshCw,
   ChevronDown,
   MoreVertical,
-  Check
+  Check,
+  UserCheck,
+  LogOut,
+  ShieldCheck,
+  User
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { useCurrency } from '@/context/CurrencyContext';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import { api } from '@/services/api';
 
 const CURRENCIES = [
@@ -29,29 +37,23 @@ export default function Header({
   onRefresh, 
   onExport 
 }) {
+  const router = useRouter();
   const { toggleMobileNav } = useTheme();
   const { currency, setCurrency } = useCurrency();
-  const [currentUser, setCurrentUser] = useState({
-    name: 'Rahul Sharma',
-    roleLabel: 'Admin'
-  });
+  const { user, isAdmin, quickLogin, logout } = useAuth();
+  const { addToast } = useToast();
+
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isBursting, setIsBursting] = useState(false);
 
-  // Mobile Dropdowns
+  // Dropdown states
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const currencyMenuRef = useRef(null);
   const actionsMenuRef = useRef(null);
-
-  useEffect(() => {
-    api.getMe()
-      .then(res => {
-        if (res.data) setCurrentUser(res.data);
-      })
-      .catch(() => {});
-  }, []);
+  const userMenuRef = useRef(null);
 
   // Handle outside clicks and ESC key for dropdowns
   useEffect(() => {
@@ -62,12 +64,16 @@ export default function Header({
       if (actionsMenuRef.current && !actionsMenuRef.current.contains(event.target)) {
         setIsActionsOpen(false);
       }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
     };
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setIsCurrencyOpen(false);
         setIsActionsOpen(false);
+        setIsUserMenuOpen(false);
       }
     };
 
@@ -108,7 +114,6 @@ export default function Header({
       onExport();
       return;
     }
-    // Default CSV export
     const csvContent = "data:text/csv;charset=utf-8,Date,Requests,Cost_INR,Provider\n2026-10-18,245230,12450,OpenAI\n";
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -119,9 +124,36 @@ export default function Header({
     document.body.removeChild(link);
   };
 
+  const handleToggleRole = async () => {
+    const nextRole = isAdmin ? 'employee' : 'admin';
+    const res = await quickLogin(nextRole);
+    setIsUserMenuOpen(false);
+    if (res.success) {
+      addToast(`Switched account to ${res.data.name} (${res.data.roleLabel || res.data.role})`, 'info');
+      if (nextRole === 'employee') {
+        router.push('/employee-portal');
+      } else {
+        router.push('/admin');
+      }
+    }
+  };
+
+  const handleLogout = async () => {
+    setIsUserMenuOpen(false);
+    await logout();
+    addToast('Logged out successfully', 'info');
+    router.push('/login');
+  };
+
   const getCurrencySymbol = (id) => {
     const match = CURRENCIES.find(c => c.id === id);
     return match ? match.symbol : '₹';
+  };
+
+  const currentUser = user || {
+    name: 'Rahul Sharma',
+    roleLabel: 'Admin',
+    email: 'admin@meterflow.io'
   };
 
   return (
@@ -156,6 +188,7 @@ export default function Header({
             onClick={() => {
               setIsCurrencyOpen(prev => !prev);
               setIsActionsOpen(false);
+              setIsUserMenuOpen(false);
             }}
             className="flex items-center gap-1 bg-[var(--bg-inset)] hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-[var(--border-subtle)] text-[var(--text-heading)] px-2 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all shadow-sm active:scale-95"
             aria-label="Change currency"
@@ -201,6 +234,7 @@ export default function Header({
             onClick={() => {
               setIsActionsOpen(prev => !prev);
               setIsCurrencyOpen(false);
+              setIsUserMenuOpen(false);
             }}
             className={`relative w-8 h-8 rounded-lg border border-[var(--border-subtle)] flex items-center justify-center cursor-pointer transition-all active:scale-95 shadow-sm ${
               isActionsOpen 
@@ -280,12 +314,58 @@ export default function Header({
           )}
         </div>
 
-        {/* Mobile User Profile Avatar */}
-        <div 
-          className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-sm shrink-0 border border-white/20"
-          title={`${currentUser.name || 'Rahul Sharma'} (${currentUser.roleLabel || 'Admin'})`}
-        >
-          {currentUser.name ? currentUser.name[0] : 'R'}
+        {/* Mobile User Profile Avatar Trigger */}
+        <div className="relative" ref={userMenuRef}>
+          <button
+            onClick={() => {
+              setIsUserMenuOpen(prev => !prev);
+              setIsCurrencyOpen(false);
+              setIsActionsOpen(false);
+            }}
+            className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-sm shrink-0 border border-white/20 cursor-pointer active:scale-95"
+            title={`${currentUser.name} (${currentUser.roleLabel || 'User'})`}
+          >
+            {currentUser.name ? currentUser.name[0] : 'R'}
+          </button>
+
+          {isUserMenuOpen && (
+            <div className="absolute right-0 top-full mt-1.5 w-60 bg-[var(--bg-card)] backdrop-blur-xl border border-[var(--border-subtle)] rounded-xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-100 flex flex-col gap-1.5">
+              <div className="p-2 bg-[var(--bg-inset)] rounded-lg">
+                <div className="text-xs font-bold text-[var(--text-heading)] leading-tight">{currentUser.name}</div>
+                <div className="text-[10px] text-[var(--text-muted)] truncate">{currentUser.email}</div>
+                <span className="inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-bold bg-blue-600/20 text-blue-400 border border-blue-500/30">
+                  {currentUser.roleLabel || 'User'}
+                </span>
+              </div>
+
+              <button
+                onClick={handleToggleRole}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium text-[var(--text-main)] hover:bg-[var(--bg-hover-subtle)] cursor-pointer text-left"
+              >
+                <UserCheck size={14} className="text-blue-500" />
+                <span>Switch to {isAdmin ? 'Employee View' : 'Admin View'}</span>
+              </button>
+
+              <Link
+                href="/login"
+                onClick={() => setIsUserMenuOpen(false)}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium text-[var(--text-main)] hover:bg-[var(--bg-hover-subtle)] no-underline"
+              >
+                <User size={14} className="text-slate-400" />
+                <span>Switch Account / Sign In</span>
+              </Link>
+
+              <div className="border-t border-[var(--border-subtle)] my-0.5" />
+
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-semibold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer text-left"
+              >
+                <LogOut size={14} />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -367,19 +447,67 @@ export default function Header({
           </button>
         </div>
 
-        {/* User Profile Avatar Pill */}
-        <div className="flex items-center gap-2 pl-2 border-l border-[var(--border-subtle)]">
-          <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
-            {currentUser.name ? currentUser.name[0] : 'R'}
-          </div>
-          <div className="hidden lg:block text-left">
-            <div className="text-xs font-bold text-[var(--text-heading)] leading-tight">
-              {currentUser.name || 'Rahul Sharma'}
+        {/* User Profile Avatar Pill & Dropdown */}
+        <div className="relative pl-2 border-l border-[var(--border-subtle)]" ref={userMenuRef}>
+          <button
+            onClick={() => setIsUserMenuOpen(prev => !prev)}
+            className="flex items-center gap-2 cursor-pointer p-1 rounded-xl hover:bg-[var(--bg-hover-subtle)] transition-colors border-0 bg-transparent text-left"
+          >
+            <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+              {currentUser.name ? currentUser.name[0] : 'R'}
             </div>
-            <div className="text-[10px] text-slate-400 font-medium">
-              {currentUser.roleLabel || 'Admin'}
+            <div className="hidden lg:block text-left">
+              <div className="text-xs font-bold text-[var(--text-heading)] leading-tight">
+                {currentUser.name}
+              </div>
+              <div className="text-[10px] text-slate-400 font-medium">
+                {currentUser.roleLabel || 'Admin'}
+              </div>
             </div>
-          </div>
+            <ChevronDown size={12} className={`text-slate-400 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isUserMenuOpen && (
+            <div className="absolute right-0 top-full mt-2 w-64 bg-[var(--bg-card)] backdrop-blur-xl border border-[var(--border-subtle)] rounded-xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-100 flex flex-col gap-1.5">
+              <div className="p-2.5 bg-[var(--bg-inset)] rounded-lg">
+                <div className="text-xs font-bold text-[var(--text-heading)]">{currentUser.name}</div>
+                <div className="text-[11px] text-[var(--text-muted)] truncate">{currentUser.email}</div>
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600/20 text-blue-400 border border-blue-500/30">
+                    {currentUser.roleLabel || 'Admin'}
+                  </span>
+                  <span className="text-[10px] text-slate-400">{currentUser.teamName || 'ABC Technologies'}</span>
+                </div>
+              </div>
+
+              <button
+                onClick={handleToggleRole}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium text-[var(--text-main)] hover:bg-[var(--bg-hover-subtle)] cursor-pointer text-left transition-colors"
+              >
+                <UserCheck size={14} className="text-blue-500" />
+                <span>Switch to {isAdmin ? 'Employee Portal' : 'Admin Workspace'}</span>
+              </button>
+
+              <Link
+                href="/login"
+                onClick={() => setIsUserMenuOpen(false)}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium text-[var(--text-main)] hover:bg-[var(--bg-hover-subtle)] no-underline transition-colors"
+              >
+                <User size={14} className="text-slate-400" />
+                <span>Switch Account / Sign In</span>
+              </Link>
+
+              <div className="border-t border-[var(--border-subtle)] my-0.5" />
+
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-semibold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer text-left transition-colors"
+              >
+                <LogOut size={14} />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

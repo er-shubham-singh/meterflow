@@ -6,5 +6,6 @@ const router = express.Router();
 router.get('/me', authController.getMe);
 router.post('/login', authController.login);
 router.post('/switch-role', authController.switchRole);
+router.post('/logout', authController.logout);
 
 export default router;

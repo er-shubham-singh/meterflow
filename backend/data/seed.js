@@ -2,11 +2,13 @@ import mongoose from 'mongoose';
 import { Meter } from '../models/Meter.js';
 import { PricingPlan } from '../models/PricingPlan.js';
 import { Customer } from '../models/Customer.js';
+import { User } from '../models/User.js';
 import { AGGREGATION_TYPES, PRICING_MODELS } from '../config/constants.js';
 import { meteringEngine } from '../services/meteringEngine.js';
 
 // Fallback in-memory registries when MongoDB is disconnected or booting
 export const memoryStore = {
+  users: new Map(),
   meters: new Map(),
   pricingPlans: new Map(),
   customers: new Map(),
@@ -296,11 +298,145 @@ const SEED_CUSTOMERS = [
   }
 ];
 
+const SEED_USERS = [
+  {
+    id: 'usr_rahul_admin',
+    name: 'Rahul Sharma',
+    email: 'admin@meterflow.io',
+    password: 'password123',
+    role: 'organization_admin',
+    roleLabel: 'Admin',
+    teamName: 'Executive Leadership',
+    monthlyLimitInr: 100000,
+    monthlyCostInr: 12450,
+    monthlyRequests: 245230,
+    apiKey: 'sk_mf_admin_9921fa84c20b',
+    allowedProviders: ['OpenAI', 'Google Gemini', 'Azure AI', 'Twilio', 'Brevo', 'Internal Orders API'],
+    organization: {
+      id: 'org_abc_tech',
+      name: 'ABC Technologies',
+      plan: 'Enterprise Plan',
+      currency: 'INR'
+    },
+    status: 'active'
+  },
+  {
+    id: 'usr_amit_dev',
+    name: 'Amit Kumar',
+    email: 'amit.kumar@abctech.com',
+    password: 'password123',
+    role: 'developer',
+    roleLabel: 'Fullstack Developer',
+    teamName: 'Development Team',
+    monthlyLimitInr: 20000,
+    monthlyCostInr: 1890,
+    monthlyRequests: 28120,
+    apiKey: 'sk_mf_dev_6678efgh1122ijkl3344mnop',
+    allowedProviders: ['OpenAI', 'Google Gemini', 'Internal APIs'],
+    organization: {
+      id: 'org_abc_tech',
+      name: 'ABC Technologies',
+      plan: 'Enterprise Plan',
+      currency: 'INR'
+    },
+    status: 'active'
+  },
+  {
+    id: 'usr_priya_arch',
+    name: 'Priya Singh',
+    email: 'priya.s@abctech.com',
+    password: 'password123',
+    role: 'developer',
+    roleLabel: 'Backend Architect',
+    teamName: 'Development Team',
+    monthlyLimitInr: 20000,
+    monthlyCostInr: 2120,
+    monthlyRequests: 32450,
+    apiKey: 'sk_mf_live_priya_8832abcd9120',
+    allowedProviders: ['OpenAI', 'Azure AI', 'AWS Bedrock'],
+    organization: {
+      id: 'org_abc_tech',
+      name: 'ABC Technologies',
+      plan: 'Enterprise Plan',
+      currency: 'INR'
+    },
+    status: 'active'
+  },
+  {
+    id: 'usr_rahul_ml',
+    name: 'Rahul Verma',
+    email: 'rahul.v@abctech.com',
+    password: 'password123',
+    role: 'developer',
+    roleLabel: 'Lead ML Engineer',
+    teamName: 'AI Team',
+    monthlyLimitInr: 25000,
+    monthlyCostInr: 3450,
+    monthlyRequests: 48230,
+    apiKey: 'sk_mf_live_rahulv_7741bcde1234',
+    allowedProviders: ['OpenAI', 'Google Gemini', 'Azure AI'],
+    organization: {
+      id: 'org_abc_tech',
+      name: 'ABC Technologies',
+      plan: 'Enterprise Plan',
+      currency: 'INR'
+    },
+    status: 'active'
+  },
+  {
+    id: 'usr_neha_int',
+    name: 'Neha Sharma',
+    email: 'neha.s@abctech.com',
+    password: 'password123',
+    role: 'developer',
+    roleLabel: 'Integration Specialist',
+    teamName: 'Development Team',
+    monthlyLimitInr: 15000,
+    monthlyCostInr: 1250,
+    monthlyRequests: 21340,
+    apiKey: 'sk_mf_live_nehas_5521cdef4321',
+    allowedProviders: ['Brevo', 'Twilio', 'Internal Orders API'],
+    organization: {
+      id: 'org_abc_tech',
+      name: 'ABC Technologies',
+      plan: 'Enterprise Plan',
+      currency: 'INR'
+    },
+    status: 'active'
+  },
+  {
+    id: 'usr_vikash_mkt',
+    name: 'Vikash Yadav',
+    email: 'vikash.y@abctech.com',
+    password: 'password123',
+    role: 'developer',
+    roleLabel: 'Growth Engineer',
+    teamName: 'Marketing Team',
+    monthlyLimitInr: 10000,
+    monthlyCostInr: 980,
+    monthlyRequests: 18220,
+    apiKey: 'sk_mf_live_vikash_3311defa7890',
+    allowedProviders: ['Brevo', 'Twilio', 'Razorpay'],
+    organization: {
+      id: 'org_abc_tech',
+      name: 'ABC Technologies',
+      plan: 'Enterprise Plan',
+      currency: 'INR'
+    },
+    status: 'active'
+  }
+];
+
 /**
  * Seeds Mongoose collections and memory registers
  */
 export async function seedInitialData() {
   // 1. Populate memory store
+  for (const u of SEED_USERS) {
+    memoryStore.users.set(u.id, u);
+    memoryStore.users.set(u.email.toLowerCase(), u);
+  }
+
   for (const m of SEED_METERS) {
     memoryStore.meters.set(m.id, m);
     memoryStore.meters.set(m.code, m);
@@ -328,6 +464,9 @@ export async function seedInitialData() {
   if (mongoose.connection.readyState === 1) {
     try {
       console.log('🌱 [Seeder] Populating Mongoose MongoDB collections...');
+      for (const u of SEED_USERS) {
+        await User.findOneAndUpdate({ email: u.email.toLowerCase() }, { $set: u }, { upsert: true, new: true });
+      }
       for (const m of SEED_METERS) {
         await Meter.findOneAndUpdate({ code: m.code }, { $set: m }, { upsert: true, new: true });
       }

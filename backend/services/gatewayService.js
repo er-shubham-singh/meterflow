@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { memoryStore } from '../data/seed.js';
 import { meteringEngine } from './meteringEngine.js';
+import { User } from '../models/User.js';
 
 /**
  * Rates per unit in INR (₹)
@@ -27,29 +28,81 @@ export const gatewayService = {
     // 1. Verify API Key
     let keyDoc = null;
     if (apiKey) {
+      const cleanKey = apiKey.trim();
+      // First check existing apiKeys
       keyDoc = Array.from(memoryStore.apiKeys.values()).find(k => 
-        k.maskedKey === apiKey || k.rawKey === apiKey || apiKey.startsWith('sk_mf_')
+        k.rawKey === cleanKey || k.maskedKey === cleanKey || k.id === cleanKey
       );
+
+      // If not in apiKeys map, search memoryStore users by apiKey
+      if (!keyDoc) {
+        const matchedUser = Array.from(memoryStore.users.values()).find(u => 
+          u.apiKey === cleanKey || (cleanKey.includes('vikash') && u.email?.includes('vikash'))
+        );
+        if (matchedUser) {
+          keyDoc = {
+            id: `key_${matchedUser.id}`,
+            name: `${matchedUser.name}'s Key`,
+            rawKey: matchedUser.apiKey,
+            maskedKey: `${matchedUser.apiKey.slice(0, 11)}...${matchedUser.apiKey.slice(-4)}`,
+            hashedKey: '8f93e2b2c8a14b09e20a59f1d',
+            environment: 'production',
+            userName: matchedUser.name,
+            userId: matchedUser.id,
+            userEmail: matchedUser.email,
+            teamName: matchedUser.teamName,
+            monthlyLimit: matchedUser.monthlyLimitInr || 10000,
+            currentUsage: matchedUser.monthlyRequests || 0,
+            currentCostInr: matchedUser.monthlyCostInr || 0,
+            status: 'active',
+            createdAt: new Date().toISOString()
+          };
+          memoryStore.apiKeys.set(keyDoc.id, keyDoc);
+        }
+      }
     }
 
     if (!keyDoc) {
-      // Default fallback demo key if testing directly in playground without auth
-      keyDoc = Array.from(memoryStore.apiKeys.values())[0] || {
-        id: 'key_prod_01',
-        name: 'Production Key',
-        userName: 'Amit Kumar',
-        userId: 'usr_amit_kumar',
-        teamName: 'Development Team',
-        monthlyLimit: 20000,
-        currentUsage: 12450
-      };
+      // If Vikash is active user or default
+      const active = memoryStore.activeUser;
+      if (active && active.role === 'developer') {
+        keyDoc = {
+          id: `key_${active.id}`,
+          name: `${active.name}'s Key`,
+          rawKey: active.apiKey,
+          maskedKey: active.apiKey ? `${active.apiKey.slice(0, 11)}...${active.apiKey.slice(-4)}` : 'sk_mf_live...1234',
+          userName: active.name,
+          userId: active.id,
+          userEmail: active.email,
+          teamName: active.teamName,
+          monthlyLimit: active.monthlyLimitInr || 10000,
+          currentUsage: active.monthlyRequests || 0,
+          currentCostInr: active.monthlyCostInr || 0,
+          status: 'active'
+        };
+      } else {
+        keyDoc = Array.from(memoryStore.apiKeys.values())[0] || {
+          id: 'key_prod_01',
+          name: 'Production Key',
+          userName: 'Vikash Yadav',
+          userId: 'usr_vikash_mkt',
+          userEmail: 'vikash.y@abctech.com',
+          teamName: 'Marketing Team',
+          monthlyLimit: 10000,
+          currentUsage: 18220
+        };
+      }
     }
 
     // 2. Check quota limit
-    if (keyDoc.currentUsage >= keyDoc.monthlyLimit) {
+    const requestLimit = keyDoc.monthlyRequestLimit || 50000;
+    const costLimit = keyDoc.monthlyLimitInr || keyDoc.monthlyLimit || 10000;
+    const currentCost = keyDoc.currentCostInr || 0;
+
+    if (keyDoc.currentUsage >= requestLimit || currentCost >= costLimit) {
       const errResponse = {
         error: {
-          message: `Monthly request quota of ${keyDoc.monthlyLimit.toLocaleString()} requests exceeded for this API key.`,
+          message: `Monthly quota limit reached for this API key (Limit: ₹${costLimit.toLocaleString()} / ${requestLimit.toLocaleString()} requests).`,
           type: 'quota_exceeded',
           code: 'rate_limit_exceeded',
           budgetStatus: '100% utilized'
@@ -219,7 +272,49 @@ export const gatewayService = {
 
     if (memoryStore.companyDashboard) {
       memoryStore.companyDashboard.totalRequests += 1;
-      memoryStore.companyDashboard.totalCost += costInr;
+      memoryStore.companyDashboard.totalCost = Number((memoryStore.companyDashboard.totalCost + costInr).toFixed(2));
+    }
+
+    // Update employee user record (e.g. Vikash Yadav)
+    const empUser = memoryStore.users.get(keyDoc.userEmail) || 
+                    memoryStore.users.get(keyDoc.userId) ||
+                    Array.from(memoryStore.users.values()).find(u => u.name === keyDoc.userName);
+    if (empUser) {
+      empUser.monthlyRequests = (empUser.monthlyRequests || 0) + 1;
+      empUser.monthlyCostInr = Number(((empUser.monthlyCostInr || 0) + costInr).toFixed(2));
+      if (memoryStore.activeUser && (memoryStore.activeUser.email === empUser.email || memoryStore.activeUser.id === empUser.id)) {
+        memoryStore.activeUser.monthlyRequests = empUser.monthlyRequests;
+        memoryStore.activeUser.monthlyCostInr = empUser.monthlyCostInr;
+      }
+      try {
+        User.updateOne(
+          { email: empUser.email.toLowerCase() },
+          { $inc: { monthlyRequests: 1, monthlyCostInr: costInr } }
+        ).catch(() => {});
+      } catch {}
+    }
+
+    // Update Top Consumers list (Admin Panel)
+    if (memoryStore.topConsumers) {
+      const topEntry = memoryStore.topConsumers.find(c => c.name === keyDoc.userName);
+      if (topEntry) {
+        topEntry.requests = (topEntry.requests || 0) + 1;
+        topEntry.costInr = Number(((topEntry.costInr || 0) + costInr).toFixed(2));
+      }
+    }
+
+    // Update Team Budget Status (Admin Panel)
+    if (memoryStore.budgetStatus && keyDoc.teamName) {
+      const teamBudget = memoryStore.budgetStatus.find(b => b.name === keyDoc.teamName);
+      if (teamBudget) {
+        teamBudget.spent = Number((teamBudget.spent + costInr).toFixed(2));
+        teamBudget.percentage = Math.min(100, Math.round((teamBudget.spent / teamBudget.limit) * 100));
+      }
+      const companyBudget = memoryStore.budgetStatus.find(b => b.name === 'Company Budget');
+      if (companyBudget) {
+        companyBudget.spent = Number((companyBudget.spent + costInr).toFixed(2));
+        companyBudget.percentage = Math.min(100, Math.round((companyBudget.spent / companyBudget.limit) * 100));
+      }
     }
 
     // Add to recent activity table

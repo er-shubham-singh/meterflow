@@ -241,11 +241,50 @@ export const api = {
     return handleResponse(res);
   },
 
+  async login(credentials) {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials)
+    });
+    return handleResponse(res);
+  },
+
+  async logout() {
+    const res = await fetch(`${API_BASE}/auth/logout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return handleResponse(res);
+  },
+
   async switchRole(role) {
     const res = await fetch(`${API_BASE}/auth/switch-role`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role })
+    });
+    return handleResponse(res);
+  },
+
+  // Employees Management (Admin Panel)
+  async getEmployees() {
+    const res = await fetch(`${API_BASE}/employees`);
+    return handleResponse(res);
+  },
+
+  async createEmployee(payload) {
+    const res = await fetch(`${API_BASE}/employees`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return handleResponse(res);
+  },
+
+  async deleteEmployee(id) {
+    const res = await fetch(`${API_BASE}/employees/${id}`, {
+      method: 'DELETE'
     });
     return handleResponse(res);
   }
