@@ -13,39 +13,73 @@ export const employeeController = {
     try {
       let employees = [];
 
+      let rawUsers = [];
+
       try {
         const dbUsers = await User.find().lean();
         if (dbUsers && dbUsers.length > 0) {
-          employees = dbUsers.map(doc => {
-            const live = memoryStore.users.get(doc.email?.toLowerCase());
-            return live ? { ...doc, monthlyRequests: live.monthlyRequests, monthlyCostInr: live.monthlyCostInr } : doc;
-          });
+          rawUsers = dbUsers;
         }
-      } catch {
-        // fallback
+      } catch {}
+
+      if (!rawUsers || rawUsers.length === 0) {
+        rawUsers = Array.from(memoryStore.users.values());
       }
 
-      if (!employees || employees.length === 0) {
-        employees = Array.from(memoryStore.users.values());
+      // Deduplicate by email and merge with live memoryStore metrics
+      const uniqueMap = new Map();
+      for (const u of rawUsers) {
+        if (!u || !u.name) continue;
+        const key = (u.email || u.id || '').toLowerCase();
+        if (!uniqueMap.has(key)) {
+          const live = memoryStore.users.get(key) || memoryStore.users.get(u.id);
+          const merged = live ? { ...u, ...live } : u;
+          uniqueMap.set(key, merged);
+        }
       }
 
-      // Safe sanitization
-      const safeList = employees.map(u => ({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        role: u.role || 'developer',
-        roleLabel: u.roleLabel || (u.role === 'organization_admin' ? 'Admin' : 'Developer'),
-        teamName: u.teamName || 'Development Team',
-        monthlyLimitInr: u.monthlyLimitInr || 15000,
-        monthlyCostInr: u.monthlyCostInr || 0,
-        monthlyRequests: u.monthlyRequests || 0,
-        apiKey: u.apiKey ? `${u.apiKey.slice(0, 11)}...${u.apiKey.slice(-4)}` : 'None',
-        rawApiKey: u.apiKey || null,
-        allowedProviders: u.allowedProviders || ['OpenAI', 'Google Gemini'],
-        status: u.status || 'active',
-        createdAt: u.createdAt || new Date().toISOString()
-      }));
+      // Safe sanitization with full quota and token showback
+      const safeList = Array.from(uniqueMap.values()).map(u => {
+        const monthlyRequests = u.monthlyRequests || 0;
+        const requestLimit = u.monthlyRequestLimit || 50000;
+        const requestsRemaining = Math.max(0, requestLimit - monthlyRequests);
+
+        const monthlyCostInr = Number((u.monthlyCostInr || 0).toFixed(2));
+        const monthlyLimitInr = u.monthlyLimitInr || (u.role === 'organization_admin' ? 500000 : 15000);
+        const remainingBudget = Math.max(0, Number((monthlyLimitInr - monthlyCostInr).toFixed(2)));
+
+        const tokensLimit = u.tokensLimit || 250000;
+        const tokensUsed = u.tokensUsed || Math.round(monthlyRequests * 12);
+        const tokensRemaining = Math.max(0, tokensLimit - tokensUsed);
+
+        const percentUsed = Math.min(100, Math.round((monthlyCostInr / monthlyLimitInr) * 100));
+        const requestPercent = Math.min(100, Math.round((monthlyRequests / requestLimit) * 100));
+
+        return {
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          role: u.role || 'developer',
+          roleLabel: u.roleLabel || (u.role === 'organization_admin' ? 'Admin' : 'Developer'),
+          teamName: u.teamName || (u.role === 'organization_admin' ? 'Executive Leadership' : 'Development Team'),
+          monthlyLimitInr,
+          monthlyCostInr,
+          remainingBudget,
+          monthlyRequests,
+          requestLimit,
+          requestsRemaining,
+          tokensLimit,
+          tokensUsed,
+          tokensRemaining,
+          percentUsed,
+          requestPercent,
+          apiKey: u.apiKey ? `${u.apiKey.slice(0, 11)}...${u.apiKey.slice(-4)}` : 'None',
+          rawApiKey: u.apiKey || null,
+          allowedProviders: u.allowedProviders || ['OpenAI', 'Google Gemini', 'Internal APIs'],
+          status: u.status || 'active',
+          createdAt: u.createdAt || new Date().toISOString()
+        };
+      });
 
       res.status(200).json({ success: true, data: safeList });
     } catch (error) {

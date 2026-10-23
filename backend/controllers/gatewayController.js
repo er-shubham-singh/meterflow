@@ -11,7 +11,7 @@ export const gatewayController = {
       const apiKeyFromHeader = authHeader.replace(/^Bearer\s+/i, '');
       const { apiKey: apiKeyFromBody, provider, method, endpoint, headers, body } = req.body;
 
-      const apiKey = apiKeyFromHeader || apiKeyFromBody;
+      const apiKey = apiKeyFromBody || apiKeyFromHeader;
 
       const result = await gatewayService.processRequest({
         apiKey,

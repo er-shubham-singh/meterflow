@@ -89,15 +89,46 @@ export const apiKeyController = {
   async getEmployeeDashboard(req, res) {
     try {
       const keys = Array.from(memoryStore.apiKeys.values());
-      const active = memoryStore.activeUser;
+      const authHeader = req.headers.authorization || '';
+      const rawToken = authHeader.replace(/^Bearer\s+/i, '');
+
+      let active = null;
+      if (rawToken) {
+        for (const u of memoryStore.users.values()) {
+          if (u.apiKey === rawToken || (rawToken.startsWith('mf_session_') && rawToken.includes(u.id))) {
+            active = u;
+            break;
+          }
+        }
+      }
+      if (!active) {
+        active = memoryStore.activeUser;
+      }
+      if (active && (active.email || active.id)) {
+        const live = memoryStore.users.get((active.email || '').toLowerCase()) || memoryStore.users.get(active.id);
+        if (live) active = { ...active, ...live };
+      }
+      if (!active || active.role === 'organization_admin') {
+        const devUser = memoryStore.users.get('vikash.y@abctech.com') || memoryStore.users.get('usr_vikash_mkt');
+        if (devUser) active = devUser;
+      }
+
       const isDev = active && (active.role === 'developer' || active.role === 'employee');
 
-      const employeeName = isDev ? active.name : 'Vikash Yadav';
-      const role = isDev ? (active.roleLabel || 'Growth Engineer') : 'Growth Engineer';
-      const team = isDev ? (active.teamName || 'Marketing Team') : 'Marketing Team';
-      const monthlyLimit = isDev ? (active.monthlyLimitInr || 10000) : 10000;
-      const myUsageThisMonth = isDev ? (active.monthlyRequests || 18220) : 18220;
-      const estimatedCostInr = isDev ? (active.monthlyCostInr || 980) : 980;
+      const employeeName = active?.name || 'Vikash Yadav';
+      const role = active?.roleLabel || (isDev ? 'Growth Engineer' : 'Developer');
+      const team = active?.teamName || 'Marketing Team';
+      const monthlyLimit = active?.monthlyLimitInr || 10000;
+      const myUsageThisMonth = active?.monthlyRequests || 18220;
+      const monthlyRequestLimit = active?.monthlyRequestLimit || 50000;
+      const requestsRemaining = active?.requestsRemaining ?? Math.max(0, monthlyRequestLimit - myUsageThisMonth);
+
+      const tokensLimit = active?.tokensLimit || 250000;
+      const tokensUsed = active?.tokensUsed ?? 0;
+      const tokensRemaining = active?.tokensRemaining ?? Math.max(0, tokensLimit - tokensUsed);
+
+      const estimatedCostInr = Number((active?.monthlyCostInr || 980).toFixed(2));
+      const remainingBudgetInr = Math.max(0, Number((monthlyLimit - estimatedCostInr).toFixed(2)));
       const limitPercent = Math.min(100, Math.round((estimatedCostInr / monthlyLimit) * 100));
 
       // Get recent activity for this employee
@@ -121,13 +152,18 @@ export const apiKeyController = {
           team,
           myUsageThisMonth,
           myUsageChange: '+12%',
+          monthlyRequestLimit,
+          requestsRemaining,
+          tokensLimit,
+          tokensUsed,
+          tokensRemaining,
           estimatedCostInr,
           estimatedCostChange: '+8%',
           monthlyLimit,
           limitPercent,
-          remainingBudgetInr: Math.max(0, monthlyLimit - estimatedCostInr),
+          remainingBudgetInr,
           apiKey: isDev ? active.apiKey : 'sk_mf_live_vikash_3311defa7890',
-          allowedProviders: isDev && active.allowedProviders ? active.allowedProviders : ['Brevo', 'Twilio', 'Razorpay'],
+          allowedProviders: isDev && active.allowedProviders ? active.allowedProviders : ['Brevo', 'Twilio', 'Razorpay', 'OpenAI'],
           usageByApi: [
             { name: 'Brevo (Email)', requests: Math.round(myUsageThisMonth * 0.45), percent: 45, color: '#6366F1' },
             { name: 'Twilio (SMS)', requests: Math.round(myUsageThisMonth * 0.35), percent: 35, color: '#10B981' },

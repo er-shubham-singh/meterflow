@@ -91,8 +91,8 @@ async function startServer() {
   const { simulatorService } = await import('./services/simulatorService.js');
   await simulatorService.triggerBurst(50, 'mixed');
 
-  // 4. Start HTTP Server
-  app.listen(PORT, () => {
+  // 4. Start HTTP Server on all network interfaces (0.0.0.0)
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`=======================================================`);
     console.log(`🚀 Usage-Based Pricing & Metering Engine Backend`);
     console.log(`🍃 Database: MongoDB (NoSQL) via Mongoose`);

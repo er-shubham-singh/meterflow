@@ -20,7 +20,43 @@ export const analyticsController = {
 
       const usageTrend = memoryStore.usageTrend || [];
       const providerDistribution = memoryStore.providerDistribution || [];
-      const topEmployees = memoryStore.topEmployees || [];
+      const rawTopEmployees = memoryStore.topEmployees || [];
+      const topEmployees = rawTopEmployees.map(emp => {
+        let liveUser = null;
+        for (const u of memoryStore.users.values()) {
+          if (u.name && emp.name && u.name.toLowerCase() === emp.name.toLowerCase()) {
+            liveUser = u;
+            break;
+          }
+        }
+        const requests = liveUser ? liveUser.monthlyRequests : (emp.requests || 0);
+        const reqLimit = liveUser ? (liveUser.monthlyRequestLimit || 50000) : 50000;
+        const requestsRemaining = Math.max(0, reqLimit - requests);
+
+        const cost = liveUser ? (liveUser.monthlyCostInr || 0) : (emp.costInr || 0);
+        const budgetLimit = liveUser ? (liveUser.monthlyLimitInr || 10000) : 10000;
+        const remainingBudgetInr = Math.max(0, Number((budgetLimit - cost).toFixed(2)));
+
+        const tokensLimit = liveUser ? (liveUser.tokensLimit || 250000) : 250000;
+        const tokensUsed = liveUser ? (liveUser.tokensUsed || Math.round(requests * 12)) : Math.round(requests * 12);
+        const tokensRemaining = Math.max(0, tokensLimit - tokensUsed);
+
+        return {
+          ...emp,
+          monthlyRequests: requests,
+          requests,
+          requestsRemaining,
+          requestLimit: reqLimit,
+          monthlyCostInr: cost,
+          costInr: cost,
+          remainingBudgetInr,
+          tokensLimit,
+          tokensUsed,
+          tokensRemaining,
+          roleLabel: emp.role || liveUser?.roleLabel || 'Developer',
+          teamName: emp.team || liveUser?.teamName || 'Engineering'
+        };
+      });
       const recentActivity = memoryStore.recentActivity || [];
       const budgetStatus = memoryStore.budgetStatus || [];
 

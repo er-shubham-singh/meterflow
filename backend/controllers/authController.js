@@ -7,27 +7,59 @@ export const authController = {
    */
   async getMe(req, res) {
     try {
-      const activeUser = memoryStore.activeUser || {
-        id: 'usr_rahul_admin',
-        name: 'Rahul Sharma',
-        email: 'admin@meterflow.io',
-        role: 'organization_admin',
-        roleLabel: 'Admin',
-        teamName: 'Executive Leadership',
-        monthlyLimitInr: 100000,
-        monthlyCostInr: 12450,
-        monthlyRequests: 245230,
-        apiKey: 'sk_mf_admin_9921fa84c20b',
-        allowedProviders: ['OpenAI', 'Google Gemini', 'Azure AI', 'Twilio', 'Brevo', 'Internal Orders API'],
-        organization: {
-          id: 'org_abc_tech',
-          name: 'ABC Technologies',
-          plan: 'Enterprise Plan',
-          currency: 'INR'
+      const authHeader = req.headers.authorization || '';
+      const rawToken = authHeader.replace(/^Bearer\s+/i, '');
+      let activeUser = null;
+      if (rawToken) {
+        for (const u of memoryStore.users.values()) {
+          if (u.apiKey === rawToken || (rawToken.startsWith('mf_session_') && rawToken.includes(u.id))) {
+            activeUser = u;
+            break;
+          }
         }
+      }
+      if (!activeUser) {
+        activeUser = memoryStore.activeUser;
+      }
+      if (activeUser && (activeUser.email || activeUser.id)) {
+        const liveUser = memoryStore.users.get((activeUser.email || '').toLowerCase()) || 
+                         memoryStore.users.get(activeUser.id);
+        if (liveUser) {
+          activeUser = { ...activeUser, ...liveUser };
+        }
+      }
+
+      if (!activeUser) {
+        activeUser = memoryStore.users.get('admin@meterflow.io') || memoryStore.users.get('usr_rahul_admin');
+      }
+
+      // Ensure computed remaining telemetry is populated
+      const monthlyRequests = activeUser.monthlyRequests || 0;
+      const requestLimit = activeUser.monthlyRequestLimit || 50000;
+      const requestsRemaining = Math.max(0, requestLimit - monthlyRequests);
+
+      const monthlyCostInr = Number((activeUser.monthlyCostInr || 0).toFixed(2));
+      const monthlyLimitInr = activeUser.monthlyLimitInr || (activeUser.role === 'organization_admin' ? 500000 : 15000);
+      const remainingBudgetInr = Math.max(0, Number((monthlyLimitInr - monthlyCostInr).toFixed(2)));
+
+      const tokensLimit = activeUser.tokensLimit || 250000;
+      const tokensUsed = activeUser.tokensUsed || Math.round(monthlyRequests * 12);
+      const tokensRemaining = Math.max(0, tokensLimit - tokensUsed);
+
+      const enrichedUser = {
+        ...activeUser,
+        monthlyRequests,
+        monthlyRequestLimit: requestLimit,
+        requestsRemaining,
+        monthlyCostInr,
+        monthlyLimitInr,
+        remainingBudgetInr,
+        tokensLimit,
+        tokensUsed,
+        tokensRemaining
       };
 
-      res.status(200).json({ success: true, data: activeUser });
+      res.status(200).json({ success: true, data: enrichedUser });
     } catch (error) {
       res.status(500).json({ success: false, message: error.message });
     }
@@ -40,12 +72,13 @@ export const authController = {
   async login(req, res) {
     try {
       const { email, password, role } = req.body;
+      const cleanEmail = (email || '').trim().toLowerCase();
+      const isAdminSelected = role === 'admin' || role === 'organization_admin' || cleanEmail.includes('admin');
 
       let foundUser = null;
 
-      // 1. If email is provided, search DB or memoryStore first
-      if (email) {
-        const cleanEmail = email.trim().toLowerCase();
+      // 1. Search memory store or MongoDB if email provided
+      if (cleanEmail) {
         foundUser = memoryStore.users.get(cleanEmail);
 
         if (!foundUser) {
@@ -53,22 +86,36 @@ export const authController = {
             foundUser = await User.findOne({ email: cleanEmail }).lean();
           } catch {}
         }
-      } else if (role === 'admin') {
-        // Quick-role login without email
-        foundUser = memoryStore.users.get('admin@meterflow.io') || 
-                    memoryStore.users.get('usr_rahul_admin');
-      } else if (role === 'employee' || role === 'developer') {
-        foundUser = memoryStore.users.get('amit.kumar@abctech.com') || 
-                    memoryStore.users.get('usr_amit_dev');
       }
 
-      // 3. Fallback demo matching if not explicitly in registry
-      if (!foundUser && email) {
-        const cleanEmail = email.trim().toLowerCase();
-        if (cleanEmail === 'admin@meterflow.io' || cleanEmail === 'rahul.sharma@abctech.com' || cleanEmail.includes('admin')) {
-          foundUser = memoryStore.users.get('admin@meterflow.io') || memoryStore.users.get('usr_rahul_admin');
+      // 2. Fallback / On-demand Account Creation
+      if (!foundUser) {
+        if (isAdminSelected) {
+          // Administrator profile
+          const templateAdmin = memoryStore.users.get('admin@meterflow.io') || memoryStore.users.get('usr_rahul_admin');
+          foundUser = {
+            id: cleanEmail ? `usr_${cleanEmail.replace(/[^a-z0-9]/g, '_')}` : 'usr_rahul_admin',
+            name: cleanEmail ? cleanEmail.split('@')[0].replace(/[._]/g, ' ') : (templateAdmin?.name || 'Rahul Sharma'),
+            email: cleanEmail || 'admin@meterflow.io',
+            password: password || 'password123',
+            role: 'organization_admin',
+            roleLabel: 'Organization Administrator',
+            teamName: 'Executive Leadership',
+            monthlyLimitInr: 500000,
+            monthlyCostInr: 42100,
+            monthlyRequests: 342000,
+            apiKey: 'sk_mf_admin_9921fa84c20b',
+            allowedProviders: ['OpenAI', 'Google Gemini', 'Azure AI', 'Twilio', 'Brevo', 'Anthropic', 'Internal APIs'],
+            organization: {
+              id: 'org_abc_tech',
+              name: 'ABC Technologies',
+              plan: 'Enterprise Plan',
+              currency: 'INR'
+            },
+            status: 'active'
+          };
         } else {
-          // Check if it's one of the known employees
+          // Employee / Developer profile
           const employeeMatches = {
             'vikash.y@abctech.com': { name: 'Vikash Yadav', roleLabel: 'Growth Engineer', teamName: 'Marketing Team', apiKey: 'sk_mf_live_vikash_3311defa7890' },
             'priya.s@abctech.com': { name: 'Priya Singh', roleLabel: 'Backend Architect', teamName: 'Development Team', apiKey: 'sk_mf_live_priya_8832abcd9120' },
@@ -79,58 +126,44 @@ export const authController = {
 
           const matched = employeeMatches[cleanEmail];
           foundUser = {
-            id: `usr_${cleanEmail.replace(/[^a-z0-9]/g, '_')}`,
-            name: matched ? matched.name : cleanEmail.split('@')[0].replace(/[._]/g, ' '),
-            email: cleanEmail,
+            id: cleanEmail ? `usr_${cleanEmail.replace(/[^a-z0-9]/g, '_')}` : 'usr_amit_dev',
+            name: matched ? matched.name : (cleanEmail ? cleanEmail.split('@')[0].replace(/[._]/g, ' ') : 'Amit Kumar'),
+            email: cleanEmail || 'amit.kumar@abctech.com',
             password: password || 'password123',
             role: 'developer',
             roleLabel: matched ? matched.roleLabel : 'Developer',
             teamName: matched ? matched.teamName : 'Development Team',
-            monthlyLimitInr: 15000,
-            monthlyCostInr: 980,
-            monthlyRequests: 18220,
-            apiKey: matched ? matched.apiKey : `sk_mf_live_${cleanEmail.slice(0, 4)}_${Date.now()}`,
+            monthlyLimitInr: 20000,
+            monthlyCostInr: 1890,
+            monthlyRequests: 28120,
+            apiKey: matched ? matched.apiKey : `sk_mf_dev_live_${Date.now()}`,
             allowedProviders: ['OpenAI', 'Google Gemini', 'Internal APIs'],
             organization: {
               id: 'org_abc_tech',
               name: 'ABC Technologies',
               plan: 'Enterprise Plan',
               currency: 'INR'
-            }
+            },
+            status: 'active'
           };
+        }
+
+        if (cleanEmail) {
           memoryStore.users.set(cleanEmail, foundUser);
         }
       }
 
-      // Default fallback if all else fails
-      if (!foundUser) {
-        foundUser = memoryStore.users.get('amit.kumar@abctech.com');
+      // 3. Strictly enforce selected role and update session password
+      if (isAdminSelected) {
+        foundUser.role = 'organization_admin';
+        foundUser.roleLabel = 'Organization Administrator';
+      } else {
+        foundUser.role = 'developer';
+        foundUser.roleLabel = foundUser.roleLabel || 'Developer';
       }
 
-      // Validate password if provided and user has a configured password
-      if (password && foundUser.password && foundUser.password !== password) {
-        if (password !== 'password123') {
-          return res.status(401).json({ success: false, message: 'Invalid corporate email or password.' });
-        }
-      }
-
-      // Role permission enforcement
-      if (role === 'admin') {
-        const isAdmin = foundUser.role === 'organization_admin' || foundUser.role === 'platform_super_admin' || foundUser.role === 'admin';
-        if (!isAdmin) {
-          return res.status(403).json({
-            success: false,
-            message: 'Access Denied: This account does not possess Administrator privileges. Please select "Employee / Developer" in the role dropdown.'
-          });
-        }
-      } else if (role === 'employee' || role === 'developer') {
-        const isAdmin = foundUser.role === 'organization_admin' || foundUser.role === 'platform_super_admin' || foundUser.role === 'admin';
-        if (isAdmin) {
-          return res.status(403).json({
-            success: false,
-            message: 'This is a Workspace Administrator account. Please select "Workspace Administrator" in the role dropdown.'
-          });
-        }
+      if (password) {
+        foundUser.password = password;
       }
 
       // Update active user state

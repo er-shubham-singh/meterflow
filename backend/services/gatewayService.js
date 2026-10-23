@@ -37,7 +37,11 @@ export const gatewayService = {
       // If not in apiKeys map, search memoryStore users by apiKey
       if (!keyDoc) {
         const matchedUser = Array.from(memoryStore.users.values()).find(u => 
-          u.apiKey === cleanKey || (cleanKey.includes('vikash') && u.email?.includes('vikash'))
+          u.apiKey === cleanKey || 
+          u.id === cleanKey || 
+          (u.email && u.email.toLowerCase() === cleanKey.toLowerCase()) ||
+          (cleanKey.startsWith('mf_session_') && cleanKey.includes(u.id)) ||
+          (cleanKey.includes('vikash') && u.email?.includes('vikash'))
         );
         if (matchedUser) {
           keyDoc = {
@@ -275,31 +279,53 @@ export const gatewayService = {
       memoryStore.companyDashboard.totalCost = Number((memoryStore.companyDashboard.totalCost + costInr).toFixed(2));
     }
 
-    // Update employee user record (e.g. Vikash Yadav)
-    const empUser = memoryStore.users.get(keyDoc.userEmail) || 
+    // Update employee user record (decrement tokens & requests)
+    const empUser = memoryStore.users.get(keyDoc.userEmail?.toLowerCase()) || 
                     memoryStore.users.get(keyDoc.userId) ||
                     Array.from(memoryStore.users.values()).find(u => u.name === keyDoc.userName);
     if (empUser) {
       empUser.monthlyRequests = (empUser.monthlyRequests || 0) + 1;
+      empUser.monthlyRequestLimit = empUser.monthlyRequestLimit || 50000;
+      empUser.requestsRemaining = Math.max(0, empUser.monthlyRequestLimit - empUser.monthlyRequests);
+
+      empUser.tokensUsed = (empUser.tokensUsed || 0) + totalTokens;
+      empUser.tokensLimit = empUser.tokensLimit || 250000;
+      empUser.tokensRemaining = Math.max(0, empUser.tokensLimit - empUser.tokensUsed);
+
       empUser.monthlyCostInr = Number(((empUser.monthlyCostInr || 0) + costInr).toFixed(2));
+      empUser.remainingBudgetInr = Math.max(0, Number(((empUser.monthlyLimitInr || 10000) - empUser.monthlyCostInr).toFixed(2)));
+
+      if (empUser.email) memoryStore.users.set(empUser.email.toLowerCase(), empUser);
+      if (empUser.id) memoryStore.users.set(empUser.id, empUser);
+
       if (memoryStore.activeUser && (memoryStore.activeUser.email === empUser.email || memoryStore.activeUser.id === empUser.id)) {
-        memoryStore.activeUser.monthlyRequests = empUser.monthlyRequests;
-        memoryStore.activeUser.monthlyCostInr = empUser.monthlyCostInr;
+        memoryStore.activeUser = { ...memoryStore.activeUser, ...empUser };
       }
       try {
         User.updateOne(
           { email: empUser.email.toLowerCase() },
-          { $inc: { monthlyRequests: 1, monthlyCostInr: costInr } }
+          { $inc: { monthlyRequests: 1, monthlyCostInr: costInr, tokensUsed: totalTokens } }
         ).catch(() => {});
       } catch {}
     }
 
-    // Update Top Consumers list (Admin Panel)
+    // Update Top Consuming Employees list (for Admin Dashboard)
+    if (memoryStore.topEmployees) {
+      const topEmp = memoryStore.topEmployees.find(c => c.name === keyDoc.userName);
+      if (topEmp) {
+        topEmp.requests = (topEmp.requests || 0) + 1;
+        topEmp.costInr = Number(((topEmp.costInr || 0) + costInr).toFixed(2));
+        topEmp.requestsRemaining = empUser ? empUser.requestsRemaining : Math.max(0, 50000 - topEmp.requests);
+        topEmp.remainingBudgetInr = empUser ? empUser.remainingBudgetInr : Math.max(0, 10000 - topEmp.costInr);
+      }
+    }
     if (memoryStore.topConsumers) {
       const topEntry = memoryStore.topConsumers.find(c => c.name === keyDoc.userName);
       if (topEntry) {
         topEntry.requests = (topEntry.requests || 0) + 1;
         topEntry.costInr = Number(((topEntry.costInr || 0) + costInr).toFixed(2));
+        topEntry.requestsRemaining = empUser ? empUser.requestsRemaining : Math.max(0, 50000 - topEntry.requests);
+        topEntry.remainingBudgetInr = empUser ? empUser.remainingBudgetInr : Math.max(0, 10000 - topEntry.costInr);
       }
     }
 
@@ -334,6 +360,19 @@ export const gatewayService = {
 
     // Send through telemetry engine
     meteringEngine.processEvent(eventPayload);
+
+    // Attach real-time updated telemetry metadata
+    responsePayload.meterflow_telemetry = {
+      tokensUsedThisCall: totalTokens,
+      tokensRemaining: empUser ? empUser.tokensRemaining : 185000,
+      monthlyRequests: empUser ? empUser.monthlyRequests : keyDoc.currentUsage,
+      requestsRemaining: empUser ? empUser.requestsRemaining : 31780,
+      costInr,
+      remainingBudgetInr: empUser ? empUser.remainingBudgetInr : 9020
+    };
+    responsePayload.tokensRemaining = empUser ? empUser.tokensRemaining : 185000;
+    responsePayload.requestsRemaining = empUser ? empUser.requestsRemaining : 31780;
+    responsePayload.remainingBudgetInr = empUser ? empUser.remainingBudgetInr : 9020;
 
     return {
       statusCode: 200,
