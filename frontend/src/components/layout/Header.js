@@ -369,10 +369,10 @@ export default function Header({
         </div>
       </div>
 
-      {/* Desktop Controls (Full Enterprise Bar for md: and above) */}
-      <div className="hidden md:flex items-center gap-2 sm:gap-2.5 shrink-0 ml-auto">
+      {/* Desktop Controls (Full Enterprise Bar for md: and above - Standardized flex gap: 12px per TICKET-03) */}
+      <div className="hidden md:flex items-center gap-3 shrink-0 ml-auto flex-nowrap">
         {/* Global Multi-Currency Selector (INR ₹ / USD $ / EUR €) */}
-        <div className="flex items-center bg-[var(--bg-inset)] border border-[var(--border-subtle)] rounded-lg p-0.5 shadow-sm">
+        <div className="flex items-center bg-[var(--bg-inset)] border border-[var(--border-subtle)] rounded-lg p-0.5 shadow-sm shrink-0">
           {CURRENCIES.map((c) => (
             <button
               key={c.id}
@@ -391,7 +391,7 @@ export default function Header({
         </div>
 
         {/* Search Input (Hidden on tablets, visible on large desktop) */}
-        <div className="relative hidden xl:block w-44 lg:w-52">
+        <div className="relative hidden 2xl:block w-48">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
@@ -400,16 +400,16 @@ export default function Header({
           />
         </div>
 
-        {/* Date Filter Range */}
-        <div className="hidden md:flex items-center gap-1.5 bg-[var(--bg-inset)] border border-[var(--border-subtle)] px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)]">
-          <Calendar size={13} className="text-blue-500" />
+        {/* Date Filter Range - Standardized alignment without overlap */}
+        <div className="hidden lg:flex items-center gap-2 bg-[var(--bg-inset)] border border-[var(--border-subtle)] px-3 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)] whitespace-nowrap shrink-0">
+          <Calendar size={13} className="text-blue-500 shrink-0" />
           <span>Oct 1 - Oct 31, 2026</span>
         </div>
 
         {/* Export Button */}
         <button
           onClick={handleExportClick}
-          className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-[var(--border-subtle)] hover:bg-slate-50 dark:hover:bg-slate-700 text-[var(--text-heading)] px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold cursor-pointer transition-all shadow-sm"
+          className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-[var(--border-subtle)] hover:bg-slate-50 dark:hover:bg-slate-700 text-[var(--text-heading)] px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold cursor-pointer transition-all shadow-sm shrink-0 whitespace-nowrap"
           title="Export CSV Report"
         >
           <Download size={13} className="text-slate-600 dark:text-slate-300" />
@@ -420,24 +420,24 @@ export default function Header({
         <button
           onClick={handleQuickBurst}
           disabled={isBursting}
-          className="flex items-center gap-1 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold cursor-pointer transition-all disabled:opacity-50"
+          className="flex items-center gap-1 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60 px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold cursor-pointer transition-all disabled:opacity-50 shrink-0 whitespace-nowrap"
           title="Send a quick live test API pulse"
         >
           <Zap size={13} className="text-blue-600 dark:text-blue-400" />
-          <span className="hidden lg:inline">{isBursting ? 'Pulse...' : 'Test Pulse'}</span>
+          <span className="hidden xl:inline">{isBursting ? 'Pulse...' : 'Test Pulse'}</span>
         </button>
 
         {/* Refresh Button */}
         <button
           onClick={handleManualRefresh}
-          className="w-8 h-8 rounded-lg border border-[var(--border-subtle)] hover:bg-[var(--bg-inset)] flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer transition-all"
+          className="w-8 h-8 rounded-lg border border-[var(--border-subtle)] hover:bg-[var(--bg-inset)] flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer transition-all shrink-0"
           title="Refresh metrics"
         >
           <RefreshCw size={14} className={isRefreshing ? 'animate-spin text-blue-600' : ''} />
         </button>
 
         {/* Notification Bell */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             className="w-8 h-8 rounded-lg border border-[var(--border-subtle)] hover:bg-[var(--bg-inset)] flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer transition-all"
             title="Notifications"
@@ -448,10 +448,10 @@ export default function Header({
         </div>
 
         {/* User Profile Avatar Pill & Dropdown */}
-        <div className="relative pl-2 border-l border-[var(--border-subtle)]" ref={userMenuRef}>
+        <div className="relative pl-3 border-l border-[var(--border-subtle)] shrink-0" ref={userMenuRef}>
           <button
             onClick={() => setIsUserMenuOpen(prev => !prev)}
-            className="flex items-center gap-2 cursor-pointer p-1 rounded-xl hover:bg-[var(--bg-hover-subtle)] transition-colors border-0 bg-transparent text-left"
+            className="flex items-center gap-2 cursor-pointer p-1 rounded-xl hover:bg-[var(--bg-hover-subtle)] transition-colors border-0 bg-transparent text-left whitespace-nowrap"
           >
             <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
               {currentUser.name ? currentUser.name[0] : 'R'}
@@ -478,6 +478,24 @@ export default function Header({
                   </span>
                   <span className="text-[10px] text-slate-400">{currentUser.teamName || 'ABC Technologies'}</span>
                 </div>
+                {currentUser.tokensRemaining !== undefined && (
+                  <div className="mt-2 pt-2 border-t border-[var(--border-subtle)] flex flex-col gap-1 text-[10px]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[var(--text-muted)] font-medium">Tokens Left:</span>
+                      <span className="font-bold text-blue-600 dark:text-blue-400 font-mono">
+                        {currentUser.tokensRemaining.toLocaleString()}
+                      </span>
+                    </div>
+                    {currentUser.requestsRemaining !== undefined && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-[var(--text-muted)] font-medium">Requests Left:</span>
+                        <span className="font-bold text-purple-600 dark:text-purple-400 font-mono">
+                          {currentUser.requestsRemaining.toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <button

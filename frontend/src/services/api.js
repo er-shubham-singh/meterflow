@@ -1,5 +1,19 @@
 export const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1').replace(/\/+$/, '');
 
+function getAuthHeaders(extra = {}) {
+  let token = null;
+  if (typeof window !== 'undefined') {
+    try {
+      token = localStorage.getItem('meterflow_token');
+    } catch {}
+  }
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    ...extra
+  };
+}
+
 async function handleResponse(res) {
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
@@ -215,7 +229,9 @@ export const api = {
   },
 
   async getEmployeeDashboard() {
-    const res = await fetch(`${API_BASE}/api-keys/employee-dashboard`);
+    const res = await fetch(`${API_BASE}/api-keys/employee-dashboard`, {
+      headers: getAuthHeaders()
+    });
     return handleResponse(res);
   },
 
@@ -229,7 +245,7 @@ export const api = {
   async sendGatewayProxy(payload) {
     const res = await fetch(`${API_BASE}/gateway/proxy`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(payload)
     });
     return handleResponse(res);
@@ -237,7 +253,9 @@ export const api = {
 
   // Auth & Roles
   async getMe() {
-    const res = await fetch(`${API_BASE}/auth/me`);
+    const res = await fetch(`${API_BASE}/auth/me`, {
+      headers: getAuthHeaders()
+    });
     return handleResponse(res);
   },
 
@@ -253,7 +271,7 @@ export const api = {
   async logout() {
     const res = await fetch(`${API_BASE}/auth/logout`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
+      headers: getAuthHeaders()
     });
     return handleResponse(res);
   },
@@ -261,7 +279,7 @@ export const api = {
   async switchRole(role) {
     const res = await fetch(`${API_BASE}/auth/switch-role`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ role })
     });
     return handleResponse(res);
@@ -269,7 +287,9 @@ export const api = {
 
   // Employees Management (Admin Panel)
   async getEmployees() {
-    const res = await fetch(`${API_BASE}/employees`);
+    const res = await fetch(`${API_BASE}/employees`, {
+      headers: getAuthHeaders()
+    });
     return handleResponse(res);
   },
 

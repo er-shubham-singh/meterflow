@@ -139,22 +139,41 @@ export default function EmployeesScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
         }
       >
-        {/* Pool Summary Cards */}
+        {/* Pool Summary Cards with Circular Progress */}
         <View style={styles.poolGrid}>
           <View style={styles.poolCard}>
             <Text style={styles.poolLabel}>Allocated Pool</Text>
+            <View style={styles.poolRingWrapper}>
+              <View style={[styles.poolRingOuter, { borderColor: COLORS.primary }]}>
+                <Text style={[styles.poolRingText, { color: COLORS.primary }]}>100%</Text>
+              </View>
+            </View>
             <Text style={styles.poolValue}>{formatCurrency(totalAllocated)}</Text>
             <Text style={styles.poolSub}>{employees.length} developers</Text>
           </View>
 
           <View style={styles.poolCard}>
             <Text style={styles.poolLabel}>Total Spent</Text>
+            <View style={styles.poolRingWrapper}>
+              <View style={[styles.poolRingOuter, { borderColor: COLORS.primaryLight }]}>
+                <Text style={[styles.poolRingText, { color: COLORS.primaryLight }]}>
+                  {Math.round((totalSpent / (totalAllocated || 1)) * 100)}%
+                </Text>
+              </View>
+            </View>
             <Text style={[styles.poolValue, { color: COLORS.primaryLight }]}>{formatCurrency(totalSpent)}</Text>
             <Text style={styles.poolSub}>{Math.round((totalSpent / (totalAllocated || 1)) * 100)}% utilized</Text>
           </View>
 
           <View style={styles.poolCard}>
             <Text style={styles.poolLabel}>Remaining Pool</Text>
+            <View style={styles.poolRingWrapper}>
+              <View style={[styles.poolRingOuter, { borderColor: COLORS.success }]}>
+                <Text style={[styles.poolRingText, { color: COLORS.success }]}>
+                  {Math.max(0, 100 - Math.round((totalSpent / (totalAllocated || 1)) * 100))}%
+                </Text>
+              </View>
+            </View>
             <Text style={[styles.poolValue, { color: COLORS.success }]}>{formatCurrency(totalRemaining)}</Text>
             <Text style={styles.poolSub}>Available</Text>
           </View>
@@ -471,9 +490,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: SPACING.md,
-    gap: SPACING.md,
-    paddingBottom: SPACING.xxl,
+    paddingHorizontal: 16, // Standard 16px side padding per Audit Spec
+    paddingVertical: 16,
+    gap: 16,
+    paddingBottom: 40,
   },
   poolGrid: {
     flexDirection: 'row',
@@ -486,22 +506,45 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     borderWidth: 1,
     borderColor: COLORS.border,
+    alignItems: 'center',
+  },
+  poolRingWrapper: {
+    marginVertical: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  poolRingOuter: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 3.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  poolRingText: {
+    fontSize: 10,
+    fontWeight: '800',
+    fontFamily: 'monospace',
   },
   poolLabel: {
     fontSize: 10,
     color: COLORS.textSecondary,
     fontWeight: '600',
+    textAlign: 'center',
   },
   poolValue: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '800',
     color: COLORS.text,
     fontFamily: 'monospace',
     marginVertical: 2,
+    textAlign: 'center',
   },
   poolSub: {
     fontSize: 9,
     color: COLORS.textMuted,
+    textAlign: 'center',
   },
   actionHeader: {
     flexDirection: 'row',

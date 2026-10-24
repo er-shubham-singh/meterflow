@@ -6,6 +6,7 @@ import {
   ScrollView,
   RefreshControl,
   Pressable,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, RADIUS, SHADOWS } from '../../constants/theme';
@@ -130,16 +131,25 @@ export default function AdminDashboardScreen({ navigation }) {
           </View>
         </View>
 
-        {/* 4-Card Executive KPI Grid */}
+        {/* 4-Card Executive KPI Grid with Circular Progress Graphs */}
         <View style={styles.kpiGrid}>
           {/* 1. Total Requests */}
           <View style={styles.kpiCard}>
             <View style={styles.kpiHeader}>
               <Text style={styles.kpiLabel}>Total Requests</Text>
               <View style={[styles.kpiIconBox, { backgroundColor: `${COLORS.primary}12` }]}>
-                <Ionicons name="pulse" size={16} color={COLORS.primary} />
+                <Ionicons name="pulse" size={14} color={COLORS.primary} />
               </View>
             </View>
+
+            {/* Circular Progress Ring */}
+            <View style={styles.kpiRingContainer}>
+              <View style={[styles.kpiRingOuter, { borderColor: COLORS.primary }]}>
+                <Text style={[styles.kpiRingValue, { color: COLORS.primary }]}>82%</Text>
+                <Text style={styles.kpiRingLabel}>CAPACITY</Text>
+              </View>
+            </View>
+
             <Text style={styles.kpiValue}>
               {metrics.totalRequests ? metrics.totalRequests.toLocaleString() : '245,230'}
             </Text>
@@ -154,9 +164,18 @@ export default function AdminDashboardScreen({ navigation }) {
             <View style={styles.kpiHeader}>
               <Text style={styles.kpiLabel}>Total Showback</Text>
               <View style={[styles.kpiIconBox, { backgroundColor: `${COLORS.success}12` }]}>
-                <Ionicons name="cash-outline" size={16} color={COLORS.success} />
+                <Ionicons name="cash-outline" size={14} color={COLORS.success} />
               </View>
             </View>
+
+            {/* Circular Progress Ring */}
+            <View style={styles.kpiRingContainer}>
+              <View style={[styles.kpiRingOuter, { borderColor: COLORS.success }]}>
+                <Text style={[styles.kpiRingValue, { color: COLORS.success }]}>62%</Text>
+                <Text style={styles.kpiRingLabel}>BUDGET</Text>
+              </View>
+            </View>
+
             <Text style={styles.kpiValue}>
               {formatCurrency(metrics.totalCost || 12450)}
             </Text>
@@ -171,11 +190,20 @@ export default function AdminDashboardScreen({ navigation }) {
             <View style={styles.kpiHeader}>
               <Text style={styles.kpiLabel}>Active Employees</Text>
               <View style={[styles.kpiIconBox, { backgroundColor: `${COLORS.secondary}12` }]}>
-                <Ionicons name="people" size={16} color={COLORS.secondary} />
+                <Ionicons name="people" size={14} color={COLORS.secondary} />
               </View>
             </View>
+
+            {/* Circular Progress Ring */}
+            <View style={styles.kpiRingContainer}>
+              <View style={[styles.kpiRingOuter, { borderColor: COLORS.secondary }]}>
+                <Text style={[styles.kpiRingValue, { color: COLORS.secondary }]}>93%</Text>
+                <Text style={styles.kpiRingLabel}>ACTIVE</Text>
+              </View>
+            </View>
+
             <Text style={styles.kpiValue}>
-              {metrics.activeEmployees || 28}
+              {metrics.activeEmployees || 28} Members
             </Text>
             <View style={styles.kpiTrendRow}>
               <Ionicons name="arrow-up" size={12} color={COLORS.success} />
@@ -188,11 +216,20 @@ export default function AdminDashboardScreen({ navigation }) {
             <View style={styles.kpiHeader}>
               <Text style={styles.kpiLabel}>Connected APIs</Text>
               <View style={[styles.kpiIconBox, { backgroundColor: `${COLORS.accent}12` }]}>
-                <Ionicons name="git-network" size={16} color={COLORS.accent} />
+                <Ionicons name="git-network" size={14} color={COLORS.accent} />
               </View>
             </View>
+
+            {/* Circular Progress Ring */}
+            <View style={styles.kpiRingContainer}>
+              <View style={[styles.kpiRingOuter, { borderColor: COLORS.accent }]}>
+                <Text style={[styles.kpiRingValue, { color: COLORS.accent }]}>100%</Text>
+                <Text style={styles.kpiRingLabel}>UPTIME</Text>
+              </View>
+            </View>
+
             <Text style={styles.kpiValue}>
-              {metrics.connectedApis || 8}
+              {metrics.connectedApis || 8} Gateways
             </Text>
             <View style={styles.kpiTrendRow}>
               <Ionicons name="checkmark-circle" size={12} color={COLORS.primary} />
@@ -343,9 +380,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: SPACING.md,
-    gap: SPACING.md,
-    paddingBottom: SPACING.xxxl,
+    paddingHorizontal: 16, // Standard 16px side padding per Audit Spec
+    paddingVertical: 16,
+    gap: 16,
+    paddingBottom: 40,
   },
 
   // Banner
@@ -453,11 +491,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  kpiRingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: SPACING.sm,
+  },
+  kpiRingOuter: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    borderWidth: 4.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    ...SHADOWS.sm,
+  },
+  kpiRingValue: {
+    fontSize: 13,
+    fontWeight: '900',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    lineHeight: 14,
+  },
+  kpiRingLabel: {
+    fontSize: 7.5,
+    fontWeight: '800',
+    color: COLORS.textMuted,
+    letterSpacing: 0.5,
+    marginTop: 1,
+  },
   kpiValue: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '900',
     color: COLORS.text,
     marginTop: 2,
+    textAlign: 'center',
   },
   kpiTrendRow: {
     flexDirection: 'row',

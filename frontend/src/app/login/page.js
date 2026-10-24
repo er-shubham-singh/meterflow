@@ -80,31 +80,31 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#07090e] text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-[#07090e] text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-10 relative overflow-hidden">
       {/* Background radial glow accents */}
-      <div className="absolute top-0 left-1/3 w-[550px] h-[550px] bg-blue-600/10 rounded-full blur-[130px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/3 w-[450px] h-[450px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-1/3 w-[650px] h-[650px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/3 w-[550px] h-[550px] bg-indigo-600/10 rounded-full blur-[130px] pointer-events-none" />
 
-      {/* Main Container */}
-      <div className="w-full max-w-[440px] relative z-10 flex flex-col gap-6">
+      {/* Main Container - Adjusted to max-width: 540px per Figma & TICKET-03 */}
+      <div className="w-full max-w-[540px] mx-auto relative z-10 flex flex-col gap-6 my-auto">
         {/* Brand Header */}
         <div className="text-center flex flex-col items-center">
           <Link href="/" className="flex items-center gap-2.5 mb-2.5 no-underline group">
-            <div className="w-11 h-11 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform">
-              <Zap size={22} className="text-white fill-white" />
+            <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform">
+              <Zap size={24} className="text-white fill-white" />
             </div>
-            <span className="text-2xl font-black tracking-tight text-white">
+            <span className="text-2xl sm:text-3xl font-black tracking-tight text-white">
               Meter<span className="text-blue-500">Flow</span>
             </span>
           </Link>
-          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Enterprise Sign In</h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Enterprise Sign In</h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Usage-Based Pricing, API Gateway & Cost Showback Engine
           </p>
         </div>
 
         {/* Professional Login Form Card */}
-        <div className="bg-[#0D111A]/95 border border-slate-800 p-6 sm:p-8 rounded-2xl backdrop-blur-2xl shadow-2xl flex flex-col gap-5">
+        <div className="bg-[#0D111A]/95 border border-slate-800/90 p-6 sm:p-10 rounded-3xl backdrop-blur-2xl shadow-2xl flex flex-col gap-6">
           {errorMsg && (
             <div className="p-3.5 rounded-xl bg-rose-950/50 border border-rose-800/60 text-rose-300 text-xs flex items-start gap-2.5 animate-in fade-in duration-200">
               <AlertCircle size={16} className="shrink-0 mt-0.5 text-rose-400" />

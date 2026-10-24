@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.card,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: 16, // Enforce standard 16px side padding per Audit Spec
     paddingBottom: SPACING.sm + 2,
     ...SHADOWS.sm,
     zIndex: 10,

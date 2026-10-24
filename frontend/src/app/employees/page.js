@@ -154,6 +154,13 @@ export default function EmployeesPage() {
   const totalRequests = employees.reduce((sum, e) => sum + (Number(e.monthlyRequests) || 0), 0);
   const overallRemainingPercent = totalLimit > 0 ? Math.round((totalRemaining / totalLimit) * 100) : 100;
 
+  const totalTokensLimit = employees.reduce((sum, e) => sum + (Number(e.tokensLimit) || 250000), 0);
+  const totalTokensUsed = employees.reduce((sum, e) => sum + (Number(e.tokensUsed) || 0), 0);
+  const totalTokensRemaining = employees.reduce((sum, e) => sum + (e.tokensRemaining !== undefined ? Number(e.tokensRemaining) : Math.max(0, (Number(e.tokensLimit) || 250000) - (Number(e.tokensUsed) || 0))), 0);
+  const overallTokensRemainingPercent = totalTokensLimit > 0 ? Math.round((totalTokensRemaining / totalTokensLimit) * 100) : 100;
+
+  const totalRequestsRemaining = employees.reduce((sum, e) => sum + (e.requestsRemaining !== undefined ? Number(e.requestsRemaining) : Math.max(0, (Number(e.requestLimit) || 50000) - (Number(e.monthlyRequests) || 0))), 0);
+
   return (
     <div className="w-full min-h-screen bg-[#F4F6F9] text-slate-800">
       <Header
@@ -163,13 +170,18 @@ export default function EmployeesPage() {
       />
 
       <main className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto flex flex-col gap-6">
-        {/* Top 4 Summary Metrics Cards with Live Remaining Pool */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Top Summary Metrics Cards with Circular Progress Graphs */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {/* Card 1: Total Allocated Budget */}
           <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500">Total Allocated Budget</span>
-              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                <Wallet size={16} />
+              <span className="text-xs font-semibold text-slate-500">Total Allocated</span>
+              <div className="relative w-11 h-11 flex items-center justify-center shrink-0">
+                <svg width="44" height="44" className="transform -rotate-90">
+                  <circle cx="22" cy="22" r="18" stroke="#F1F5F9" strokeWidth="4" fill="transparent" />
+                  <circle cx="22" cy="22" r="18" stroke="#2563EB" strokeWidth="4" strokeDasharray="113.1" strokeDashoffset="0" strokeLinecap="round" fill="transparent" />
+                </svg>
+                <span className="absolute text-[9px] font-black font-mono text-blue-600">100%</span>
               </div>
             </div>
             <div className="text-xl sm:text-2xl font-black text-slate-900 mt-2 font-mono">
@@ -180,11 +192,28 @@ export default function EmployeesPage() {
             </div>
           </div>
 
+          {/* Card 2: Total Cost Spent */}
           <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500">Total Cost Spent</span>
-              <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                <ArrowUpRight size={16} />
+              <div className="relative w-11 h-11 flex items-center justify-center shrink-0">
+                <svg width="44" height="44" className="transform -rotate-90">
+                  <circle cx="22" cy="22" r="18" stroke="#F1F5F9" strokeWidth="4" fill="transparent" />
+                  <circle 
+                    cx="22" 
+                    cy="22" 
+                    r="18" 
+                    stroke="#6366F1" 
+                    strokeWidth="4" 
+                    strokeDasharray="113.1" 
+                    strokeDashoffset={113.1 * (1 - Math.min(1, totalSpent / (totalLimit || 1)))} 
+                    strokeLinecap="round" 
+                    fill="transparent" 
+                  />
+                </svg>
+                <span className="absolute text-[9px] font-black font-mono text-indigo-600">
+                  {totalLimit > 0 ? Math.min(100, Math.round((totalSpent / totalLimit) * 100)) : 0}%
+                </span>
               </div>
             </div>
             <div className="text-xl sm:text-2xl font-black text-slate-900 mt-2 font-mono">
@@ -195,30 +224,86 @@ export default function EmployeesPage() {
             </div>
           </div>
 
-          {/* Card 3: REMAINING QUOTA POOL */}
+          {/* Card 3: REMAINING BUDGET POOL */}
           <div className="bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm flex flex-col justify-between bg-gradient-to-br from-white to-emerald-50/40">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold text-emerald-800">Remaining Quota Balance</span>
+                <span className="text-xs font-bold text-emerald-800">Remaining Budget</span>
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-                Live Pool
-              </span>
+              <div className="relative w-11 h-11 flex items-center justify-center shrink-0">
+                <svg width="44" height="44" className="transform -rotate-90">
+                  <circle cx="22" cy="22" r="18" stroke="#E2E8F0" strokeWidth="4" fill="transparent" />
+                  <circle 
+                    cx="22" 
+                    cy="22" 
+                    r="18" 
+                    stroke="#10B981" 
+                    strokeWidth="4" 
+                    strokeDasharray="113.1" 
+                    strokeDashoffset={113.1 * (1 - Math.min(1, overallRemainingPercent / 100))} 
+                    strokeLinecap="round" 
+                    fill="transparent" 
+                  />
+                </svg>
+                <span className="absolute text-[9px] font-black font-mono text-emerald-700">
+                  {overallRemainingPercent}%
+                </span>
+              </div>
             </div>
             <div className="text-xl sm:text-2xl font-black text-emerald-600 mt-2 font-mono">
               {formatCurrency(totalRemaining)}
             </div>
             <div className="text-[11px] text-emerald-700 font-semibold mt-1">
-              {overallRemainingPercent}% quota remaining available
+              {overallRemainingPercent}% budget available
             </div>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+          {/* Card 4: REMAINING TOKENS POOL */}
+          <div className="bg-white p-5 rounded-2xl border border-blue-200 shadow-sm flex flex-col justify-between bg-gradient-to-br from-white to-blue-50/40">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500">Total Gateway Invocations</span>
-              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-                <Activity size={16} />
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-blue-800">Tokens Pool</span>
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+              </div>
+              <div className="relative w-11 h-11 flex items-center justify-center shrink-0">
+                <svg width="44" height="44" className="transform -rotate-90">
+                  <circle cx="22" cy="22" r="18" stroke="#E2E8F0" strokeWidth="4" fill="transparent" />
+                  <circle 
+                    cx="22" 
+                    cy="22" 
+                    r="18" 
+                    stroke="#0284C7" 
+                    strokeWidth="4" 
+                    strokeDasharray="113.1" 
+                    strokeDashoffset={113.1 * (1 - Math.min(1, overallTokensRemainingPercent / 100))} 
+                    strokeLinecap="round" 
+                    fill="transparent" 
+                  />
+                </svg>
+                <span className="absolute text-[9px] font-black font-mono text-blue-700">
+                  {overallTokensRemainingPercent}%
+                </span>
+              </div>
+            </div>
+            <div className="text-xl sm:text-2xl font-black text-blue-600 mt-2 font-mono">
+              {totalTokensRemaining.toLocaleString()}
+            </div>
+            <div className="text-[11px] text-blue-700 font-semibold mt-1">
+              {overallTokensRemainingPercent}% tokens remaining ({totalTokensUsed.toLocaleString()} used)
+            </div>
+          </div>
+
+          {/* Card 5: Invocations & Remaining */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between col-span-1 sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-500">Invocations</span>
+              <div className="relative w-11 h-11 flex items-center justify-center shrink-0">
+                <svg width="44" height="44" className="transform -rotate-90">
+                  <circle cx="22" cy="22" r="18" stroke="#F1F5F9" strokeWidth="4" fill="transparent" />
+                  <circle cx="22" cy="22" r="18" stroke="#F59E0B" strokeWidth="4" strokeDasharray="113.1" strokeDashoffset={113.1 * 0.18} strokeLinecap="round" fill="transparent" />
+                </svg>
+                <span className="absolute text-[9px] font-black font-mono text-amber-600">82%</span>
               </div>
             </div>
             <div className="text-xl sm:text-2xl font-black text-slate-900 mt-2 font-mono">
@@ -226,7 +311,7 @@ export default function EmployeesPage() {
             </div>
             <div className="text-[11px] text-amber-600 font-semibold mt-1 flex items-center gap-1">
               <Zap size={12} />
-              <span>Real-time showback telemetry</span>
+              <span>{totalRequestsRemaining.toLocaleString()} reqs left in quota</span>
             </div>
           </div>
         </div>
@@ -258,8 +343,91 @@ export default function EmployeesPage() {
           </button>
         </div>
 
-        {/* Employees Table with Prominent Remaining Quota */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        {/* Mobile Stacked Cards Layout (<768px viewports per FIGMA SPEC #02) */}
+        <div className="block md:hidden space-y-3.5" data-testid="mobile-employees-cards">
+          {filtered.map((emp) => {
+            const keyString = emp.rawApiKey || emp.apiKey || 'sk_mf_live_...';
+            const isCopied = copiedKeyId === emp.id;
+            const limit = Number(emp.monthlyLimitInr) || 15000;
+            const spent = Number(emp.monthlyCostInr) || 0;
+            const remaining = Math.max(0, limit - spent);
+            const requests = Number(emp.monthlyRequests) || 0;
+            const tokensLimit = Number(emp.tokensLimit) || 250000;
+            const tokensUsed = emp.tokensUsed !== undefined ? Number(emp.tokensUsed) : Math.round(requests * 12);
+            const tokensRemaining = emp.tokensRemaining !== undefined ? Number(emp.tokensRemaining) : Math.max(0, tokensLimit - tokensUsed);
+            const requestLimit = Number(emp.requestLimit) || 50000;
+            const requestsRemaining = emp.requestsRemaining !== undefined ? Number(emp.requestsRemaining) : Math.max(0, requestLimit - requests);
+
+            return (
+              <div key={emp.id} className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex flex-col gap-3">
+                {/* Header Row: Employee Name Left (14px Bold), Status Badge Right */}
+                <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+                  <div className="min-w-0">
+                    <div className="font-bold text-sm text-slate-900 truncate">{emp.name}</div>
+                    <div className="text-[11px] text-slate-400 font-mono truncate">{emp.email}</div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 shrink-0">
+                    {emp.status || 'Active'}
+                  </span>
+                </div>
+
+                {/* Body Grid: 2-Column Key-Value Layout */}
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase text-slate-400 block tracking-wider">Remaining Quota</span>
+                    <span className="font-black text-sm text-emerald-700 block mt-0.5">{formatCurrency(remaining)}</span>
+                    <div className="text-[11px] text-slate-500 mt-1">Limit: {formatCurrency(limit)}</div>
+                    <div className="text-[10px] text-slate-400">Spent: {formatCurrency(spent)}</div>
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] font-bold uppercase text-slate-400 block tracking-wider">Remaining Tokens</span>
+                    <span className="font-black text-sm text-blue-700 block mt-0.5">{tokensRemaining.toLocaleString()}</span>
+                    <div className="text-[11px] text-purple-700 font-bold mt-1">{requestsRemaining.toLocaleString()} reqs left</div>
+                    <div className="text-[10px] text-slate-400">{emp.teamName || 'Engineering'}</div>
+                  </div>
+                </div>
+
+                {/* API Token Row */}
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0 font-mono text-[11px] text-slate-600">
+                    <KeyRound size={12} className="text-blue-500 shrink-0" />
+                    <span className="truncate">{keyString}</span>
+                  </div>
+                  <button
+                    onClick={() => handleCopyKey(keyString, emp.id)}
+                    className="text-xs font-bold text-blue-600 hover:text-blue-700 shrink-0 flex items-center gap-1 cursor-pointer"
+                  >
+                    {isCopied ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
+                    <span>{isCopied ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </div>
+
+                {/* Action Footer: Touch-Friendly Buttons (Min Height 44px) */}
+                <div className="pt-2 border-t border-slate-100 flex gap-2">
+                  <button
+                    onClick={() => handleCopyKey(keyString, emp.id)}
+                    className="flex-1 min-h-[44px] flex items-center justify-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 rounded-xl font-bold text-xs cursor-pointer active:scale-[0.98] transition-all"
+                  >
+                    <KeyRound size={14} />
+                    <span>{isCopied ? 'Token Copied!' : 'Copy API Token'}</span>
+                  </button>
+                  <button
+                    onClick={() => handleDeleteEmployee(emp.id, emp.name)}
+                    className="min-h-[44px] px-3.5 flex items-center justify-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 rounded-xl font-bold text-xs cursor-pointer active:scale-[0.98] transition-all"
+                    title="Revoke and delete employee"
+                  >
+                    <Trash2 size={14} />
+                    <span className="hidden sm:inline">Revoke</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop Employees Table (md: and above) */}
+        <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -273,7 +441,10 @@ export default function EmployeesPage() {
                   <th className="py-3.5 px-4 text-right bg-emerald-50/70 text-emerald-900 font-bold border-x border-emerald-200/60">
                     Remaining Quota
                   </th>
-                  <th className="py-3.5 px-4 text-right">Invocations</th>
+                  <th className="py-3.5 px-4 text-right bg-blue-50/70 text-blue-900 font-bold border-x border-blue-200/60">
+                    Remaining Tokens
+                  </th>
+                  <th className="py-3.5 px-4 text-right">Reqs Left</th>
                   <th className="py-3.5 px-4 text-center">Status</th>
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
@@ -288,6 +459,14 @@ export default function EmployeesPage() {
                   const remaining = Math.max(0, limit - spent);
                   const percentRemaining = Math.max(0, Math.min(100, Math.round((remaining / limit) * 100)));
                   const requests = Number(emp.monthlyRequests) || 0;
+
+                  const tokensLimit = Number(emp.tokensLimit) || 250000;
+                  const tokensUsed = emp.tokensUsed !== undefined ? Number(emp.tokensUsed) : Math.round(requests * 12);
+                  const tokensRemaining = emp.tokensRemaining !== undefined ? Number(emp.tokensRemaining) : Math.max(0, tokensLimit - tokensUsed);
+                  const tokenPercentRemaining = Math.max(0, Math.min(100, Math.round((tokensRemaining / tokensLimit) * 100)));
+
+                  const requestLimit = Number(emp.requestLimit) || 50000;
+                  const requestsRemaining = emp.requestsRemaining !== undefined ? Number(emp.requestsRemaining) : Math.max(0, requestLimit - requests);
 
                   return (
                     <tr key={emp.id} className="hover:bg-slate-50/80 transition-colors">
@@ -333,8 +512,27 @@ export default function EmployeesPage() {
                           <span className="text-[10px] font-bold text-slate-500">{percentRemaining}% left</span>
                         </div>
                       </td>
+                      {/* Highlighted Remaining Tokens Cell */}
+                      <td className="py-3.5 px-4 text-right font-mono bg-blue-50/40 border-x border-blue-200/60">
+                        <div className="font-black text-xs sm:text-sm text-blue-700">
+                          {tokensRemaining.toLocaleString()}
+                        </div>
+                        <div className="flex items-center justify-end gap-1.5 mt-1">
+                          <div className="w-16 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                            <div 
+                              className={`h-full rounded-full transition-all duration-300 ${
+                                tokenPercentRemaining < 20 ? 'bg-rose-500' : tokenPercentRemaining < 50 ? 'bg-amber-500' : 'bg-blue-600'
+                              }`}
+                              style={{ width: `${tokenPercentRemaining}%` }}
+                            />
+                          </div>
+                          <span className="text-[10px] font-bold text-slate-500">{tokenPercentRemaining}% left</span>
+                        </div>
+                      </td>
+                      {/* Reqs Remaining Cell */}
                       <td className="py-3.5 px-4 text-right font-mono font-bold text-slate-700">
-                        {requests.toLocaleString()}
+                        <div className="font-bold text-purple-700">{requestsRemaining.toLocaleString()}</div>
+                        <div className="text-[10px] text-slate-400 font-normal">of {requestLimit.toLocaleString()} limit</div>
                       </td>
                       <td className="py-3.5 px-4 text-center">
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">

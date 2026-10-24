@@ -317,6 +317,8 @@ export const gatewayService = {
         topEmp.costInr = Number(((topEmp.costInr || 0) + costInr).toFixed(2));
         topEmp.requestsRemaining = empUser ? empUser.requestsRemaining : Math.max(0, 50000 - topEmp.requests);
         topEmp.remainingBudgetInr = empUser ? empUser.remainingBudgetInr : Math.max(0, 10000 - topEmp.costInr);
+        topEmp.tokensUsed = empUser ? empUser.tokensUsed : (topEmp.tokensUsed || 0) + totalTokens;
+        topEmp.tokensRemaining = empUser ? empUser.tokensRemaining : Math.max(0, 250000 - topEmp.tokensUsed);
       }
     }
     if (memoryStore.topConsumers) {
@@ -326,6 +328,8 @@ export const gatewayService = {
         topEntry.costInr = Number(((topEntry.costInr || 0) + costInr).toFixed(2));
         topEntry.requestsRemaining = empUser ? empUser.requestsRemaining : Math.max(0, 50000 - topEntry.requests);
         topEntry.remainingBudgetInr = empUser ? empUser.remainingBudgetInr : Math.max(0, 10000 - topEntry.costInr);
+        topEntry.tokensUsed = empUser ? empUser.tokensUsed : (topEntry.tokensUsed || 0) + totalTokens;
+        topEntry.tokensRemaining = empUser ? empUser.tokensRemaining : Math.max(0, 250000 - topEntry.tokensUsed);
       }
     }
 

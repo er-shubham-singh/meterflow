@@ -131,6 +131,12 @@ export const apiKeyController = {
       const remainingBudgetInr = Math.max(0, Number((monthlyLimit - estimatedCostInr).toFixed(2)));
       const limitPercent = Math.min(100, Math.round((estimatedCostInr / monthlyLimit) * 100));
 
+      // Dynamic quota utilization calculation (Audit Fix & TICKET-01)
+      const requestQuotaLimit = 10000;
+      const utilizationPercentage = Math.round((myUsageThisMonth / requestQuotaLimit) * 100);
+      const isOverBudget = utilizationPercentage >= 100;
+      const cardState = isOverBudget ? 'overBudget' : 'normal';
+
       // Get recent activity for this employee
       const recent = (memoryStore.recentActivity || []).filter(a => a.employee === employeeName).slice(0, 10);
       const recentRequests = recent.length > 0 ? recent.map(r => ({
@@ -154,6 +160,10 @@ export const apiKeyController = {
           myUsageChange: '+12%',
           monthlyRequestLimit,
           requestsRemaining,
+          requestQuotaLimit,
+          utilizationPercentage,
+          isOverBudget,
+          cardState,
           tokensLimit,
           tokensUsed,
           tokensRemaining,

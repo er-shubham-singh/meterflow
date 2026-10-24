@@ -416,9 +416,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: SPACING.md,
-    gap: SPACING.md,
-    paddingBottom: SPACING.xxxl,
+    paddingHorizontal: 16, // Standard 16px side padding per Audit Spec
+    paddingVertical: 16,
+    gap: 16,
+    paddingBottom: 40,
   },
 
   // 1. Hero Card

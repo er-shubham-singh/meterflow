@@ -72,6 +72,11 @@ export default function EmployeePortalScreen({ navigation }) {
   const tokensRemaining = employeeDashboard?.tokensRemaining ?? user?.tokensRemaining ?? Math.max(0, tokensLimit - tokensUsed);
   const tokenPercent = Math.min(100, Math.round((tokensUsed / tokensLimit) * 100));
 
+  // Dynamic quota utilization calculation (Audit Fix & TICKET-01)
+  const quotaLimit = employeeDashboard?.requestQuotaLimit || 10000;
+  const utilizationPercentage = Math.round((requestsMade / quotaLimit) * 100);
+  const isOverBudget = utilizationPercentage >= 100;
+
   const copyToClipboard = (text, label = 'API Token') => {
     setCopiedKey(true);
     addToast(`${label} copied to clipboard!`, 'success');
@@ -194,6 +199,86 @@ res = requests.post(
           </Pressable>
         </View>
 
+        {/* Component 01: Monthly Limit Progress Ring Card (FIGMA SPEC #01 & TICKET-01) */}
+        <View style={[
+          styles.monthlyLimitCard,
+          isOverBudget ? styles.monthlyLimitCardOverBudget : styles.monthlyLimitCardNormal
+        ]}>
+          {/* Header Row */}
+          <View style={styles.monthlyLimitHeaderRow}>
+            <View>
+              <Text style={[styles.monthlyLimitTitle, isOverBudget && { color: '#991B1B' }]}>
+                MONTHLY LIMIT
+              </Text>
+              <Text style={[styles.monthlyLimitSub, isOverBudget && { color: '#B91C1C' }]}>
+                Assigned Quota & Ingestion Cap
+              </Text>
+            </View>
+            <View style={[
+              styles.monthlyLimitBadge,
+              isOverBudget ? styles.badgeOverBudget : styles.badgeNormal
+            ]}>
+              <Ionicons 
+                name={isOverBudget ? "alert-circle" : "checkmark-circle"} 
+                size={13} 
+                color={isOverBudget ? "#DC2626" : "#0284C7"} 
+              />
+              <Text style={[
+                styles.monthlyLimitBadgeText,
+                { color: isOverBudget ? "#DC2626" : "#0284C7" }
+              ]}>
+                {isOverBudget ? "Limit Exceeded" : "Normal"}
+              </Text>
+            </View>
+          </View>
+
+          {/* Center Circular Progress Ring */}
+          <View style={styles.ringCenterContainer}>
+            <View style={[
+              styles.progressRingOuter,
+              { borderColor: isOverBudget ? '#DC2626' : '#0284C7' }
+            ]}>
+              <View style={styles.progressRingInner}>
+                <Text style={[
+                  styles.progressRingValue,
+                  { color: isOverBudget ? '#DC2626' : '#0284C7' }
+                ]}>
+                  {utilizationPercentage}%
+                </Text>
+                <Text style={[
+                  styles.progressRingLabel,
+                  { color: isOverBudget ? '#991B1B' : COLORS.textMuted }
+                ]}>
+                  UTILIZED
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Metric Text: 18,220 / 10,000 Requests (16px Bold) with Warning Sub-text */}
+          <View style={styles.metricRowContainer}>
+            <Text style={[
+              styles.mainMetricText,
+              isOverBudget && { color: '#7F1D1D' }
+            ]}>
+              {requestsMade.toLocaleString()} / {quotaLimit.toLocaleString()} Requests
+            </Text>
+
+            {isOverBudget ? (
+              <View style={styles.warningSubTextBox}>
+                <Ionicons name="warning" size={13} color="#DC2626" />
+                <Text style={styles.warningSubText}>
+                  Quota exceeded by {(requestsMade - quotaLimit).toLocaleString()} requests. Ingestion throttled.
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.normalSubText}>
+                {(quotaLimit - requestsMade).toLocaleString()} requests available within limit
+              </Text>
+            )}
+          </View>
+        </View>
+
         {/* Hero Card: Live Remaining Quota & Token Meter */}
         <View style={styles.quotaCard}>
           {/* Top subtle highlight */}
@@ -294,7 +379,9 @@ res = requests.post(
         </View>
 
         {/* 4 KPI Grid: Tokens, Requests, Budget, Status */}
+        {/* 4 KPI Grid: Tokens, Requests, Budget, Status with Circular Progress Graphs */}
         <View style={styles.kpiGridFour}>
+          {/* 1. Remaining Tokens */}
           <View style={styles.miniKpiCard}>
             <View style={styles.miniKpiHeader}>
               <Text style={styles.miniKpiLabel}>Remaining Tokens</Text>
@@ -302,25 +389,47 @@ res = requests.post(
                 <Ionicons name="layers" size={14} color={COLORS.primary} />
               </View>
             </View>
+
+            {/* Circular Progress Ring */}
+            <View style={styles.miniRingWrapper}>
+              <View style={[styles.miniRingOuter, { borderColor: COLORS.primary }]}>
+                <Text style={[styles.miniRingText, { color: COLORS.primary }]}>{tokenPercent}%</Text>
+                <Text style={styles.miniRingLabel}>CONSUMED</Text>
+              </View>
+            </View>
+
             <Text style={[styles.miniKpiValue, { color: COLORS.primary }]}>
               {tokensRemaining.toLocaleString()}
             </Text>
-            <Text style={styles.miniKpiSub}>{tokensUsed.toLocaleString()} consumed</Text>
+            <Text style={styles.miniKpiSub}>{tokensUsed.toLocaleString()} of {tokensLimit.toLocaleString()} used</Text>
           </View>
 
-          <View style={styles.miniKpiCard}>
+          {/* 2. Monthly Limit / Requests */}
+          <View style={[styles.miniKpiCard, isOverBudget && styles.miniKpiCardOverBudget]}>
             <View style={styles.miniKpiHeader}>
-              <Text style={styles.miniKpiLabel}>Remaining Reqs</Text>
-              <View style={[styles.miniKpiIconWrap, { backgroundColor: `${COLORS.secondary}15` }]}>
-                <Ionicons name="repeat" size={14} color={COLORS.secondary} />
+              <Text style={[styles.miniKpiLabel, isOverBudget && { color: '#991B1B' }]}>Monthly Limit</Text>
+              <View style={[styles.miniKpiIconWrap, { backgroundColor: isOverBudget ? '#FEE2E2' : `${COLORS.secondary}15` }]}>
+                <Ionicons name={isOverBudget ? "alert-circle" : "repeat"} size={14} color={isOverBudget ? '#DC2626' : COLORS.secondary} />
               </View>
             </View>
-            <Text style={[styles.miniKpiValue, { color: COLORS.secondary }]}>
-              {requestsRemaining.toLocaleString()}
+
+            {/* Circular Progress Ring */}
+            <View style={styles.miniRingWrapper}>
+              <View style={[styles.miniRingOuter, { borderColor: isOverBudget ? '#DC2626' : '#0284C7' }]}>
+                <Text style={[styles.miniRingText, { color: isOverBudget ? '#DC2626' : '#0284C7' }]}>{utilizationPercentage}%</Text>
+                <Text style={[styles.miniRingLabel, isOverBudget && { color: '#991B1B' }]}>UTILIZED</Text>
+              </View>
+            </View>
+
+            <Text style={[styles.miniKpiValue, { color: isOverBudget ? '#DC2626' : COLORS.secondary }]}>
+              {requestsMade.toLocaleString()} reqs
             </Text>
-            <Text style={styles.miniKpiSub}>{requestsMade.toLocaleString()} executed</Text>
+            <Text style={[styles.miniKpiSub, isOverBudget && { color: '#B91C1C' }]}>
+              {isOverBudget ? `Limit: ${quotaLimit.toLocaleString()} (Exceeded)` : `of ${quotaLimit.toLocaleString()} limit`}
+            </Text>
           </View>
 
+          {/* 3. Remaining Budget */}
           <View style={styles.miniKpiCard}>
             <View style={styles.miniKpiHeader}>
               <Text style={styles.miniKpiLabel}>Remaining Budget</Text>
@@ -328,24 +437,42 @@ res = requests.post(
                 <Ionicons name="wallet-outline" size={14} color={COLORS.success} />
               </View>
             </View>
+
+            {/* Circular Progress Ring */}
+            <View style={styles.miniRingWrapper}>
+              <View style={[styles.miniRingOuter, { borderColor: percentUsed > 80 ? COLORS.warning : COLORS.success }]}>
+                <Text style={[styles.miniRingText, { color: percentUsed > 80 ? COLORS.warning : COLORS.success }]}>{percentUsed}%</Text>
+                <Text style={styles.miniRingLabel}>UTILIZED</Text>
+              </View>
+            </View>
+
             <Text style={[styles.miniKpiValue, { color: COLORS.success }]}>
               {formatCurrency(remainingBudget)}
             </Text>
-            <Text style={styles.miniKpiSub}>{percentUsed}% used</Text>
+            <Text style={styles.miniKpiSub}>Spent: {formatCurrency(currentCost)} of {formatCurrency(monthlyLimit)}</Text>
           </View>
 
+          {/* 4. Gateway Status */}
           <View style={styles.miniKpiCard}>
             <View style={styles.miniKpiHeader}>
               <Text style={styles.miniKpiLabel}>Gateway Proxy</Text>
               <View style={[styles.miniKpiIconWrap, { backgroundColor: `${COLORS.success}15` }]}>
-                <Ionicons name="checkmark-circle" size={16} color={COLORS.success} />
+                <Ionicons name="checkmark-circle" size={14} color={COLORS.success} />
               </View>
             </View>
-            <View style={styles.statusRow}>
-              <View style={styles.greenDot} />
-              <Text style={styles.statusActiveText}>Active / Live</Text>
+
+            {/* Circular Progress Ring */}
+            <View style={styles.miniRingWrapper}>
+              <View style={[styles.miniRingOuter, { borderColor: COLORS.success }]}>
+                <Text style={[styles.miniRingText, { color: COLORS.success }]}>100%</Text>
+                <Text style={styles.miniRingLabel}>HEALTHY</Text>
+              </View>
             </View>
-            <Text style={styles.miniKpiSub}>Low-latency edge</Text>
+
+            <Text style={[styles.miniKpiValue, { color: COLORS.success }]}>
+              Active / Live
+            </Text>
+            <Text style={styles.miniKpiSub}>Low-latency edge proxy</Text>
           </View>
         </View>
 
@@ -469,9 +596,128 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: SPACING.md,
-    gap: SPACING.md,
-    paddingBottom: SPACING.xxxl,
+    paddingHorizontal: 16, // Enforce standard 16px edge padding per Audit Spec
+    paddingVertical: 16,
+    gap: 16,
+    paddingBottom: 40,
+  },
+
+  // Component 01: Monthly Limit Progress Ring Card (Figma Spec #01)
+  monthlyLimitCard: {
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    borderWidth: 1,
+    ...SHADOWS.md,
+  },
+  monthlyLimitCardNormal: {
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.border,
+  },
+  monthlyLimitCardOverBudget: {
+    backgroundColor: '#FEE2E2', // Light Red Fill
+    borderColor: '#FCA5A5',
+  },
+  monthlyLimitHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  monthlyLimitTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: COLORS.textMuted,
+    letterSpacing: 0.8,
+  },
+  monthlyLimitSub: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    marginTop: 1,
+  },
+  monthlyLimitBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: RADIUS.full,
+    borderWidth: 1,
+  },
+  badgeNormal: {
+    backgroundColor: '#F0F9FF',
+    borderColor: '#BAE6FD',
+  },
+  badgeOverBudget: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#FCA5A5',
+  },
+  monthlyLimitBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  ringCenterContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  progressRingOuter: {
+    width: 108,
+    height: 108,
+    borderRadius: 54,
+    borderWidth: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    ...SHADOWS.sm,
+  },
+  progressRingInner: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressRingValue: {
+    fontSize: 22,
+    fontWeight: '900',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    lineHeight: 24,
+  },
+  progressRingLabel: {
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    marginTop: 2,
+  },
+  metricRowContainer: {
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  mainMetricText: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: COLORS.text,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  warningSubTextBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+    borderRadius: RADIUS.md,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginTop: 8,
+  },
+  warningSubText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#991B1B',
+    flex: 1,
+  },
+  normalSubText: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 4,
   },
 
   // 1. Profile Card
@@ -803,16 +1049,50 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  miniKpiCardOverBudget: {
+    backgroundColor: '#FEE2E2',
+    borderColor: '#FCA5A5',
+  },
+  miniRingWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: SPACING.xs,
+  },
+  miniRingOuter: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    borderWidth: 4.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    ...SHADOWS.sm,
+  },
+  miniRingText: {
+    fontSize: 12.5,
+    fontWeight: '900',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    lineHeight: 14,
+  },
+  miniRingLabel: {
+    fontSize: 7,
+    fontWeight: '800',
+    color: COLORS.textMuted,
+    letterSpacing: 0.5,
+    marginTop: 1,
+  },
   miniKpiValue: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: '900',
     color: COLORS.text,
-    marginTop: 6,
+    marginTop: 2,
+    textAlign: 'center',
   },
   miniKpiSub: {
     fontSize: 10,
     color: COLORS.textMuted,
     marginTop: 2,
+    textAlign: 'center',
   },
   statusRow: {
     flexDirection: 'row',

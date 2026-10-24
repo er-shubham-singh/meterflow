@@ -52,18 +52,24 @@ export function AuthProvider({ children }) {
       // storage unavailable
     }
 
-    // Refresh from backend
-    api.getMe()
-      .then(res => {
-        if (res.data) {
-          setUser(res.data);
-          try {
-            localStorage.setItem('meterflow_user', JSON.stringify(res.data));
-          } catch {}
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    // Refresh from backend with periodic background sync
+    const syncUser = () => {
+      api.getMe()
+        .then(res => {
+          if (res && res.data) {
+            setUser(res.data);
+            try {
+              localStorage.setItem('meterflow_user', JSON.stringify(res.data));
+            } catch {}
+          }
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    };
+
+    syncUser();
+    const interval = setInterval(syncUser, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const login = async (credentials) => {

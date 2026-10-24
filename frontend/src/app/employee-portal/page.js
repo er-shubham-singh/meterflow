@@ -24,6 +24,8 @@ import {
   FileCode,
   Users
 } from 'lucide-react';
+import MonthlyLimitCard from '@/components/dashboard/MonthlyLimitCard';
+import CircularMetricCard from '@/components/dashboard/CircularMetricCard';
 
 export default function EmployeePortalPage() {
   const { user } = useAuth();
@@ -45,6 +47,15 @@ export default function EmployeePortalPage() {
   const remainingBudget = employeeDashboard?.remainingBudgetInr !== undefined ? employeeDashboard.remainingBudgetInr : Math.max(0, monthlyLimit - currentCost);
   const teamName = employeeDashboard?.team || user?.teamName || 'Marketing Team';
   const percentUsed = Math.min(100, Math.round((currentCost / monthlyLimit) * 100));
+
+  const totalRequestsLimit = employeeDashboard?.monthlyRequestLimit || user?.monthlyRequestLimit || 50000;
+  const requestsRemaining = employeeDashboard?.requestsRemaining !== undefined ? employeeDashboard.requestsRemaining : Math.max(0, totalRequestsLimit - requestsCount);
+  const requestPercent = Math.min(100, Math.round((requestsCount / totalRequestsLimit) * 100));
+
+  const tokensLimit = employeeDashboard?.tokensLimit || user?.tokensLimit || 250000;
+  const tokensUsed = employeeDashboard?.tokensUsed ?? user?.tokensUsed ?? 0;
+  const tokensRemaining = employeeDashboard?.tokensRemaining !== undefined ? employeeDashboard.tokensRemaining : Math.max(0, tokensLimit - tokensUsed);
+  const tokenPercent = Math.min(100, Math.round((tokensUsed / tokensLimit) * 100));
 
   const fetchDashboard = () => {
     api.getEmployeeDashboard()
@@ -76,9 +87,23 @@ export default function EmployeePortalPage() {
         provider: 'brevo',
         method: 'POST',
         endpoint: '/v3/smtp/email',
-        body: { to: 'vikash.marketing@example.com', message: 'Test live gateway trigger' }
+        body: { to: user?.email || 'vikash.marketing@example.com', message: 'Test live gateway trigger' }
       });
-      addToast('Test API Request sent through gateway! Quota updated.', 'success');
+      const telemetry = res?.meterflow_telemetry || res?.data?.meterflow_telemetry;
+      if (telemetry) {
+        setEmployeeDashboard(prev => prev ? ({
+          ...prev,
+          tokensUsed: (prev.tokensUsed || 0) + (telemetry.tokensUsedThisCall || 25),
+          tokensRemaining: telemetry.tokensRemaining,
+          myUsageThisMonth: (prev.myUsageThisMonth || 0) + 1,
+          requestsRemaining: telemetry.requestsRemaining,
+          remainingBudgetInr: telemetry.remainingBudgetInr,
+          estimatedCostInr: Number(((prev.estimatedCostInr || 0) + (telemetry.costInr || 0.05)).toFixed(2))
+        }) : prev);
+        addToast(`⚡ Ingested! -${telemetry.tokensUsedThisCall || 25} tokens (${telemetry.tokensRemaining?.toLocaleString()} remaining)`, 'success');
+      } else {
+        addToast('Test API Request sent through gateway! Quota updated.', 'success');
+      }
       fetchDashboard();
     } catch (err) {
       addToast(err.message || 'Failed to send test request', 'error');
@@ -137,81 +162,59 @@ export default function EmployeePortalPage() {
           </div>
         </div>
 
-        {/* Top 4 Metrics Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Card 1: Remaining Quota & Monthly Budget */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="text-xs font-semibold text-slate-500">Remaining Quota / Budget</div>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  Live Meter
-                </span>
-              </div>
-              <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
-                {formatCurrency(remainingBudget)}
-                <span className="text-xs text-slate-400 font-normal ml-1">remaining</span>
-              </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
-                Spent: <span className="font-semibold text-slate-700">{formatCurrency(currentCost)}</span> of {formatCurrency(monthlyLimit)}
-              </div>
-            </div>
-            <div className="mt-3">
-              <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                <div 
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    percentUsed > 80 ? 'bg-amber-500' : 'bg-emerald-500'
-                  }`}
-                  style={{ width: `${percentUsed}%` }}
-                />
-              </div>
-              <div className="text-[10px] font-bold text-slate-500 mt-1 flex justify-between">
-                <span>{percentUsed}% Quota Utilized</span>
-                <span className="text-emerald-600 font-medium">Within Limit</span>
-              </div>
-            </div>
-          </div>
+        {/* Top 4 Metrics Cards: Tokens, Requests, Budget, Status */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Card 1: Tokens Remaining Circular Graph */}
+          <CircularMetricCard
+            title="Tokens Remaining"
+            subtitle="Live Token Pool"
+            badgeText="Live Tokens"
+            badgeVariant="blue"
+            percentage={tokenPercent}
+            percentageLabel="CONSUMED"
+            strokeColor="#2563EB"
+            textColor="#2563EB"
+            metric={`${tokensRemaining.toLocaleString()} tokens left`}
+            subtext={`Used: ${tokensUsed.toLocaleString()} of ${tokensLimit.toLocaleString()}`}
+          />
 
-          {/* Card 2: Total Invocations */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="text-xs font-semibold text-slate-500">Total API Requests (Oct)</div>
-              <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
-                {requestsCount.toLocaleString()}
-              </div>
-            </div>
-            <div className="text-[11px] text-emerald-600 font-semibold mt-2 flex items-center gap-1">
-              <ArrowUpRight size={13} />
-              <span>Real-time Ingested</span>
-            </div>
-          </div>
+          {/* Card 2: Monthly Limit Progress Ring Card (FIGMA SPEC #01 & TICKET-01) */}
+          <MonthlyLimitCard
+            currentUsage={requestsCount}
+            monthlyLimit={10000}
+            unit="Requests"
+            title="Monthly Limit"
+            subtitle="Quota & Gateway Cap"
+          />
 
-          {/* Card 3: Key Status */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="text-xs font-semibold text-slate-500">API Key Status</div>
-              <div className="text-xl sm:text-2xl font-black text-emerald-600 mt-1 flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Active</span>
-              </div>
-            </div>
-            <div className="text-[11px] text-slate-500 mt-2 truncate">
-              Production Gateway Ready
-            </div>
-          </div>
+          {/* Card 3: Remaining Budget Circular Graph */}
+          <CircularMetricCard
+            title="Remaining Budget"
+            subtitle="Live Showback Pool"
+            badgeText="Live Showback"
+            badgeVariant="emerald"
+            percentage={percentUsed}
+            percentageLabel="UTILIZED"
+            strokeColor={percentUsed > 80 ? '#F59E0B' : '#10B981'}
+            textColor={percentUsed > 80 ? '#D97706' : '#059669'}
+            metric={`${formatCurrency(remainingBudget)} remaining`}
+            subtext={`Spent: ${formatCurrency(currentCost)} of ${formatCurrency(monthlyLimit)}`}
+          />
 
-          {/* Card 4: Allowed APIs */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="text-xs font-semibold text-slate-500">Authorized Gateways</div>
-              <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
-                {allowedProviders.length} Providers
-              </div>
-            </div>
-            <div className="text-[11px] text-blue-600 font-medium mt-2 truncate">
-              {allowedProviders.slice(0, 2).join(', ')}...
-            </div>
-          </div>
+          {/* Card 4: Gateway Key & Status Circular Graph */}
+          <CircularMetricCard
+            title="API Key & Status"
+            subtitle="Low-Latency Edge Proxy"
+            badgeText="Production"
+            badgeVariant="emerald"
+            percentage={100}
+            percentageLabel="HEALTHY"
+            strokeColor="#10B981"
+            textColor="#059669"
+            metric="Active / Live Gateway"
+            subtext={`${allowedProviders.length} Providers: ${allowedProviders.slice(0, 2).join(', ')}`}
+            icon={ShieldCheck}
+          />
         </div>
 
         {/* Personal API Key & Quickstart Code Snippets */}

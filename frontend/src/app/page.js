@@ -21,6 +21,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import CircularMetricCard from '@/components/dashboard/CircularMetricCard';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -85,71 +86,60 @@ export default function DashboardPage() {
         {/* Top 4 KPI Stat Cards (Matching Panel 2) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {/* 1. Total API Requests */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-2">
-              <span>Total API Requests</span>
-              <span className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
-                <Activity size={16} />
-              </span>
-            </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-mono">
-              {metrics.totalRequests ? metrics.totalRequests.toLocaleString() : '245,230'}
-            </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600">
-              <ArrowUpRight size={14} />
-              <span>{metrics.totalRequestsChange || '+12% from last month'}</span>
-            </div>
-          </div>
+          <CircularMetricCard
+            title="Total API Requests"
+            subtitle="Enterprise Ingestion"
+            badgeText="Live Volume"
+            badgeVariant="blue"
+            percentage={82}
+            percentageLabel="CAPACITY"
+            strokeColor="#2563EB"
+            textColor="#2563EB"
+            metric={`${(metrics.totalRequests || 245230).toLocaleString()} reqs`}
+            subtext={metrics.totalRequestsChange || '+12% from last month'}
+          />
 
           {/* 2. Total Cost (Estimated) in INR */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-2">
-              <span>Total Cost (Estimated)</span>
-              <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
-                <IndianRupee size={16} />
-              </span>
-            </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-mono">
-              ₹{metrics.totalCost ? metrics.totalCost.toLocaleString() : '12,450'}
-            </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600">
-              <ArrowUpRight size={14} />
-              <span>{metrics.totalCostChange || '+8% from last month'}</span>
-            </div>
-          </div>
+          <CircularMetricCard
+            title="Total Cost (Estimated)"
+            subtitle="Monthly Showback"
+            badgeText="Accrued"
+            badgeVariant="emerald"
+            percentage={62}
+            percentageLabel="BUDGET"
+            strokeColor="#10B981"
+            textColor="#059669"
+            metric={`₹${(metrics.totalCost || 12450).toLocaleString()}`}
+            subtext={metrics.totalCostChange || '+8% from last month'}
+          />
 
           {/* 3. Active Employees */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-2">
-              <span>Active Employees</span>
-              <span className="p-1.5 rounded-lg bg-purple-50 text-purple-600">
-                <Users size={16} />
-              </span>
-            </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-mono">
-              {metrics.activeEmployees || 28}
-            </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600">
-              <ArrowUpRight size={14} />
-              <span>{metrics.activeEmployeesChange || '+2 new this month'}</span>
-            </div>
-          </div>
+          <CircularMetricCard
+            title="Active Employees"
+            subtitle="Team Seat Allocation"
+            badgeText="Organization"
+            badgeVariant="purple"
+            percentage={93}
+            percentageLabel="ACTIVE"
+            strokeColor="#7C3AED"
+            textColor="#7C3AED"
+            metric={`${metrics.activeEmployees || 28} Team Members`}
+            subtext={metrics.activeEmployeesChange || '+2 new this month'}
+          />
 
           {/* 4. Connected APIs */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-2">
-              <span>Connected APIs</span>
-              <span className="p-1.5 rounded-lg bg-cyan-50 text-cyan-600">
-                <Layers size={16} />
-              </span>
-            </div>
-            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-mono">
-              {metrics.connectedApis || 8}
-            </div>
-            <div className="mt-2 text-xs font-medium text-slate-500">
-              {metrics.connectedApisDetail || '3 third-party, 5 internal'}
-            </div>
-          </div>
+          <CircularMetricCard
+            title="Connected APIs"
+            subtitle="Gateway Integrations"
+            badgeText="Ecosystem"
+            badgeVariant="cyan"
+            percentage={100}
+            percentageLabel="UPTIME"
+            strokeColor="#0284C7"
+            textColor="#0284C7"
+            metric={`${metrics.connectedApis || 8} Active Gateways`}
+            subtext={metrics.connectedApisDetail || '3 third-party, 5 internal'}
+          />
         </div>
 
         {/* Charts Row: API Usage Trend (Left) & Usage by API Provider (Right) */}
@@ -281,26 +271,35 @@ export default function DashboardPage() {
                   <tr className="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase">
                     <th className="py-2 px-1">#</th>
                     <th className="py-2 px-2">Employee</th>
+                    <th className="py-2 px-2 text-right">Tokens Left</th>
                     <th className="py-2 px-2 text-right">Requests</th>
                     <th className="py-2 px-2 text-right">Cost (₹)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-xs">
-                  {topEmployees.map((emp) => (
-                    <tr key={emp.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-2.5 px-1 font-bold text-slate-400 font-mono">{emp.id}</td>
-                      <td className="py-2.5 px-2">
-                        <div className="font-bold text-slate-800">{emp.name}</div>
-                        <div className="text-[10px] text-slate-400">{emp.team}</div>
-                      </td>
-                      <td className="py-2.5 px-2 text-right font-bold text-slate-900 font-mono">
-                        {emp.requests.toLocaleString()}
-                      </td>
-                      <td className="py-2.5 px-2 text-right font-bold text-emerald-600 font-mono">
-                        ₹{emp.costInr.toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
+                  {topEmployees.map((emp) => {
+                    const tokensRemaining = emp.tokensRemaining !== undefined ? emp.tokensRemaining : Math.max(0, (emp.tokensLimit || 250000) - (emp.tokensUsed || (emp.requests * 12)));
+                    return (
+                      <tr key={emp.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="py-2.5 px-1 font-bold text-slate-400 font-mono">{emp.id}</td>
+                        <td className="py-2.5 px-2">
+                          <div className="font-bold text-slate-800">{emp.name}</div>
+                          <div className="text-[10px] text-slate-400">{emp.team}</div>
+                        </td>
+                        <td className="py-2.5 px-2 text-right font-mono">
+                          <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                            {tokensRemaining.toLocaleString()}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-2 text-right font-bold text-slate-900 font-mono">
+                          {emp.requests.toLocaleString()}
+                        </td>
+                        <td className="py-2.5 px-2 text-right font-bold text-emerald-600 font-mono">
+                          ₹{emp.costInr.toLocaleString()}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

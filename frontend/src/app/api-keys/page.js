@@ -20,6 +20,8 @@ import {
   X
 } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
+import MonthlyLimitCard from '@/components/dashboard/MonthlyLimitCard';
+import CircularMetricCard from '@/components/dashboard/CircularMetricCard';
 
 export default function ApiKeysPage() {
   const { showToast, showConfirm } = useToast();
@@ -46,6 +48,8 @@ export default function ApiKeysPage() {
 
   useEffect(() => {
     loadData();
+    const interval = setInterval(loadData, 2500);
+    return () => clearInterval(interval);
   }, [loadData]);
 
   const handleCopy = (id, text) => {
@@ -99,6 +103,16 @@ export default function ApiKeysPage() {
   const myCost = data?.estimatedCostInr || 850;
   const monthlyLimit = data?.monthlyLimit || 20000;
   const limitPercent = data?.limitPercent || 62;
+
+  const tokensLimit = data?.tokensLimit || 250000;
+  const tokensUsed = data?.tokensUsed || 0;
+  const tokensRemaining = data?.tokensRemaining !== undefined ? data.tokensRemaining : Math.max(0, tokensLimit - tokensUsed);
+  const tokenPercent = Math.min(100, Math.round((tokensUsed / tokensLimit) * 100));
+
+  const totalRequestsLimit = data?.monthlyRequestLimit || 50000;
+  const requestsRemaining = data?.requestsRemaining !== undefined ? data.requestsRemaining : Math.max(0, totalRequestsLimit - myUsage);
+  const requestPercent = Math.min(100, Math.round((myUsage / totalRequestsLimit) * 100));
+
   const usageByApi = data?.usageByApi || [
     { name: 'OpenAI', requests: 6230, percent: 50, color: '#10B981' },
     { name: 'Internal API', requests: 3450, percent: 28, color: '#2563EB' },
@@ -118,110 +132,118 @@ export default function ApiKeysPage() {
     <div className="w-full min-h-screen bg-[#F4F6F9] text-slate-800">
       <Header
         title="Employee Dashboard / API Keys"
-        subtitle={`Personal API credentials & consumption quota — ${employeeName} (${role})`}
+        subtitle={`Personal API credentials & live token balance — ${employeeName} (${role})`}
         onRefresh={loadData}
       />
 
       <main className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto flex flex-col gap-6">
-        {/* Top Row: My Usage, Monthly Limit, My API Keys (Matching Panel 5) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1: My Usage (This Month) */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        {/* Top 4 Metrics Cards: Tokens, Requests, Monthly Limit, API Keys */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Card 1: Tokens Remaining Circular Graph */}
+          <CircularMetricCard
+            title="Tokens Remaining"
+            subtitle="Live Token Pool"
+            badgeText="Live Tokens"
+            badgeVariant="blue"
+            percentage={tokenPercent}
+            percentageLabel="CONSUMED"
+            strokeColor="#2563EB"
+            textColor="#2563EB"
+            metric={`${tokensRemaining.toLocaleString()} tokens left`}
+            subtext={`Used: ${tokensUsed.toLocaleString()} of ${tokensLimit.toLocaleString()}`}
+          />
+
+          {/* Card 2: Requests Remaining Circular Graph */}
+          <CircularMetricCard
+            title="Requests Remaining"
+            subtitle="Monthly Threshold"
+            badgeText="Monthly Cap"
+            badgeVariant="purple"
+            percentage={requestPercent}
+            percentageLabel="UTILIZED"
+            strokeColor="#7C3AED"
+            textColor="#7C3AED"
+            metric={`${requestsRemaining.toLocaleString()} reqs left`}
+            subtext={`Sent: ${myUsage.toLocaleString()} of ${totalRequestsLimit.toLocaleString()}`}
+          />
+
+          {/* Card 3: Monthly Limit Progress Ring Card (FIGMA SPEC #01 & TICKET-01) */}
+          <MonthlyLimitCard
+            currentUsage={myUsage || 18220}
+            monthlyLimit={data?.monthlyRequestLimit || 10000}
+            unit="Requests"
+            title="Monthly Limit"
+            subtitle="Quota & Gateway Ingestion"
+          />
+
+          {/* Card 4: Gateway Key & Status Circular Graph */}
+          <CircularMetricCard
+            title="API Keys & Status"
+            subtitle="Gateway Credentials"
+            badgeText="Production"
+            badgeVariant="emerald"
+            percentage={100}
+            percentageLabel="HEALTHY"
+            strokeColor="#10B981"
+            textColor="#059669"
+            metric={`${apiKeys.length} Active Key${apiKeys.length !== 1 ? 's' : ''}`}
+            subtext="SHA-256 Hashed • Low-latency"
+            icon={KeyRound}
+          />
+        </div>
+
+        {/* Personal API Keys Vault with Create Button */}
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                My Usage (This Month)
-              </div>
-              <div className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">
-                {myUsage.toLocaleString()} <span className="text-sm font-semibold text-slate-400">Requests</span>
-              </div>
-              <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600">
-                <ArrowUpRight size={14} />
-                <span>+10% from last week</span>
-              </div>
+              <h3 className="text-sm font-bold text-slate-900 leading-tight">My API Key Credentials</h3>
+              <p className="text-[11px] text-slate-500">Bearer tokens for outbound edge proxy requests</p>
             </div>
-
-            <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-              <div>
-                <div className="text-xs text-slate-400 font-medium">Estimated Cost</div>
-                <div className="text-xl font-bold text-emerald-600 font-mono">₹{myCost.toLocaleString()}</div>
-              </div>
-              <div className="flex items-center gap-1 text-xs font-semibold text-emerald-600">
-                <ArrowUpRight size={13} />
-                <span>+8%</span>
-              </div>
-            </div>
+            <button
+              onClick={() => { setShowCreateModal(true); setCreatedRawKey(null); }}
+              className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-3.5 rounded-xl cursor-pointer transition-all shadow-sm"
+            >
+              <Plus size={14} />
+              <span>Generate New Key</span>
+            </button>
           </div>
 
-          {/* Card 2: Monthly Limit Radial Gauge */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center justify-between text-center">
-            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 self-start">
-              Monthly Limit
-            </div>
-
-            <div className="relative w-36 h-36 rounded-full flex items-center justify-center border-[12px] border-slate-100 border-t-blue-600 border-r-blue-600 border-b-blue-600 shadow-inner my-2">
-              <div className="text-center">
-                <div className="text-2xl font-black text-slate-900 font-mono">{limitPercent}%</div>
-                <div className="text-[10px] text-slate-400 font-bold uppercase">Utilized</div>
-              </div>
-            </div>
-
-            <div className="text-xs font-semibold text-slate-600 font-mono">
-              <span className="text-slate-900 font-bold">{myUsage.toLocaleString()}</span> / {monthlyLimit.toLocaleString()}
-            </div>
-          </div>
-
-          {/* Card 3: My API Keys with Create Button */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                My API Keys
-              </div>
-              <button
-                onClick={() => { setShowCreateModal(true); setCreatedRawKey(null); }}
-                className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-1.5 px-3 rounded-lg cursor-pointer transition-all shadow-sm"
-              >
-                <Plus size={13} />
-                <span>Create New API Key</span>
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-3 flex-1 justify-center">
-              {apiKeys.slice(0, 2).map((key) => (
-                <div key={key.id} className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
-                  <div className="min-w-0 flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                      <KeyRound size={16} />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-bold text-slate-800 truncate">{key.name}</div>
-                      <div className="text-[11px] font-mono text-slate-400 truncate">{key.maskedKey}</div>
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {apiKeys.map((key) => (
+              <div key={key.id} className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-3">
+                <div className="min-w-0 flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                    <KeyRound size={16} />
                   </div>
-
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button
-                      onClick={() => handleCopy(key.id, key.rawKey || key.maskedKey)}
-                      className="p-1.5 text-slate-400 hover:text-blue-600 rounded cursor-pointer transition-colors"
-                      title="Copy API Key"
-                    >
-                      {copiedKeyId === key.id ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
-                    </button>
-                    <button
-                      onClick={() => handleRevoke(key.id)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded cursor-pointer transition-colors"
-                      title="Revoke API Key"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                  <div className="min-w-0">
+                    <div className="text-xs font-bold text-slate-800 truncate">{key.name}</div>
+                    <div className="text-[11px] font-mono text-slate-400 truncate">{key.maskedKey}</div>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <div className="text-[11px] text-slate-400 mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5">
-              <Lock size={12} className="text-emerald-600" />
-              <span>Keys are hashed at rest via SHA-256</span>
-            </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={() => handleCopy(key.id, key.rawKey || key.maskedKey)}
+                    className="p-1.5 text-slate-400 hover:text-blue-600 rounded cursor-pointer transition-colors"
+                    title="Copy API Key"
+                  >
+                    {copiedKeyId === key.id ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                  </button>
+                  <button
+                    onClick={() => handleRevoke(key.id)}
+                    className="p-1.5 text-slate-400 hover:text-rose-600 rounded cursor-pointer transition-colors"
+                    title="Revoke API Key"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-[11px] text-slate-400 pt-3 border-t border-slate-100 flex items-center gap-1.5">
+            <Lock size={12} className="text-emerald-600" />
+            <span>Keys are hashed at rest via SHA-256 and verified through edge proxy rate limiting</span>
           </div>
         </div>
 

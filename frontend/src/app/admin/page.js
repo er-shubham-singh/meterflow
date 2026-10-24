@@ -16,6 +16,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
+import CircularMetricCard from '@/components/dashboard/CircularMetricCard';
 
 export default function PlatformAdminPage() {
   const [data, setData] = useState(null);
@@ -87,71 +88,64 @@ export default function PlatformAdminPage() {
         {/* Top 4 Stat Cards (Matching Panel 3) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {/* Total Customers */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-2">
-              <span>Total Customers</span>
-              <span className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
-                <Users size={16} />
-              </span>
-            </div>
-            <div className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">
-              {metrics.totalCustomers}
-            </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600">
-              <ArrowUpRight size={14} />
-              <span>{metrics.totalCustomersChange}</span>
-            </div>
-          </div>
+          <CircularMetricCard
+            title="Total Customers"
+            subtitle="Enterprise Tenants"
+            badgeText="Registered"
+            badgeVariant="blue"
+            percentage={88}
+            percentageLabel="GROWTH"
+            strokeColor="#2563EB"
+            textColor="#2563EB"
+            metric={`${metrics.totalCustomers} Accounts`}
+            subtext={metrics.totalCustomersChange}
+            icon={Users}
+          />
 
           {/* Total API Requests */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-2">
-              <span>Total API Requests</span>
-              <span className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
-                <Activity size={16} />
-              </span>
-            </div>
-            <div className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">
-              {metrics.totalApiRequests}
-            </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600">
-              <ArrowUpRight size={14} />
-              <span>{metrics.totalApiRequestsChange}</span>
-            </div>
-          </div>
+          <CircularMetricCard
+            title="Total API Requests"
+            subtitle="Platform Throughput"
+            badgeText="Live Ingestion"
+            badgeVariant="emerald"
+            percentage={94}
+            percentageLabel="CAPACITY"
+            strokeColor="#10B981"
+            textColor="#059669"
+            metric={`${metrics.totalApiRequests} Requests`}
+            subtext={metrics.totalApiRequestsChange}
+            icon={Activity}
+          />
 
           {/* Monthly Revenue */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-2">
-              <span>Monthly Revenue</span>
-              <span className="p-1.5 rounded-lg bg-purple-50 text-purple-600">
-                <IndianRupee size={16} />
-              </span>
-            </div>
-            <div className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">
-              {metrics.monthlyRevenue}
-            </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600">
-              <ArrowUpRight size={14} />
-              <span>{metrics.monthlyRevenueChange}</span>
-            </div>
-          </div>
+          <CircularMetricCard
+            title="Monthly Revenue"
+            subtitle="Gross Showback Run-Rate"
+            badgeText="MRR"
+            badgeVariant="purple"
+            percentage={78}
+            percentageLabel="TARGET"
+            strokeColor="#7C3AED"
+            textColor="#7C3AED"
+            metric={metrics.monthlyRevenue}
+            subtext={metrics.monthlyRevenueChange}
+            icon={IndianRupee}
+          />
 
           {/* Active APIs */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div className="flex items-center justify-between text-xs font-medium text-slate-500 mb-2">
-              <span>Active APIs</span>
-              <span className="p-1.5 rounded-lg bg-cyan-50 text-cyan-600">
-                <Layers size={16} />
-              </span>
-            </div>
-            <div className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">
-              {metrics.activeApis}
-            </div>
-            <div className="mt-2 text-xs font-medium text-slate-500">
-              {metrics.activeApisDetail}
-            </div>
-          </div>
+          <CircularMetricCard
+            title="Active APIs"
+            subtitle="Gateway Integrations"
+            badgeText="Health"
+            badgeVariant="cyan"
+            percentage={100}
+            percentageLabel="ONLINE"
+            strokeColor="#0284C7"
+            textColor="#0284C7"
+            metric={`${metrics.activeApis} Active APIs`}
+            subtext={metrics.activeApisDetail}
+            icon={Layers}
+          />
         </div>
 
         {/* Platform Usage & Revenue Chart (Matching Panel 3) */}

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
 import { useToast } from '@/context/ToastContext';
+import { useAuth } from '@/context/AuthContext';
 import { Send, Copy, Check, Terminal, Plus, Trash2, Zap, Clock, ShieldAlert } from 'lucide-react';
 
 const API_TEMPLATES = {
@@ -87,14 +88,24 @@ const API_TEMPLATES = {
 };
 
 export default function ApiPlayground() {
+  const { user } = useAuth();
   const [selectedApi, setSelectedApi] = useState('OpenAI');
   const [method, setMethod] = useState('POST');
   const [endpoint, setEndpoint] = useState('/v1/chat/completions');
   const [activeTab, setActiveTab] = useState('Headers'); // 'Headers' | 'Body'
+  const activeToken = user?.apiKey || 'sk_mf_live_vikash_3311defa7890';
   const [headers, setHeaders] = useState([
-    { key: 'Authorization', value: 'Bearer sk_mf_1234abcd5678efgh' },
+    { key: 'Authorization', value: `Bearer ${activeToken}` },
     { key: 'Content-Type', value: 'application/json' }
   ]);
+  const [telemetry, setTelemetry] = useState(null);
+
+  useEffect(() => {
+    if (user?.apiKey) {
+      setHeaders(prev => prev.map(h => h.key.toLowerCase() === 'authorization' ? { ...h, value: `Bearer ${user.apiKey}` } : h));
+    }
+  }, [user]);
+
   const [bodyText, setBodyText] = useState(JSON.stringify(API_TEMPLATES.OpenAI.body, null, 2));
   const [response, setResponse] = useState({
     id: 'chatcmpl-123',
@@ -129,7 +140,7 @@ export default function ApiPlayground() {
     const tmpl = API_TEMPLATES[apiName] || API_TEMPLATES.OpenAI;
     setMethod(tmpl.method);
     setEndpoint(tmpl.endpoint);
-    setHeaders([...tmpl.headers]);
+    setHeaders(tmpl.headers.map(h => h.key.toLowerCase() === 'authorization' ? { ...h, value: `Bearer ${user?.apiKey || 'sk_mf_live_vikash_3311defa7890'}` } : h));
     setBodyText(JSON.stringify(tmpl.body, null, 2));
     showToast(`Loaded ${apiName} template`, 'info', 2000);
   };
@@ -184,7 +195,13 @@ export default function ApiPlayground() {
       setLatency(execLatency);
       setStatus(200);
       setResponse(res);
-      showToast(`200 OK — Ingestion recorded (${execLatency}ms)`, 'success');
+      const tel = res?.meterflow_telemetry || res?.data?.meterflow_telemetry;
+      if (tel) {
+        setTelemetry(tel);
+        showToast(`200 OK — Ingested! -${tel.tokensUsedThisCall || 25} tokens (${tel.tokensRemaining?.toLocaleString()} left)`, 'success');
+      } else {
+        showToast(`200 OK — Ingestion recorded (${execLatency}ms)`, 'success');
+      }
     } catch (err) {
       setStatus(429);
       setResponse({
@@ -392,6 +409,27 @@ export default function ApiPlayground() {
             </div>
           </div>
 
+          {/* Live Telemetry Decrement Banner */}
+          {telemetry && (
+            <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 border-b border-blue-800/60 p-3 px-4 flex items-center justify-between text-xs flex-wrap gap-2 text-white animate-in fade-in duration-200">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="font-bold text-emerald-400">-{telemetry.tokensUsedThisCall || 25} Tokens Decreased</span>
+              </div>
+              <div className="flex items-center gap-3 text-[11px] font-mono">
+                <span className="text-blue-300 font-bold bg-blue-900/60 px-2.5 py-0.5 rounded border border-blue-700/50">
+                  {telemetry.tokensRemaining?.toLocaleString()} Tokens Remaining
+                </span>
+                <span className="text-purple-300 font-bold bg-purple-900/60 px-2.5 py-0.5 rounded border border-purple-700/50">
+                  {telemetry.requestsRemaining?.toLocaleString()} Reqs Remaining
+                </span>
+                <span className="text-emerald-300 font-bold">
+                  ₹{telemetry.costInr || 0.05} Cost
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* JSON Body Display with syntax styling and horizontal touch scroll */}
           <div className="p-4 flex-1 overflow-x-auto overflow-y-auto max-w-full font-mono text-xs text-emerald-400 leading-relaxed bg-[#0B132B] min-h-[280px]">
             <pre className="whitespace-pre-wrap break-all sm:break-normal font-mono max-w-full select-all">
@@ -405,7 +443,9 @@ export default function ApiPlayground() {
               <Zap size={12} className="shrink-0" />
               <span>Live Gateway Ingestion Recorded</span>
             </span>
-            <span className="font-mono text-[10px] text-slate-500">Auth: Bearer sk_mf_...</span>
+            <span className="font-mono text-[10px] text-slate-400">
+              {telemetry ? `${telemetry.tokensRemaining?.toLocaleString()} tokens remaining` : 'Auth: Bearer sk_mf_...'}
+            </span>
           </div>
         </div>
       </div>
