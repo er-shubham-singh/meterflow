@@ -122,46 +122,6 @@ export default function EmployeePortalPage() {
       />
 
       <main className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto flex flex-col gap-6">
-        {/* Welcome Banner */}
-        <div className="bg-gradient-to-r from-[#0B132B] to-[#1E293B] text-white p-6 rounded-2xl border border-slate-800 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-blue-600/30 border border-blue-500/40 text-blue-400 flex items-center justify-center text-lg font-bold">
-              {user?.name ? user.name[0] : (employeeDashboard?.employeeName ? employeeDashboard.employeeName[0] : 'V')}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-white leading-tight">
-                  {user?.name || employeeDashboard?.employeeName || 'Vikash Yadav'}
-                </h2>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                  {employeeDashboard?.role || user?.roleLabel || 'Growth Engineer'}
-                </span>
-              </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                {teamName} • Corporate Email: <span className="text-slate-300 font-mono">{user?.email || 'vikash.y@abctech.com'}</span>
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              onClick={handleSendTestRequest}
-              disabled={sendingTest}
-              className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow-md shadow-emerald-600/20 cursor-pointer transition-all active:scale-95"
-            >
-              <Zap size={14} className={sendingTest ? "animate-spin" : ""} />
-              <span>{sendingTest ? "Executing..." : "Send Test Request"}</span>
-            </button>
-            <Link
-              href="/playground"
-              className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow-md shadow-blue-600/20 no-underline transition-all active:scale-95"
-            >
-              <Terminal size={14} />
-              <span>Launch API Playground</span>
-            </Link>
-          </div>
-        </div>
-
         {/* Top 4 Metrics Cards: Tokens, Requests, Budget, Status */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Tokens Remaining Circular Graph */}
@@ -392,14 +352,14 @@ print(response.json())`}
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[650px]">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold text-slate-400 uppercase">
-                  <th className="py-3 px-4">Time</th>
-                  <th className="py-3 px-4">Provider / API</th>
-                  <th className="py-3 px-4">Endpoint</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Cost (INR)</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Time</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Provider / API</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Endpoint</th>
+                  <th className="py-3 px-4 whitespace-nowrap">Status</th>
+                  <th className="py-3 px-4 text-right whitespace-nowrap">Cost (INR)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs font-medium">
@@ -411,15 +371,16 @@ print(response.json())`}
                   { time: '10:15 AM', api: 'OpenAI', endpoint: '/v1/embeddings', status: 200, cost: '₹0.02' }
                 ].map((row, idx) => (
                   <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3 px-4 text-slate-400 font-mono text-[11px]">{row.time}</td>
-                    <td className="py-3 px-4 font-bold text-slate-900">{row.api}</td>
-                    <td className="py-3 px-4 text-slate-500 font-mono text-[11px]">{row.endpoint}</td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
-                        {row.status} OK
+                    <td className="py-3 px-4 text-slate-400 font-mono text-[11px] whitespace-nowrap">{row.time}</td>
+                    <td className="py-3 px-4 font-bold text-slate-900 whitespace-nowrap">{row.api}</td>
+                    <td className="py-3 px-4 text-slate-500 font-mono text-[11px] whitespace-nowrap">{row.endpoint}</td>
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono whitespace-nowrap bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                        <span>{row.status}</span>
+                        <span>OK</span>
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right font-mono font-bold text-slate-900">{row.cost}</td>
+                    <td className="py-3 px-4 text-right font-mono font-bold text-slate-900 whitespace-nowrap">{row.cost}</td>
                   </tr>
                 ))}
               </tbody>

@@ -13,7 +13,10 @@ import {
   Zap, 
   Code2, 
   Server,
-  Layers
+  Layers,
+  ChevronDown,
+  ChevronUp,
+  X
 } from 'lucide-react';
 
 const DOC_NAV = [
@@ -111,6 +114,17 @@ export default function DocsPage() {
   const [selectedLang, setSelectedLang] = useState('cURL');
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedRes, setCopiedRes] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const filteredDocNav = DOC_NAV.map(sec => ({
+    ...sec,
+    items: sec.items.filter(item => 
+      !searchQuery.trim() || 
+      item.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      sec.category.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  })).filter(sec => sec.items.length > 0);
 
   const sampleResponse = {
     id: "chatcmpl-123",
@@ -159,22 +173,129 @@ export default function DocsPage() {
       />
 
       <main className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto">
+        {/* Mobile / Tablet Docs Topic Dropdown Bar (lg:hidden) */}
+        <div className="lg:hidden mb-6 relative z-30">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm">
+            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 px-0.5">
+              Documentation Topic
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-full flex items-center justify-between bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 transition-all cursor-pointer shadow-xs"
+            >
+              <div className="flex items-center gap-2 truncate">
+                <BookOpen size={16} className="text-blue-600 shrink-0" />
+                <span className="truncate">{selectedTopic}</span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0 text-slate-500">
+                <span className="text-[11px] font-medium hidden sm:inline">Browse Topics</span>
+                {isDropdownOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </div>
+            </button>
+          </div>
+
+          {/* Dropdown Menu Modal / Sheet with high z-index and internal scrolling */}
+          {isDropdownOpen && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 transition-opacity"
+                onClick={() => setIsDropdownOpen(false)}
+              />
+
+              {/* Dropdown Floating Panel */}
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 p-4 max-h-[65vh] flex flex-col animate-in fade-in zoom-in-95 duration-150">
+                {/* Header with Search and Close Button */}
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <BookOpen size={16} className="text-blue-600" />
+                    <span className="text-xs font-bold text-slate-900">Select Documentation Topic</span>
+                  </div>
+                  <button
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors"
+                    title="Close Menu"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                {/* Search Input */}
+                <div className="relative mb-3 shrink-0">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search topics, providers, guides..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 outline-none focus:border-blue-500 placeholder:text-slate-400"
+                  />
+                </div>
+
+                {/* Scrollable list of categories and items */}
+                <div className="overflow-y-auto flex-1 pr-1 flex flex-col gap-4">
+                  {filteredDocNav.map((sec, idx) => (
+                    <div key={idx}>
+                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 mb-1">
+                        {sec.category}
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                        {sec.items.map((item) => (
+                          <button
+                            key={item}
+                            onClick={() => {
+                              setSelectedTopic(item);
+                              setIsDropdownOpen(false);
+                            }}
+                            className={`text-left text-xs font-semibold py-2 px-3 rounded-lg transition-colors cursor-pointer flex items-center justify-between ${
+                              selectedTopic === item
+                                ? 'bg-blue-50 text-blue-600 font-bold border border-blue-200'
+                                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                            }`}
+                          >
+                            <span>{item}</span>
+                            {selectedTopic === item && <Check size={14} className="text-blue-600 shrink-0" />}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Footer info & Done button */}
+                <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between shrink-0">
+                  <span className="text-[11px] text-slate-400">Tap any topic to navigate</span>
+                  <button
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl cursor-pointer"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Category Sidebar (Matching Panel 4) */}
-          <div className="lg:col-span-3 bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm sticky top-[84px]">
+          {/* Desktop Category Sidebar (hidden on mobile, sticky and internally scrollable on desktop) */}
+          <div className="hidden lg:flex lg:col-span-3 bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm sticky top-[84px] max-h-[calc(100vh-100px)] flex-col">
             {/* Search Docs */}
-            <div className="relative mb-5">
+            <div className="relative mb-4 shrink-0">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search docs..."
                 className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 outline-none focus:border-blue-500 placeholder:text-slate-400"
               />
             </div>
 
-            {/* Navigation Sections */}
-            <div className="flex flex-col gap-5">
-              {DOC_NAV.map((sec, idx) => (
+            {/* Navigation Sections with internal scroll */}
+            <div className="overflow-y-auto flex-1 pr-1 flex flex-col gap-5 pb-3">
+              {filteredDocNav.map((sec, idx) => (
                 <div key={idx}>
                   <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 mb-1.5">
                     {sec.category}
